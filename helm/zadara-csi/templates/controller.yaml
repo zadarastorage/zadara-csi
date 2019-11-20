@@ -1,0 +1,272 @@
+---
+kind: Deployment
+apiVersion: apps/v1{{ if semverCompare "<1.16" .Capabilities.KubeVersion.GitVersion }}beta1{{ end }}
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-controller
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      {{- include "helm.selector.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: controller
+        {{- include "helm.labels" . | nindent 8 }}
+    spec:
+      priorityClassName: system-cluster-critical
+      serviceAccount: {{ .Release.Name }}-csi-zadara-controller-sa
+      containers:
+        - name: csi-provisioner
+          image: quay.io/k8scsi/csi-provisioner:v1.4.0
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--timeout=120s"
+            - "--v=5"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: csi-attacher
+          image: quay.io/k8scsi/csi-attacher:v2.0.0
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--v=5"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: csi-snapshotter
+          image: quay.io/k8scsi/csi-snapshotter:v1.2.0
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--v=5"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: csi-resizer
+          image: quay.io/k8scsi/csi-resizer:v0.3.0
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - "--v=5"
+            - "--csi-address=$(ADDRESS)"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: liveness-probe
+          image: quay.io/k8scsi/livenessprobe:v1.1.0
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - --csi-address=/csi/csi.sock
+          volumeMounts:
+            - mountPath: /csi
+              name: socket-dir
+        - name: csi-zadara-driver
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          args:
+            - "--name={{ .Values.plugin.provisioner }}"
+            - "--endpoint=$(CSI_ENDPOINT)"
+            - "--hostname=$(VPSA_URL)"
+            - "--key=$(VPSA_ACCESS_TOKEN)"
+            - "--secure={{ .Values.vpsa.https }}"
+            - "--config=/etc/csi/{{ .Values.plugin.configName }}"
+            - "--controller=true"
+          env:
+            - name: CSI_ENDPOINT
+              value: unix:///csi/csi.sock
+            - name: VPSA_URL
+              value: "{{ .Values.vpsa.url }}"
+            - name: VPSA_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vpsa-access-token
+                  key: access-token
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 5
+          ports:
+            - name: healthz
+              containerPort: 9808
+              protocol: TCP
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: config-dir
+              mountPath: /etc/csi
+      volumes:
+        - name: socket-dir
+          emptyDir: {}
+        - name: config-dir
+          hostPath:
+            path: "{{ .Values.plugin.configDir }}"
+            type: DirectoryOrCreate
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-controller-sa
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "helm.labels" . | nindent 4 }}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-provisioner-role
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "helm.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["csinodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents"]
+    verbs: ["create", "get", "list", "watch", "update", "delete"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshots"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshots/status"]
+    verbs: ["update"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["create", "list", "watch", "delete", "get", "update"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-provisioner-binding
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "helm.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-csi-zadara-controller-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}-csi-zadara-provisioner-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Attacher must be able to work with PVs, nodes and VolumeAttachments
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-attacher-role
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "helm.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["csinodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["volumeattachments"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-attacher-binding
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "helm.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-csi-zadara-controller-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}-csi-zadara-attacher-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# Resizer must be able to work with PVCs, PVs, SCs.
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-resizer
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "helm.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims/status"]
+    verbs: ["update", "patch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-csi-resizer-role
+  labels:
+    app.kubernetes.io/component: controller
+    {{- include "helm.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-csi-zadara-controller-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}-csi-zadara-resizer
+  apiGroup: rbac.authorization.k8s.io

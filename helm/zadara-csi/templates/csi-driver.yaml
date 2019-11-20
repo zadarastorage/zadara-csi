@@ -1,0 +1,17 @@
+---
+# Register driver at cluster-level
+# https://kubernetes-csi.github.io/docs/csi-driver-object.html
+#
+# Usage:
+#  kubectl create -f csi-driver.yaml
+#
+# Requires K8s 1.14+
+apiVersion: storage.k8s.io/v1beta1
+kind: CSIDriver
+metadata:
+  name: "{{ .Values.plugin.provisioner }}"
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  attachRequired: true
+  podInfoOnMount: true

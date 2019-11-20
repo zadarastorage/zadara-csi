@@ -1,0 +1,67 @@
+{{- if or (not .Values.vpsa.url) (not .Values.vpsa.token) (eq .Values.vpsa.url "example.zadaravpsa.com") (eq .Values.vpsa.token "1234ABCD5678EFGH-123") -}}
+##############################################################################
+####   ERROR: Missing required values                                     ####
+##############################################################################
+It appears that VPSA credentials are not set.
+Zadara-CSI Plugin will not be able to reach your VPSA.
+To fix:
+1. Set VPSA credentials. You can use the following example:
+cat << EOF > my_values.yaml
+---
+vpsa:
+  url: "example.zadaravpsa.com"
+  https: true
+  token: "1234ABCD5678EFGH-123"
+EOF
+2. Delete current release:
+  helm delete {{ .Release.Name }}
+3. Install the chart again with updated credentials
+  helm install -f my_values.yaml {{ .Chart.Name }}
+{{- else if and (ne .Values.plugin.iscsiMode "rootfs") (ne .Values.plugin.iscsiMode "client-server") -}}
+##############################################################################
+####   ERROR: Invalid plugin.iscsiMode                                    ####
+##############################################################################
+Invalid value of 'plugin.iscsiMode': {{ .Values.plugin.iscsiMode }}
+Allowed values are "rootfs" or "client-server".
+Try one of the following:
+  helm install --set plugin.iscsiMode="rootfs"        {{ .Chart.Name }}
+  helm install --set plugin.iscsiMode="client-server" {{ .Chart.Name }}
+{{- else -}}
+##############################################################################
+####   Successfully installed Zadara-CSI                                  ####
+##############################################################################
+Thank you for installing {{ .Chart.Name }}!
+Your release is named {{ .Release.Name }}
+
+Try following example to create a NAS volume on your VPSA:
+
+cat << EOF > sc_and_pvc.yaml
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: csi-zadara-{{ .Release.Name }}-nas
+provisioner: {{ .Values.plugin.provisioner }}
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+# # remove comment for VPSA with multiple Storage Pools
+# parameters:
+#   poolid: pool-00010003
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zadara-{{ .Release.Name }}-nas-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: csi-zadara-{{ .Release.Name }}-nas
+EOF
+kubectl create -f sc_and_pvc.yaml  # create StorageClass and PersistentVolumeClaim
+kubectl get sc  # verify StorageClass creation
+kubectl get pvc  # verify PersistentVolumeClaim creation
+{{- end -}}

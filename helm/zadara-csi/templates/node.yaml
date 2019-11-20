@@ -1,0 +1,200 @@
+---
+kind: DaemonSet
+apiVersion: apps/v1{{ if semverCompare "<1.16" .Capabilities.KubeVersion.GitVersion }}beta2{{ end }}
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-node
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: node
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: node
+      {{- include "helm.selector.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: node
+        {{- include "helm.labels" . | nindent 8 }}
+    spec:
+      priorityClassName: system-node-critical
+      serviceAccount: {{ .Release.Name }}-csi-zadara-node-sa
+      hostNetwork: true
+      containers:
+        - name: csi-node-driver-registrar
+          image: quay.io/k8scsi/csi-node-driver-registrar:v1.2.0
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)"
+            - "--v=5"
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - "rm -rf /registration/{{ .Values.plugin.provisioner }} /registration/{{ .Values.plugin.provisioner }}-reg.sock"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+            - name: DRIVER_REG_SOCK_PATH
+              value: /var/lib/kubelet/plugins/{{ .Values.plugin.provisioner }}/csi.sock
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: registration-dir
+              mountPath: /registration
+        - name: liveness-probe
+          image: quay.io/k8scsi/livenessprobe:v1.1.0
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - --csi-address=/csi/csi.sock
+          volumeMounts:
+            - mountPath: /csi
+              name: socket-dir
+        - name: csi-zadara-driver
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          args:
+            - "--name={{ .Values.plugin.provisioner }}"
+            - "--endpoint=$(CSI_ENDPOINT)"
+            - "--hostname=$(VPSA_URL)"
+            - "--key=$(VPSA_ACCESS_TOKEN)"
+            - "--secure={{ .Values.vpsa.https }}"
+            - "--config=/etc/csi/{{ .Values.plugin.configName }}"
+          env:
+            - name: CSI_ENDPOINT
+              value: unix:///csi/csi.sock
+            - name: VPSA_URL
+              value: "{{ .Values.vpsa.url }}"
+            - name: VPSA_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vpsa-access-token
+                  key: access-token
+            - name: ISCSIADM_MODE
+              value: "{{ .Values.plugin.iscsiMode }}"
+            - name: POSTSTART_FINISHED_MARKER
+              value: "/run/poststart_finished"
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/poststart_actions.sh"]
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 5
+          ports:
+            - name: healthz
+              containerPort: 9808
+              protocol: TCP
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"]
+            allowPrivilegeEscalation: true
+          volumeMounts:
+            {{- if eq .Values.plugin.iscsiMode "rootfs" }}
+            - name: host-root
+              mountPath: /host
+            {{ end -}}
+            {{- if eq .Values.plugin.iscsiMode "client-server" }}
+            - name: iscsi-socket
+              mountPath: /iscsi-socket/iscsi.sock
+            {{ end -}}
+            - name: iscsi-initiator-name
+              mountPath: /etc/iscsi/initiatorname.iscsi
+            - name: socket-dir
+              mountPath: /csi
+            - name: pods-mount-dir
+              mountPath: /var/lib/kubelet
+              # needed so that any mounts setup inside this container are
+              # propagated back to the host machine.
+              mountPropagation: "Bidirectional"
+            - name: device-dir
+              mountPath: /dev
+            - name: config-dir
+              mountPath: /etc/csi
+      volumes:
+        {{- if eq .Values.plugin.iscsiMode "rootfs" }}
+        - name: host-root
+          hostPath:
+            path: /
+        {{ end -}}
+        {{- if eq .Values.plugin.iscsiMode "client-server" }}
+        - name: iscsi-socket
+          hostPath:
+            path: /var/zadara/csi-iscsi.sock
+            type: FileOrCreate
+        {{ end -}}
+        - name: iscsi-initiator-name
+          hostPath:
+            path: /etc/iscsi/initiatorname.iscsi
+        - name: registration-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins_registry/
+            type: DirectoryOrCreate
+        - name: socket-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins/{{ .Values.plugin.provisioner }}
+            type: DirectoryOrCreate
+        - name: pods-mount-dir
+          hostPath:
+            path: /var/lib/kubelet
+            type: Directory
+        - name: device-dir
+          hostPath:
+            path: /dev
+        - name: config-dir
+          hostPath:
+            path: "{{ .Values.plugin.configDir }}"
+            type: DirectoryOrCreate
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-node-sa
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: node
+    {{- include "helm.labels" . | nindent 4 }}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-node-driver-registrar-role
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: node
+    {{- include "helm.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-csi-zadara-node-driver-registrar-binding
+  labels:
+    app.kubernetes.io/component: node
+    {{- include "helm.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-csi-zadara-node-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}-csi-zadara-node-driver-registrar-role
+  apiGroup: rbac.authorization.k8s.io
