@@ -58,10 +58,10 @@ Currently Helm charts are only available locally, as part of this repository.
   `vpsa.url`            |  url or IP of VPSA provisioning Volumes, without `http://` or `https://` prefix
   `vpsa.https`          |  whether to use HTTPS or HTTP to access VPSA
   `vpsa.token`          |  token to access VPSA, e.g `ABCD1234DEFG5678-123`
-  `plugin.provisioner`  |  the name of CSI plugin, for use in StorageClass, e.g. `us-west.csi.zadara.com` or  `on-prem.csi.zadara.com`
+  `plugin.provisioner`  |  the name of CSI plugin, for use in StorageClass, e.g. `us-west.csi.zadara.com` or `on-prem.csi.zadara.com`
   `plugin.configDir`    |  directory on host FS, where the plugin will look for config, or create one if doesn't exist
   `plugin.configName`   |  name of dynamic config
-  `plugin.iscsiMode`    |  defines how the plugin will run `iscsiadm` commands on host. Allowed values: `rootfs` or `client-server`. 
+  `plugin.iscsiMode`    |  defines how the plugin will run `iscsiadm` commands on host. Allowed values: `rootfs` or `client-server`.
   `labels`              |  labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary `key: "value"` pairs
 
 For more info about `plugin.iscsiMode` see [Establishing iSCSI connectivity](README.md#establishing-iscsi-connectivity) section.
