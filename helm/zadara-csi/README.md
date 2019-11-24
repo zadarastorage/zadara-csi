@@ -1,7 +1,7 @@
 <!--- This file is auto-generated. Do not edit. -->
 
 ## Description
-   The Zadra VPSA CSI provider implements an interface between the Container Storage Interface (CSI)
+   The Zadara VPSA CSI provider implements an interface between the Container Storage Interface (CSI)
    and Zadara VPSA Storage Array & VPSA All-Flash, for a dynamic provisioning of persistent Block and File volumes.
 
 
