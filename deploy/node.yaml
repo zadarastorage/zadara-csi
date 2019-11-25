@@ -103,7 +103,7 @@ spec:
                   name: release-vpsa-access-token
                   key: access-token
             - name: ISCSIADM_MODE
-              value: "client-server"
+              value: "rootfs"
             - name: POSTSTART_FINISHED_MARKER
               value: "/run/poststart_finished"
           lifecycle:
@@ -128,8 +128,8 @@ spec:
               add: ["SYS_ADMIN"]
             allowPrivilegeEscalation: true
           volumeMounts:
-            - name: iscsi-socket
-              mountPath: /iscsi-socket/iscsi.sock
+            - name: host-root
+              mountPath: /host
             - name: iscsi-initiator-name
               mountPath: /etc/iscsi/initiatorname.iscsi
             - name: socket-dir
@@ -144,10 +144,9 @@ spec:
             - name: config-dir
               mountPath: /etc/csi
       volumes:
-        - name: iscsi-socket
+        - name: host-root
           hostPath:
-            path: /var/zadara/csi-iscsi.sock
-            type: FileOrCreate
+            path: /
         - name: iscsi-initiator-name
           hostPath:
             path: /etc/iscsi/initiatorname.iscsi

@@ -64,6 +64,6 @@ Currently Helm charts are only available locally, as part of this repository.
   `plugin.iscsiMode`    |  defines how the plugin will run `iscsiadm` commands on host. Allowed values: `rootfs` or `client-server`.
   `labels`              |  labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary `key: "value"` pairs
 
-For more info about `plugin.iscsiMode` see [Establishing iSCSI connectivity](README.md#establishing-iscsi-connectivity) section.
+For more info about `plugin.iscsiMode` see [Node iSCSI Connectivity](#node-iscsi-connectivity) section.
 
 <!--- end -->

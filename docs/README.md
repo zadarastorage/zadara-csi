@@ -225,7 +225,7 @@ These include examples of an application (nginx in most cases) using NAS and Blo
 dynamically provisioned by Zadara-CSI.
 Also included examples of cloning volumes, creating and restoring snapshots.
 
-- Using Helm charts (will be added soon)
+- [Using Helm charts](examples-helm.md)
 
 - [Manually (using kubectl)](examples-k8s.md)
 

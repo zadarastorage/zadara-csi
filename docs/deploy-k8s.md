@@ -3,7 +3,7 @@
 ### Configuration
 
 We provide two versions of plugin deployment with different approaches to manage iSCSI connectivity
-(see [Establishing iSCSI connectivity](README.md#establishing-iscsi-connectivity) section),
+(see [Node iSCSI Connectivity](#node-iscsi-connectivity) section),
  available in `deploy/rootfs` and `deploy/client-server`.
 
 #### Secrets management

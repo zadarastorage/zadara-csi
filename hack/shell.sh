@@ -47,9 +47,9 @@ while getopts ":n:r:" opt; do
 done
 
 if [ ! $NODE ]; then
-  POD=$($KUBECTL get all -n kube-system 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | head -n1 | awk 'BEGIN{FS=" "} {print $1}')
+  POD=$($KUBECTL get pods -n kube-system 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | head -n1 | awk 'BEGIN{FS=" "} {print $1}')
 else
-  POD=$($KUBECTL get all -n kube-system -o wide 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep "${NODE}" | awk 'BEGIN{FS=" "} {print $1}')
+  POD=$($KUBECTL get pods -n kube-system -o wide 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | grep "${NODE}" | awk 'BEGIN{FS=" "} {print $1}')
 fi
 
 if [ ! $POD ]; then

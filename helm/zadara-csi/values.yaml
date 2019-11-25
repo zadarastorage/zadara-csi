@@ -24,7 +24,7 @@ plugin:
   # configName is a name of dynamic config
   configName: "zadara-csi-config.yaml"
   # iscsiMode (rootfs|client-server) allows to chose a way for the plugin to reach iscsiadm on host
-  iscsiMode: "client-server"
+  iscsiMode: "rootfs"
 # labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary 'key: "value"' pairs
 labels:
   # stage can be 'dev', 'staging', 'production', or any other option of your choice
