@@ -6,7 +6,7 @@ We provide one, but very flexible Helm chart example to test Zadara-CSI plugin.
 This example will allow you to run a single Pod, with an arbitrary container, and NAS or Block volume (or both).
 The configuration can be easily changed using custom Helm values file.
 
-The chart can be found in [helm/one-pod-one-pool](helm/one-pod-one-pool) in this repository.
+The chart can be found in [helm/one-pod-one-pool](../helm/one-pod-one-pool) in this repository.
 
 In all following examples proceed as following:
 1.  Get release name of CSI plugin (`fuzzy-grasshopper` in this example).

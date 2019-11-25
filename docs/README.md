@@ -151,7 +151,7 @@ If you are not sure what `provisioner` should be, it's value can be obtained aft
 
 Example:
 
-```
+```yaml
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -192,7 +192,7 @@ Changes in config file (`/etc/csi/zadara-csi-config.yaml` by default) are monito
 | `plugin.log.level`               | info  | Verbosity level for plugin logs. Allowed values: `panic`, `fatal`, `error`, `warn` or `warning`, `info`, `debug`
 
 Example config:
-```
+```yaml
 vpsa:
   request-timeout-sec: 180
 plugin:
@@ -207,11 +207,11 @@ plugin:
 Default security parameters do not allow `mount` inside a pod.
 To add ability to mount a filesystem residing on a block device,
 add following parameters to container configuration:
-
-      securityContext:
-        capabilities:
-          add: ["SYS_ADMIN"]
-
+```yaml
+  securityContext:
+    capabilities:
+      add: ["SYS_ADMIN"]
+```
 Please, do not use `privileged: true`: because of a [bug in Docker](https://bugzilla.redhat.com/show_bug.cgi?id=1614734),
 block device won't appear at requested `devicePath`.
 

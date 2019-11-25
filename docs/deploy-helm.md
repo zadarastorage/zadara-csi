@@ -8,7 +8,7 @@ Currently Helm charts are only available locally, as part of this repository.
 
 2. Edit or create [values.yaml](../helm/zadara-csi/values.yaml) and set CSI driver version and VPSA credentials.
 
-    ```
+    ```yaml
     image:
       repository: zadara/csi-driver
       tag: 0.14.0

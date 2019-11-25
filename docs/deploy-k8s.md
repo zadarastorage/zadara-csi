@@ -10,13 +10,15 @@ We provide two versions of plugin deployment with different approaches to manage
 
 Before deploying Zadara-CSI plugin, create a file `secrets.yaml`, with VPSA credentials. You can use [secrets.yaml](../deploy/secrets.yaml) as an example.
 
-    apiVersion: v1
-    kind: Secret
-    metadata:
-      name: vpsa-access-token
-      namespace: kube-system
-    stringData:
-      access-token: "ABCD1234DEFG5678-123"
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vpsa-access-token
+  namespace: kube-system
+stringData:
+  access-token: "ABCD1234DEFG5678-123"
+```
 
 - Get access token from VPSA, and paste into `access-token`.
 - Run `kubectl create -f deploy/secrets.yaml`. This will create a Secret object in Kubernetes.

@@ -6,8 +6,7 @@ appVersion: 0.14.0
 description: "Container Storage Interface (CSI) driver for Zadara VPSA"
 keywords: ["CSI", "Storage", "Zadara", "VPSA", "NAS", "Block", "Persistent Volume", "Cloud Storage", "STaaS", "PVC"]
 home: zadara.com
-# TODO: upload icon to our share
-icon: https://i.imgur.com/UeZagWP.png
+icon: https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v0.14.0/helm/zadara-csi/icon.png
 maintainers:
   - name: Lev Pechersky
     email: levp@zadara.com
