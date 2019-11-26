@@ -8,9 +8,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "0.14.0"
+    app.kubernetes.io/version: "0.14.1"
     app: zadara-csi
-    version: 0.14.0
+    version: 0.14.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -22,9 +22,9 @@ spec:
       app.kubernetes.io/component: controller
       app.kubernetes.io/name: zadara-csi
       app.kubernetes.io/instance: release
-      app.kubernetes.io/version: "0.14.0"
+      app.kubernetes.io/version: "0.14.1"
       app: zadara-csi
-      version: "0.14.0"
+      version: "0.14.1"
       release: release
       stage: "production"
       publisher: "zadara"
@@ -35,9 +35,9 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: zadara-csi
         app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "0.14.0"
+        app.kubernetes.io/version: "0.14.1"
         app: zadara-csi
-        version: 0.14.0
+        version: 0.14.1
         release: release
         stage: "production"
         publisher: "zadara"
@@ -104,7 +104,7 @@ spec:
             - mountPath: /csi
               name: socket-dir
         - name: csi-zadara-driver
-          image: "zadara/csi-driver:0.14.0"
+          image: "zadara/csi-driver:0.14.1"
           imagePullPolicy: "IfNotPresent"
           args:
             - "--name=csi.zadara.com"
@@ -158,9 +158,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "0.14.0"
+    app.kubernetes.io/version: "0.14.1"
     app: zadara-csi
-    version: 0.14.0
+    version: 0.14.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -174,9 +174,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "0.14.0"
+    app.kubernetes.io/version: "0.14.1"
     app: zadara-csi
-    version: 0.14.0
+    version: 0.14.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -227,9 +227,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "0.14.0"
+    app.kubernetes.io/version: "0.14.1"
     app: zadara-csi
-    version: 0.14.0
+    version: 0.14.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -252,9 +252,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "0.14.0"
+    app.kubernetes.io/version: "0.14.1"
     app: zadara-csi
-    version: 0.14.0
+    version: 0.14.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -281,9 +281,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "0.14.0"
+    app.kubernetes.io/version: "0.14.1"
     app: zadara-csi
-    version: 0.14.0
+    version: 0.14.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -306,9 +306,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "0.14.0"
+    app.kubernetes.io/version: "0.14.1"
     app: zadara-csi
-    version: 0.14.0
+    version: 0.14.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -335,9 +335,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "0.14.0"
+    app.kubernetes.io/version: "0.14.1"
     app: zadara-csi
-    version: 0.14.0
+    version: 0.14.1
     release: release
     stage: "production"
     publisher: "zadara"

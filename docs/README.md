@@ -123,6 +123,9 @@ Use one of the following methods:
 
 After successful deployment you will see a Server created on your VPSA for each active K8s node.
 
+Server records and volumes attachments are managed dynamically by the CSI provider, do not change or delete them manually.
+In case a manual configuration cleanup is required, disconnect the active iSCSI sessions to the VPSA before spinning up a new instance of the provider.
+
 ### Troubleshooting
 
 The most common problems:
@@ -228,4 +231,3 @@ Also included examples of cloning volumes, creating and restoring snapshots.
 - [Using Helm charts](examples-helm.md)
 
 - [Manually (using kubectl)](examples-k8s.md)
-
