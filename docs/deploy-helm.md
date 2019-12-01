@@ -11,12 +11,12 @@ Currently Helm charts are only available locally, as part of this repository.
     ```yaml
     image:
       repository: zadara/csi-driver
-      tag: 0.14.1
+      tag: 1.1.0
       pullPolicy: IfNotPresent
     vpsa:
       url: "example.zadaravpsa.com"
       https: true
-      token: "ABCD1234DEFG5678-123"
+      token: "FAKETOKEN1234567-123"
     plugin:
       provisioner: csi.zadara.com
       configDir: "/etc/csi"
@@ -57,7 +57,7 @@ Currently Helm charts are only available locally, as part of this repository.
   `image.pullPolicy`    | `pullPolicy` of the image https://kubernetes.io/docs/concepts/containers/images/#updating-images
   `vpsa.url`            |  url or IP of VPSA provisioning Volumes, without `http://` or `https://` prefix
   `vpsa.https`          |  whether to use HTTPS or HTTP to access VPSA
-  `vpsa.token`          |  token to access VPSA, e.g `ABCD1234DEFG5678-123`
+  `vpsa.token`          |  token to access VPSA, e.g `FAKETOKEN1234567-123`
   `plugin.provisioner`  |  the name of CSI plugin, for use in StorageClass, e.g. `us-west.csi.zadara.com` or `on-prem.csi.zadara.com`
   `plugin.configDir`    |  directory on host FS, where the plugin will look for config, or create one if doesn't exist
   `plugin.configName`   |  name of dynamic config

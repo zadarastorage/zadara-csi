@@ -1,14 +1,33 @@
 ## Deploying zadara-csi plugin on Kubernetes
 
-### Configuration
+### Choose your version
 
-We provide two versions of plugin deployment with different approaches to manage iSCSI connectivity
+Directory `deploy` contains YAML files organized by K8s versions.
+
+For each version, we provide two options of plugin deployment with different approaches to manage iSCSI connectivity
 (see [Node iSCSI Connectivity](#node-iscsi-connectivity) section),
- available in `deploy/rootfs` and `deploy/client-server`.
+ available in `deploy/<k8s-version-dir>/rootfs` and `deploy/<k8s-version-dir>/client-server`.
+
+For more convenience, we suggest creating a symlink to a directory of your choice:
+```shell script
+ln -sfT  <k8s-version-dir>/<rootfs|client-server>  deploy/current
+# Example:
+ln -sfT  k8s-1.16/client-server  deploy/current
+```
+Or to skip Node iSCSI Connectivity part and choose default:
+```shell script
+ln -sfT  <k8s-version-dir>/  deploy/current
+# Example:
+ln -sfT  k8s-1.16  deploy/current
+```
+
+---
+
+### Configuration
 
 #### Secrets management
 
-Before deploying Zadara-CSI plugin, create a file `secrets.yaml`, with VPSA credentials. You can use [secrets.yaml](../deploy/secrets.yaml) as an example.
+Before deploying Zadara-CSI plugin, edit `deploy/current/secrets.yaml` and set VPSA credentials.
 
 ```yaml
 apiVersion: v1
@@ -17,20 +36,17 @@ metadata:
   name: vpsa-access-token
   namespace: kube-system
 stringData:
-  access-token: "ABCD1234DEFG5678-123"
+  access-token: "FAKETOKEN1234567-123"
 ```
 
 - Get access token from VPSA, and paste into `access-token`.
-- Run `kubectl create -f deploy/secrets.yaml`. This will create a Secret object in Kubernetes.
+- Run `kubectl create -f deploy/current/secrets.yaml`. This will create a Secret object in Kubernetes.
 - To verify, run `kubectl --namespace kube-system get secrets`, `vpsa-access-token` should appear in output.
 - Remove `secrets.yaml`, to keep your secrets safe.
 
 #### Plugin arguments
 
-Edit following parameters in
-[controller.yaml](../deploy/controller.yaml)
-and
-[node.yaml](../deploy/node.yaml).
+Edit following parameters in `controller.yaml` and `node.yaml`.
 In most cases, only `hostname`, and `secure` need to be changed.
 
 | parameter | description | required | examples |
@@ -39,9 +55,11 @@ In most cases, only `hostname`, and `secure` need to be changed.
 |`nodeid` | Kubernetes Node id | No. Defaults to hostname of a current node, as returned by `uname -n` | `VM-001`, `node42`
 | `endpoint` | gRPC UNIX socket | No. Defaults to `unix://tmp/csi.sock` | `unix://csi/csi.sock`
 | `hostname` | VPSA hostname, or IP  | Yes | `example.zadaravpsa.com`, `10.0.10.1`
-| `token` | API access key | Yes, by default is taken from [secrets](#secrets-management) | `ABCD1234DEFG5678-123`
+| `token` | API access key | Yes, by default is taken from [secrets](#secrets-management) | `FAKETOKEN1234567-123`
 | `secure` | Whether or not to use HTTPS | No. Defaults to `true` | `true`, `false`, `0`, `1`. <br>Pass as `--secure=false`
 | `config` | Path to dynamic [config](README.md#extended-configuration) | No. Defaults to `/etc/csi/zadara-csi-config.yaml` | `etc/csi-config.yaml`
+
+---
 
 ### Deployment
 
@@ -49,7 +67,7 @@ In most cases, only `hostname`, and `secure` need to be changed.
 2. Update [plugin arguments](#plugin-arguments)
 3. Execute:
     ```
-    kubectl create -f deploy/csi-driver.yaml
-    kubectl create -f deploy/node.yaml
-    kubectl create -f deploy/controller.yaml
+    kubectl create -f deploy/current/csi-driver.yaml
+    kubectl create -f deploy/current/node.yaml
+    kubectl create -f deploy/current/controller.yaml
     ```

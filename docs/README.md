@@ -7,6 +7,11 @@
 
 <!--- end -->
 
+### Versioning
+
+- `release` branch (the default) and tags `release-v[version]` refer to stable versions.
+- `master` contains the latest changes, some of which may be still not fully tested.
+
 ## Table of contents
 
 - [Prerequisites](#prerequisites)

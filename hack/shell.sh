@@ -3,8 +3,16 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $SCRIPT_DIR/..
 
-# For non-standard distributions, like microk8s
-KUBECTL='kubectl'
+# For non-standard distributions, like microk8s. Use enviroment variable, or default.
+if [ ! $KUBECTL ]; then
+  KUBECTL='kubectl'
+fi
+if [ ! `which $KUBECTL` ]; then
+  echo "Error: cannot find kubectl (Now set to $KUBECTL)."
+  echo "For non-standard distributions use 'export KUBECTL=<kubectl name>'"
+  echo "Example: 'export KUBECTL=microk8s.kubectl'"
+  exit 1
+fi
 
 function print_usage_and_exit {
     echo "Open an interactive shell in Zadara-CSI Pod"

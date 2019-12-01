@@ -1,4 +1,4 @@
-{{- if or (not .Values.vpsa.url) (not .Values.vpsa.token) (eq .Values.vpsa.url "example.zadaravpsa.com") (eq .Values.vpsa.token "1234ABCD5678EFGH-123") -}}
+{{- if or (not .Values.vpsa.url) (not .Values.vpsa.token) (eq .Values.vpsa.url "example.zadaravpsa.com") (eq .Values.vpsa.token "FAKETOKEN1234567-123") -}}
 ##############################################################################
 ####   ERROR: Missing required values                                     ####
 ##############################################################################
@@ -11,7 +11,7 @@ cat << EOF > my_values.yaml
 vpsa:
   url: "example.zadaravpsa.com"
   https: true
-  token: "1234ABCD5678EFGH-123"
+  token: "FAKETOKEN1234567-123"
 EOF
 2. Delete current release:
   helm delete {{ .Release.Name }}
