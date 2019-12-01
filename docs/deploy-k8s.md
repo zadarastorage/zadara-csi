@@ -5,7 +5,7 @@
 Directory `deploy` contains YAML files organized by K8s versions.
 
 For each version, we provide two options of plugin deployment with different approaches to manage iSCSI connectivity
-(see [Node iSCSI Connectivity](#node-iscsi-connectivity) section),
+(see [Node iSCSI Connectivity](README.md#node-iscsi-connectivity) section),
  available in `deploy/<k8s-version-dir>/rootfs` and `deploy/<k8s-version-dir>/client-server`.
 
 For more convenience, we suggest creating a symlink to a directory of your choice:
