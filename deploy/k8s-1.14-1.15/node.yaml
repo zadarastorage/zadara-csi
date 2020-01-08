@@ -8,9 +8,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.0"
+    app.kubernetes.io/version: "1.1.2"
     app: zadara-csi
-    version: 1.1.0
+    version: 1.1.2
     release: release
     stage: "production"
     publisher: "zadara"
@@ -21,9 +21,9 @@ spec:
       app.kubernetes.io/component: node
       app.kubernetes.io/name: zadara-csi
       app.kubernetes.io/instance: release
-      app.kubernetes.io/version: "1.1.0"
+      app.kubernetes.io/version: "1.1.2"
       app: zadara-csi
-      version: "1.1.0"
+      version: "1.1.2"
       release: release
       stage: "production"
       publisher: "zadara"
@@ -34,9 +34,9 @@ spec:
         app.kubernetes.io/component: node
         app.kubernetes.io/name: zadara-csi
         app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "1.1.0"
+        app.kubernetes.io/version: "1.1.2"
         app: zadara-csi
-        version: 1.1.0
+        version: 1.1.2
         release: release
         stage: "production"
         publisher: "zadara"
@@ -179,9 +179,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.0"
+    app.kubernetes.io/version: "1.1.2"
     app: zadara-csi
-    version: 1.1.0
+    version: 1.1.2
     release: release
     stage: "production"
     publisher: "zadara"
@@ -196,9 +196,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.0"
+    app.kubernetes.io/version: "1.1.2"
     app: zadara-csi
-    version: 1.1.0
+    version: 1.1.2
     release: release
     stage: "production"
     publisher: "zadara"
@@ -216,9 +216,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.0"
+    app.kubernetes.io/version: "1.1.2"
     app: zadara-csi
-    version: 1.1.0
+    version: 1.1.2
     release: release
     stage: "production"
     publisher: "zadara"

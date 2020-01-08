@@ -50,6 +50,8 @@
 If you change IQN, restart iSCSI service, using `systemctl restart iscsid`
 
 ### Feature gates
+K8s 1.17+ users can skip this section.
+
 For some CSI features, following
 [feature gates](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/)
 must be enabled:
@@ -57,7 +59,7 @@ must be enabled:
 | Feature                       | Feature gate                   |  Available since     | Enabled by default since |
 |-------------------------------|--------------------------------| ---------------------| -------------------------|
 | Clone Volume                  | `VolumePVCDataSource`          | K8s 1.15             | K8s 1.16
-| Restore Volume from Snapshot  | `VolumeSnapshotDataSource`     | K8s 1.12             | -
+| Restore Volume from Snapshot  | `VolumeSnapshotDataSource`     | K8s 1.12             | K8s 1.17
 | Expand Volume                 | `ExpandCSIVolumes` <br> `ExpandInUsePersistentVolumes` | K8s 1.14 <br> K8s 1.11 | K8s 1.16 <br> K8s 1.15
 
 #### Enabling feature gates example
