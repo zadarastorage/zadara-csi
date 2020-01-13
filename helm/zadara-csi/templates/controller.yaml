@@ -53,7 +53,7 @@ spec:
           imagePullPolicy: "IfNotPresent"
           args:
             - "--v=5"
-            - "--csiTimeout=180s"
+            - "--timeout=180s"
             - "--csi-address=$(ADDRESS)"
           env:
             - name: ADDRESS

@@ -103,7 +103,7 @@ Currently Helm charts are only available locally, as part of this repository.
     ```yaml
     image:
       repository: zadara/csi-driver
-      tag: 1.1.3
+      tag: 1.1.4
       pullPolicy: IfNotPresent
     vpsa:
       url: "example.zadaravpsa.com"
