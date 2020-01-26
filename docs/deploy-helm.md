@@ -11,7 +11,7 @@ Currently Helm charts are only available locally, as part of this repository.
     ```yaml
     image:
       repository: zadara/csi-driver
-      tag: 1.1.4
+      tag: 1.2.0
       pullPolicy: IfNotPresent
     vpsa:
       url: "example.zadaravpsa.com"
@@ -62,6 +62,7 @@ Currently Helm charts are only available locally, as part of this repository.
   `plugin.configDir`    |  directory on host FS, where the plugin will look for config, or create one if doesn't exist
   `plugin.configName`   |  name of dynamic config
   `plugin.iscsiMode`    |  defines how the plugin will run `iscsiadm` commands on host. Allowed values: `rootfs` or `client-server`.
+  `plugin.healthzPort`  |  healthzPort is an TCP ports for listening for HTTP requests of liveness probes, needs to be _unique for each plugin instance_ in a cluster.
   `labels`              |  labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary `key: "value"` pairs
 
 For more info about `plugin.iscsiMode` see [Node iSCSI Connectivity](README.md#node-iscsi-connectivity) section.

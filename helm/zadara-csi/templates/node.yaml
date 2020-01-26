@@ -55,6 +55,7 @@ spec:
           imagePullPolicy: "IfNotPresent"
           args:
             - --csi-address=/csi/csi.sock
+            - --health-port={{ .Values.plugin.healthzPort }}
           volumeMounts:
             - mountPath: /csi
               name: socket-dir
@@ -96,7 +97,7 @@ spec:
             failureThreshold: 5
           ports:
             - name: healthz
-              containerPort: 9808
+              containerPort: {{ .Values.plugin.healthzPort }}
               protocol: TCP
           securityContext:
             privileged: true

@@ -8,9 +8,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.4"
+    app.kubernetes.io/version: "1.2.0"
     app: zadara-csi
-    version: 1.1.4
+    version: 1.2.0
     release: release
     stage: "production"
     publisher: "zadara"
@@ -22,9 +22,9 @@ spec:
       app.kubernetes.io/component: controller
       app.kubernetes.io/name: zadara-csi
       app.kubernetes.io/instance: release
-      app.kubernetes.io/version: "1.1.4"
+      app.kubernetes.io/version: "1.2.0"
       app: zadara-csi
-      version: "1.1.4"
+      version: "1.2.0"
       release: release
       stage: "production"
       publisher: "zadara"
@@ -35,9 +35,9 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: zadara-csi
         app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "1.1.4"
+        app.kubernetes.io/version: "1.2.0"
         app: zadara-csi
-        version: 1.1.4
+        version: 1.2.0
         release: release
         stage: "production"
         publisher: "zadara"
@@ -103,11 +103,12 @@ spec:
           imagePullPolicy: "IfNotPresent"
           args:
             - --csi-address=/csi/csi.sock
+            - --health-port=9808
           volumeMounts:
             - mountPath: /csi
               name: socket-dir
         - name: csi-zadara-driver
-          image: "zadara/csi-driver:1.1.4"
+          image: "zadara/csi-driver:1.2.0"
           imagePullPolicy: "IfNotPresent"
           args:
             - "--name=csi.zadara.com"
@@ -161,9 +162,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.4"
+    app.kubernetes.io/version: "1.2.0"
     app: zadara-csi
-    version: 1.1.4
+    version: 1.2.0
     release: release
     stage: "production"
     publisher: "zadara"
@@ -177,9 +178,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.4"
+    app.kubernetes.io/version: "1.2.0"
     app: zadara-csi
-    version: 1.1.4
+    version: 1.2.0
     release: release
     stage: "production"
     publisher: "zadara"
@@ -230,9 +231,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.4"
+    app.kubernetes.io/version: "1.2.0"
     app: zadara-csi
-    version: 1.1.4
+    version: 1.2.0
     release: release
     stage: "production"
     publisher: "zadara"
@@ -255,9 +256,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.4"
+    app.kubernetes.io/version: "1.2.0"
     app: zadara-csi
-    version: 1.1.4
+    version: 1.2.0
     release: release
     stage: "production"
     publisher: "zadara"
@@ -284,9 +285,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.4"
+    app.kubernetes.io/version: "1.2.0"
     app: zadara-csi
-    version: 1.1.4
+    version: 1.2.0
     release: release
     stage: "production"
     publisher: "zadara"
@@ -309,9 +310,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.4"
+    app.kubernetes.io/version: "1.2.0"
     app: zadara-csi
-    version: 1.1.4
+    version: 1.2.0
     release: release
     stage: "production"
     publisher: "zadara"
@@ -338,9 +339,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.1.4"
+    app.kubernetes.io/version: "1.2.0"
     app: zadara-csi
-    version: 1.1.4
+    version: 1.2.0
     release: release
     stage: "production"
     publisher: "zadara"
