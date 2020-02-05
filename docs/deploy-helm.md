@@ -11,7 +11,7 @@ Currently Helm charts are only available locally, as part of this repository.
     ```yaml
     image:
       repository: zadara/csi-driver
-      tag: 1.2.0
+      tag: 1.2.1
       pullPolicy: IfNotPresent
     vpsa:
       url: "example.zadaravpsa.com"
@@ -22,6 +22,7 @@ Currently Helm charts are only available locally, as part of this repository.
       configDir: "/etc/csi"
       configName: "zadara-csi-config.yaml"
       iscsiMode: "rootfs"
+      healthzPort: 9808
     labels:
       stage: "production"
     ```
@@ -30,21 +31,63 @@ Currently Helm charts are only available locally, as part of this repository.
       to be unique for each instance. Some name describing underlying VPSA, like `all-flash.csi.zadara.com`,
       or `us-east.csi.zadara.com` will be a good choice.
 
-3. To deploy, run:
-    ```
-    helm install helm/zadara-csi
-    ```
-   or with a different YAML for values, e.g. `my_values.yaml`:
-   ```
-   helm install -f my_values.yaml helm/zadara-csi
-   ```
+3. Deploy
+
+   - Helm 2:
+       ```
+       $ helm install helm/zadara-csi
+       ```
+       or with a different YAML for values, e.g. `my_values.yaml`:
+       ```
+       $ helm install -f my_values.yaml helm/zadara-csi
+       ```
+
+   - Helm 3 users need to specify release name, e.g. `zadara-csi-driver`, or use `--generate-name` flag:
+       ```
+       $ helm install zadara-csi-driver helm/zadara-csi
+       $ helm install --generate-name   helm/zadara-csi
+
+       $ helm install zadara-csi-driver -f my_values.yaml helm/zadara-csi
+       $ helm install --generate-name   -f my_values.yaml helm/zadara-csi
+       ```
 
    You can verify resulting YAML files by adding `--dry-run --debug` options to above commands.
 
-4. To verify:
+4. Verify installation
    ```
-   helm list
+   $ helm list
+   NAME               NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
+   zadara-csi-driver  default         1               2020-02-03 12:42:56.468379418 +0200 IST deployed        zadara-csi-1.1.0        1.2.0
+
+   $ helm status zadara-csi-driver
+   NAME: zadara-csi-driver
+   LAST DEPLOYED: Mon Feb  3 12:42:56 2020
+   NAMESPACE: default
+   STATUS: deployed
+   REVISION: 1
+   TEST SUITE: None
+   NOTES:
+   ##############################################################################
+   ####   Successfully installed Zadara-CSI                                  ####
+   ##############################################################################
+   Thank you for installing zadara-csi!
+   Your release is named csi-helm-3
+
+   Try following example to create a NAS volume on your VPSA:
+   ...
    ```
+
+5. Uninstall
+
+   - Helm 2:
+       ```
+       $ helm delete zadara-csi-driver
+       ```
+   - Helm 3:
+       ```
+       $ helm uninstall zadara-csi-driver
+       ```
+    Replace `zadara-csi-driver` with your release name, as appears in `helm list`.
 
 ---
 
