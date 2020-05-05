@@ -87,23 +87,19 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           args:
-            - "--name={{ .Values.plugin.provisioner }}"
-            - "--endpoint=$(CSI_ENDPOINT)"
-            - "--hostname=$(VPSA_URL)"
-            - "--key=$(VPSA_ACCESS_TOKEN)"
+            - "--hostname={{ .Values.vpsa.url }}"
             - "--secure={{ .Values.vpsa.https }}"
-            - "--config=/etc/csi/{{ .Values.plugin.configName }}"
+            - "--name={{ .Values.plugin.provisioner }}"
+            - "--endpoint=unix:///csi/csi.sock"
             - "--controller=true"
           env:
-            - name: CSI_ENDPOINT
-              value: unix:///csi/csi.sock
-            - name: VPSA_URL
-              value: "{{ .Values.vpsa.url }}"
             - name: VPSA_ACCESS_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-vpsa-access-token
                   key: access-token
+            - name: ISCSIADM_MODE
+              value: "{{ .Values.plugin.iscsiMode }}"
           livenessProbe:
             httpGet:
               path: /healthz
@@ -125,9 +121,9 @@ spec:
         - name: socket-dir
           emptyDir: {}
         - name: config-dir
-          hostPath:
-            path: "{{ .Values.plugin.configDir }}"
-            type: DirectoryOrCreate
+          configMap:
+            name: {{ .Release.Name }}-csi-config-map
+
 ---
 kind: ServiceAccount
 apiVersion: v1

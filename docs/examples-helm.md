@@ -18,7 +18,7 @@ In all following examples proceed as following:
 2. Get `provisioner` name of plugin
     ```
     $ helm status fuzzy-grasshopper | grep 'provisioner:'
-    provisioner: qa8.csi.zadara.com
+    provisioner: qa.csi.zadara.com
     ```
 3. Create `my_values.yaml` with contents as shown in example, set `provisioner` field.
 Alternatively, you can edit `helm/one-pod-one-pool/values.yaml`.
@@ -56,9 +56,9 @@ block: false
 
 ```yaml
 pod:
-  name: dd-to-nas-pod
+  name: dd-to-block-pod
   container:
-    name: dd-to-nas-container
+    name: dd-to-block-container
   image: ubuntu:bionic
   args: ["dd", "if=/dev/urandom", "of=/dev/sdx", "bs=1M", "count=10000", "oflag=direct"]
   env: []

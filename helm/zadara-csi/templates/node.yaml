@@ -63,17 +63,11 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           args:
-            - "--name={{ .Values.plugin.provisioner }}"
-            - "--endpoint=$(CSI_ENDPOINT)"
-            - "--hostname=$(VPSA_URL)"
-            - "--key=$(VPSA_ACCESS_TOKEN)"
+            - "--hostname={{ .Values.vpsa.url }}"
             - "--secure={{ .Values.vpsa.https }}"
-            - "--config=/etc/csi/{{ .Values.plugin.configName }}"
+            - "--name={{ .Values.plugin.provisioner }}"
+            - "--endpoint=unix:///csi/csi.sock"
           env:
-            - name: CSI_ENDPOINT
-              value: unix:///csi/csi.sock
-            - name: VPSA_URL
-              value: "{{ .Values.vpsa.url }}"
             - name: VPSA_ACCESS_TOKEN
               valueFrom:
                 secretKeyRef:
@@ -157,9 +151,8 @@ spec:
           hostPath:
             path: /dev
         - name: config-dir
-          hostPath:
-            path: "{{ .Values.plugin.configDir }}"
-            type: DirectoryOrCreate
+          configMap:
+            name: {{ .Release.Name }}-csi-config-map
 
 ---
 apiVersion: v1

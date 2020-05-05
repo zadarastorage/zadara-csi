@@ -8,9 +8,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.1"
+    app.kubernetes.io/version: "1.2.2"
     app: zadara-csi
-    version: 1.2.1
+    version: 1.2.2
     release: release
     stage: "production"
     publisher: "zadara"
@@ -22,9 +22,9 @@ spec:
       app.kubernetes.io/component: controller
       app.kubernetes.io/name: zadara-csi
       app.kubernetes.io/instance: release
-      app.kubernetes.io/version: "1.2.1"
+      app.kubernetes.io/version: "1.2.2"
       app: zadara-csi
-      version: "1.2.1"
+      version: "1.2.2"
       release: release
       stage: "production"
       publisher: "zadara"
@@ -35,9 +35,9 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: zadara-csi
         app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "1.2.1"
+        app.kubernetes.io/version: "1.2.2"
         app: zadara-csi
-        version: 1.2.1
+        version: 1.2.2
         release: release
         stage: "production"
         publisher: "zadara"
@@ -108,26 +108,22 @@ spec:
             - mountPath: /csi
               name: socket-dir
         - name: csi-zadara-driver
-          image: "zadara/csi-driver:1.2.1"
+          image: "zadara/csi-driver:1.2.2"
           imagePullPolicy: "IfNotPresent"
           args:
-            - "--name=csi.zadara.com"
-            - "--endpoint=$(CSI_ENDPOINT)"
-            - "--hostname=$(VPSA_URL)"
-            - "--key=$(VPSA_ACCESS_TOKEN)"
+            - "--hostname=example.zadaravpsa.com"
             - "--secure=true"
-            - "--config=/etc/csi/zadara-csi-config.yaml"
+            - "--name=csi.zadara.com"
+            - "--endpoint=unix:///csi/csi.sock"
             - "--controller=true"
           env:
-            - name: CSI_ENDPOINT
-              value: unix:///csi/csi.sock
-            - name: VPSA_URL
-              value: "example.zadaravpsa.com"
             - name: VPSA_ACCESS_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: release-vpsa-access-token
                   key: access-token
+            - name: ISCSIADM_MODE
+              value: "rootfs"
           livenessProbe:
             httpGet:
               path: /healthz
@@ -149,9 +145,8 @@ spec:
         - name: socket-dir
           emptyDir: {}
         - name: config-dir
-          hostPath:
-            path: "/etc/csi"
-            type: DirectoryOrCreate
+          configMap:
+            name: release-csi-config-map
 ---
 kind: ServiceAccount
 apiVersion: v1
@@ -162,9 +157,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.1"
+    app.kubernetes.io/version: "1.2.2"
     app: zadara-csi
-    version: 1.2.1
+    version: 1.2.2
     release: release
     stage: "production"
     publisher: "zadara"
@@ -178,9 +173,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.1"
+    app.kubernetes.io/version: "1.2.2"
     app: zadara-csi
-    version: 1.2.1
+    version: 1.2.2
     release: release
     stage: "production"
     publisher: "zadara"
@@ -231,9 +226,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.1"
+    app.kubernetes.io/version: "1.2.2"
     app: zadara-csi
-    version: 1.2.1
+    version: 1.2.2
     release: release
     stage: "production"
     publisher: "zadara"
@@ -256,9 +251,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.1"
+    app.kubernetes.io/version: "1.2.2"
     app: zadara-csi
-    version: 1.2.1
+    version: 1.2.2
     release: release
     stage: "production"
     publisher: "zadara"
@@ -285,9 +280,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.1"
+    app.kubernetes.io/version: "1.2.2"
     app: zadara-csi
-    version: 1.2.1
+    version: 1.2.2
     release: release
     stage: "production"
     publisher: "zadara"
@@ -310,9 +305,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.1"
+    app.kubernetes.io/version: "1.2.2"
     app: zadara-csi
-    version: 1.2.1
+    version: 1.2.2
     release: release
     stage: "production"
     publisher: "zadara"
@@ -339,9 +334,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.1"
+    app.kubernetes.io/version: "1.2.2"
     app: zadara-csi
-    version: 1.2.1
+    version: 1.2.2
     release: release
     stage: "production"
     publisher: "zadara"

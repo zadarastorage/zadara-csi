@@ -17,10 +17,10 @@ fi
 function print_usage_and_exit {
     echo "Open an interactive shell in Zadara-CSI Pod"
     echo "Usage: $0 <node|controller> [-n k8s-node] [-r helm-release-name]"
-    echo "    k8s-node: Node name as appears in 'kubectl get nodes'"
-    echo "              If not specified - show logs for the 1st node/controller pod in list"
-    echo "    helm-release-name: helm release name as appears in 'helm list'"
-    echo "              Required if you have multiple instances of CSI plugin"
+    echo "    -n k8s-node:          Node name as appears in 'kubectl get nodes', or IP"
+    echo "                          If not specified - show logs for the 1st node/controller pod in list"
+    echo "    -r helm-release-name: Helm release name as appears in 'helm list'"
+    echo "                          Required if you have multiple instances of CSI plugin"
     exit 1
 }
 
@@ -55,9 +55,9 @@ while getopts ":n:r:" opt; do
 done
 
 if [ ! $NODE ]; then
-  POD=$($KUBECTL get pods -n kube-system 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | head -n1 | awk 'BEGIN{FS=" "} {print $1}')
+  POD=$($KUBECTL get pods -n kube-system 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | head -n1 | awk '{print $1}')
 else
-  POD=$($KUBECTL get pods -n kube-system -o wide 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | grep "${NODE}" | awk 'BEGIN{FS=" "} {print $1}')
+  POD=$($KUBECTL get pods -n kube-system -o wide 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | grep "${NODE}" | awk '{print $1}')
 fi
 
 if [ ! $POD ]; then

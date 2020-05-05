@@ -136,9 +136,9 @@ In case a manual configuration cleanup is required, disconnect the active iSCSI 
 ### Troubleshooting
 
 The most common problems:
-- Invalid VPSA credentials (url, token)
+- Invalid VPSA credentials (url, token).
 - VPSA is not accessible (network problems)
-- iSCSI is not configured properly:
+- iSCSI is not configured properly (when using `client-server` iSCSI mode):
     - initiator utils (e.g. `open-iscsi`) are not installed on K8s nodes
     - `run-on-host-server` service is not installed, or is disabled
     - IQN in `/etc/initiatorname.iscsi` is not unique for each node
@@ -153,11 +153,16 @@ The most common problems:
 |-----------|-------------|-----------|----------|
 | `provisioner`       |  Identity of Zadara-CSI plugin. Important when you have multiple plugin instances | Yes | `all-flash.csi.zadara.com`, `us-west.csi.zadara.com` |
 | `parameters.poolid` |  Id of a Storage Pool to provision volumes from | If VPSA has only 1 Storage Pool - can be omitted.<br> Otherwise - required. | `pool-00000001` |
+| `parameters.volumeOptions` |  Additional options for creating Volumes, in JSON format. See `POST /api/volumes` documentation in http://vpsa-api.zadarastorage.com/#volumes for the full list*. | No | `'{"nfsanonuid":"65500", "nfsanongid":"65500"}'` |
 
 If you are not sure what `provisioner` should be, it's value can be obtained after plugin deployment using:
 - `kubectl get csidrivers.storage.k8s.io -l publisher=zadara -o yaml`.
   Look for label such as `provisioner: on-prem.csi.zadara.com`
 - `helm status <release name>` will show an example of `StorageClass` with `provisioner` field.
+
+Note on `parameters.volumeOptions` limitations: some options available in REST API documentation are not supported in StorageClass parameters.
+Following parameters are set based on PVC: `name`, `capacity`, `pool`, `block`.
+In addition, since CSI driver supports only NFS for NAS volumes, SMB parameters are not supported.
 
 Example:
 
@@ -171,6 +176,7 @@ reclaimPolicy: Delete
 allowVolumeExpansion: true
 parameters:
   poolid: pool-00010003
+  volumeOptions: '{"nfsanonuid":"65500", "nfsanongid":"65500"}'
 ```
 
 ### Persistent Volume Claim (PVC)
@@ -190,25 +196,32 @@ it's user responsibility to ensure data consistency for multiple concurrent read
 
 ### Extended configuration
 
-Zadara-CSI plugin supports fine-grained configuration via config file.
-Config keys are case-insensitive.
+Zadara-CSI plugin supports fine-grained configuration via ConfigMap. Changes in ConfigMap are monitored and updated live.
 
-Changes in config file (`/etc/csi/zadara-csi-config.yaml` by default) are monitored and updated live.
+To update ConfigMap follow the example below:
+```shell script
+$ kubectl get cm -n kube-system -l app=zadara-csi  # get ConfigMap name
+NAME                          DATA   AGE
+gilded-chimp-csi-config-map   1      7m34s
+$ kubectl edit cm -n kube-system gilded-chimp-csi-config-map
+```
 
 | variable | default | description |
 |----------|---------|-------------|
-| `vpsa.request-timeout-sec`       | 180   | VPSA Requests timeout in seconds. See http://vpsa-api.zadarastorage.com/#timeouts
-| `plugin.default-volume-size-gib` | 100   | Volume size [GiB] used when no `storage` specified in `PersistentVolumeClaim`
-| `plugin.log.level`               | info  | Verbosity level for plugin logs. Allowed values: `panic`, `fatal`, `error`, `warn` or `warning`, `info`, `debug`
+| `vpsa.requestTimeoutSec`      | 180   | VPSA Requests timeout in seconds. See http://vpsa-api.zadarastorage.com/#timeouts
+| `plugin.defaultVolumeSizeGiB` | 100   | Volume size [GiB] used when no `storage` specified in `PersistentVolumeClaim`
+| `plugin.logLevel.<tag>`       | info  | Verbosity level for plugin logs. Allowed values: `panic`, `fatal`, `error`, `warn` or `warning`, `info`, `debug`
+| `useLogColors`                | false | Use colored output in logs. Does not auto-detect pipes, redirection, or other non-interactive outputs.
 
 Example config:
 ```yaml
 vpsa:
-  request-timeout-sec: 180
+  requestTimeoutSec: 180
 plugin:
-  default-volume-size-gib: 100
-  log:
-    level: "debug"
+  defaultVolumeSizeGiB: 100
+logLevel:
+  general: "info"
+  csi: "info"
 ```
 
 ### Notes

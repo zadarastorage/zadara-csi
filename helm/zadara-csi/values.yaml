@@ -4,7 +4,7 @@ image:
   # repository is the image name on DockerHub
   repository: zadara/csi-driver
   # tag is the image version on DockerHub
-  tag: 1.2.1
+  tag: 1.2.2
   # pullPolicy of the image https://kubernetes.io/docs/concepts/containers/images/#updating-images
   pullPolicy: IfNotPresent
 # vpsa defines parameters required to access the VPSA provisioning Volumes
@@ -19,10 +19,6 @@ vpsa:
 plugin:
   # provisioner is the name of CSI plugin, for use in StorageClass, e.g. us-west.csi.zadara.com  on-prem.csi.zadara.com
   provisioner: csi.zadara.com
-  # configDir is a directory on host FS, where the plugin will look for config, or create one if doesn't exist
-  configDir: "/etc/csi"
-  # configName is a name of dynamic config
-  configName: "zadara-csi-config.yaml"
   # iscsiMode (rootfs|client-server) allows to chose a way for the plugin to reach iscsiadm on host
   iscsiMode: "rootfs"
   # healthzPort is used for liveness probes, needs to be unique for each plugin instance in a cluster

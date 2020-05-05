@@ -51,13 +51,21 @@ In most cases, only `hostname`, and `secure` need to be changed.
 
 | parameter | description | required | examples |
 |-----------|-----------|-----------|----------|
+| `hostname` | VPSA hostname, or IP  | Yes | `example.zadaravpsa.com`, `10.0.10.1`
+| `secure` | Whether or not to use HTTPS | No. Defaults to `true` | `true`, `false`, `0`, `1`. <br>Pass as `--secure=false`
 |`name` | Plugin name, to identify plugin instance and use in `provisioner` field of StorageClass  | No. Defaults to `csi.zadara.com` | `us-west.csi.zadara.com`, `on-prem.csi.zadara.com`, `all-flash.csi.zadara.com`
 |`nodeid` | Kubernetes Node id | No. Defaults to hostname of a current node, as returned by `uname -n` | `VM-001`, `node42`
-| `endpoint` | gRPC UNIX socket | No. Defaults to `unix://tmp/csi.sock` | `unix://csi/csi.sock`
-| `hostname` | VPSA hostname, or IP  | Yes | `example.zadaravpsa.com`, `10.0.10.1`
-| `token` | API access key | Yes, by default is taken from [secrets](#secrets-management) | `FAKETOKEN1234567-123`
-| `secure` | Whether or not to use HTTPS | No. Defaults to `true` | `true`, `false`, `0`, `1`. <br>Pass as `--secure=false`
-| `config` | Path to dynamic [config](README.md#extended-configuration) | No. Defaults to `/etc/csi/zadara-csi-config.yaml` | `etc/csi-config.yaml`
+
+Plugin arguments appear in `controller.yaml` and `node.yaml` similar to the following snippet:
+```yaml
+    - name: csi-zadara-driver
+      image: "zadara/csi-driver:1.2.2"
+      imagePullPolicy: "IfNotPresent"
+      args:
+        - "--hostname=example.zadaravpsa.com"
+        - "--secure=true"
+        - "--name=csi.zadara.com"
+```
 
 ---
 
@@ -68,6 +76,21 @@ In most cases, only `hostname`, and `secure` need to be changed.
 3. Execute:
     ```
     kubectl create -f deploy/current/csi-driver.yaml
+    kubectl create -f deploy/current/csi-configmap.yaml
     kubectl create -f deploy/current/node.yaml
     kubectl create -f deploy/current/controller.yaml
     ```
+
+### Cleanup
+
+To delete CSI Driver and all related resources:
+```shell script
+kubectl delete daemonset      -n kube-system -l app=zadara-csi
+kubectl delete deployment     -n kube-system -l app=zadara-csi
+kubectl delete configmap      -n kube-system -l app=zadara-csi
+kubectl delete secret         -n kube-system -l app=zadara-csi
+kubectl delete serviceaccount -n kube-system -l app=zadara-csi
+kubectl delete clusterrolebinding -l app=zadara-csi
+kubectl delete clusterrole        -l app=zadara-csi
+kubectl delete csidriver          -l app=zadara-csi
+```

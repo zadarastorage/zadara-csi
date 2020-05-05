@@ -11,7 +11,7 @@ Currently Helm charts are only available locally, as part of this repository.
     ```yaml
     image:
       repository: zadara/csi-driver
-      tag: 1.2.1
+      tag: 1.2.2
       pullPolicy: IfNotPresent
     vpsa:
       url: "example.zadaravpsa.com"
@@ -19,8 +19,6 @@ Currently Helm charts are only available locally, as part of this repository.
       token: "FAKETOKEN1234567-123"
     plugin:
       provisioner: csi.zadara.com
-      configDir: "/etc/csi"
-      configName: "zadara-csi-config.yaml"
       iscsiMode: "rootfs"
       healthzPort: 9808
     labels:
