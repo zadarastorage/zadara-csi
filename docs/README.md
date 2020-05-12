@@ -160,9 +160,14 @@ If you are not sure what `provisioner` should be, it's value can be obtained aft
   Look for label such as `provisioner: on-prem.csi.zadara.com`
 - `helm status <release name>` will show an example of `StorageClass` with `provisioner` field.
 
-Note on `parameters.volumeOptions` limitations: some options available in REST API documentation are not supported in StorageClass parameters.
+Notes on `parameters.volumeOptions`:
+- some options available in REST API documentation are not supported in StorageClass parameters.
 Following parameters are set based on PVC: `name`, `capacity`, `pool`, `block`.
 In addition, since CSI driver supports only NFS for NAS volumes, SMB parameters are not supported.
+
+- VPSA Volumes [auto-expand feature](http://guides.zadarastorage.com/release-notes/1908/whats-new.html#volume-auto-expand)
+requires an additional configuration to sync VPSA Volumes capacity with Persistent Volume Claims.
+This part is explained in plugin deployment instructions.
 
 Example:
 

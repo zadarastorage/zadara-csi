@@ -11,7 +11,7 @@ Currently Helm charts are only available locally, as part of this repository.
     ```yaml
     image:
       repository: zadara/csi-driver
-      tag: 1.2.2
+      tag: 1.2.3
       pullPolicy: IfNotPresent
     vpsa:
       url: "example.zadaravpsa.com"
@@ -21,6 +21,8 @@ Currently Helm charts are only available locally, as part of this repository.
       provisioner: csi.zadara.com
       iscsiMode: "rootfs"
       healthzPort: 9808
+      autoExpandSupport:
+        schedule: "*/10 * * * *"
     labels:
       stage: "production"
     ```
@@ -102,10 +104,16 @@ Currently Helm charts are only available locally, as part of this repository.
   `plugin.provisioner`  |  the name of CSI plugin, for use in StorageClass, e.g. `us-west.csi.zadara.com` or `on-prem.csi.zadara.com`
   `plugin.configDir`    |  directory on host FS, where the plugin will look for config, or create one if doesn't exist
   `plugin.configName`   |  name of dynamic config
-  `plugin.iscsiMode`    |  defines how the plugin will run `iscsiadm` commands on host. Allowed values: `rootfs` or `client-server`.
+  `plugin.iscsiMode`*    |  defines how the plugin will run `iscsiadm` commands on host. Allowed values: `rootfs` or `client-server`.
   `plugin.healthzPort`  |  healthzPort is an TCP ports for listening for HTTP requests of liveness probes, needs to be _unique for each plugin instance_ in a cluster.
+  `plugin.autoExpandSupport`**  |  support for VPSA Volumes [auto-expand feature](http://guides.zadarastorage.com/release-notes/1908/whats-new.html#volume-auto-expand). Set to `false` to disable.
+  `plugin.autoExpandSupport.schedule`  |  schedule for periodical sync of capacity between VPSA Volumes with auto-expand enabled and Persistent Volume Claims.
   `labels`              |  labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary `key: "value"` pairs
 
-For more info about `plugin.iscsiMode` see [Node iSCSI Connectivity](README.md#node-iscsi-connectivity) section.
+\* For more info about `plugin.iscsiMode` see [Node iSCSI Connectivity](README.md#node-iscsi-connectivity) section.
+
+\** To enable auto-expand for CSI Volumes, you need to configure [Storage Class](README.md#storage-class) `parameters.volumeOptions`.
+    Auto-expand requires VPSA version 19.08 or higher. When `plugin.autoExpandSupport` is enabled,
+    periodical sync will be handled by a CronJob, running in the same namespace as CSI driver.
 
 <!--- end -->

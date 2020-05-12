@@ -4,7 +4,7 @@ image:
   # repository is the image name on DockerHub
   repository: zadara/csi-driver
   # tag is the image version on DockerHub
-  tag: 1.2.2
+  tag: 1.2.3
   # pullPolicy of the image https://kubernetes.io/docs/concepts/containers/images/#updating-images
   pullPolicy: IfNotPresent
 # vpsa defines parameters required to access the VPSA provisioning Volumes
@@ -23,6 +23,10 @@ plugin:
   iscsiMode: "rootfs"
   # healthzPort is used for liveness probes, needs to be unique for each plugin instance in a cluster
   healthzPort: 9808
+  # autoExpandSupport enables periodical sync of capacity between VPSA Volumes with auto-expand enabled and K8s PVCs
+  autoExpandSupport:
+    # schedule for periodical capacity sync in cron format
+    schedule: "*/10 * * * *"
 # labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary 'key: "value"' pairs
 labels:
   # stage can be 'dev', 'staging', 'production', or any other option of your choice

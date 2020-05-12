@@ -67,24 +67,39 @@ Plugin arguments appear in `controller.yaml` and `node.yaml` similar to the foll
         - "--name=csi.zadara.com"
 ```
 
+#### Volume auto-expand support
+
+To enable support for [VPSA auto-expand feature](http://guides.zadarastorage.com/release-notes/1908/whats-new.html#volume-auto-expand),
+edit `expander.yaml` and set `hostname`, and `secure` parameters, as explained [above](#plugin-arguments).
+Optionally, other CronJob parameters, like `schedule`, `successfulJobsHistoryLimit`, `failedJobsHistoryLimit` can be configured.
+
+To enable auto-expand for CSI Volumes, you need to configure [Storage Class](README.md#storage-class) `parameters.volumeOptions`.
+Auto-expand requires VPSA version 19.08 or higher. When `plugin.autoExpandSupport` is enabled,
+periodical sync will be handled by a CronJob, running in the same namespace as CSI driver.
+
 ---
 
 ### Deployment
 
 1. Create [secrets](#secrets-management)
 2. Update [plugin arguments](#plugin-arguments)
-3. Execute:
-    ```
+3. Deploy CSI Driver components:
+    ```shell script
     kubectl create -f deploy/current/csi-driver.yaml
     kubectl create -f deploy/current/csi-configmap.yaml
     kubectl create -f deploy/current/node.yaml
     kubectl create -f deploy/current/controller.yaml
+    ```
+4. Optional: [auto-expand support](#volume-auto-expand-support)
+    ```shell script
+    kubectl create -f deploy/current/expander.yaml
     ```
 
 ### Cleanup
 
 To delete CSI Driver and all related resources:
 ```shell script
+kubectl delete cronjob        -n kube-system -l app=zadara-csi
 kubectl delete daemonset      -n kube-system -l app=zadara-csi
 kubectl delete deployment     -n kube-system -l app=zadara-csi
 kubectl delete configmap      -n kube-system -l app=zadara-csi
