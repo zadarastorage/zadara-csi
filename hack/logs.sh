@@ -66,19 +66,19 @@ while getopts ":n:r:lf" opt; do
   esac
 done
 
-if [ ! $NODE ]; then
-  POD=$($KUBECTL get pods -n kube-system 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | head -n1 | awk '{print $1}')
+if [ ! "$NODE" ]; then
+  NS_POD=$($KUBECTL get pods --all-namespaces 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | head -n1 | awk '{print $1, $2}')
 else
-  POD=$($KUBECTL get pods -n kube-system -o wide 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | grep "${NODE}" | awk '{print $1}')
+  NS_POD=$($KUBECTL get pods --all-namespaces -o wide 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | grep "${NODE}" | awk '{print $1, $2}')
 fi
 
-if [ ! $POD ]; then
+if [ ! "$NS_POD" ]; then
   echo "Pod not found"
   exit 1
 fi
 
-if [ $LESS ]; then
-  $KUBECTL logs $FOLLOW_KUBECTL $POD -n kube-system -c csi-zadara-driver | less -R $FOLLOW_LESS
+if [ "$LESS" ]; then
+  $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD -c csi-zadara-driver | less -R $FOLLOW_LESS
 else
-  $KUBECTL logs $FOLLOW_KUBECTL $POD -n kube-system -c csi-zadara-driver
+  $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD -c csi-zadara-driver
 fi

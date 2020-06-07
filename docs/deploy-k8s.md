@@ -34,14 +34,14 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: vpsa-access-token
-  namespace: kube-system
+  namespace: zadara
 stringData:
   access-token: "FAKETOKEN1234567-123"
 ```
 
 - Get access token from VPSA, and paste into `access-token`.
 - Run `kubectl create -f deploy/current/secrets.yaml`. This will create a Secret object in Kubernetes.
-- To verify, run `kubectl --namespace kube-system get secrets`, `vpsa-access-token` should appear in output.
+- To verify, run `kubectl --namespace zadara get secrets`, `vpsa-access-token` should appear in output.
 - Remove `secrets.yaml`, to keep your secrets safe.
 
 #### Plugin arguments
@@ -99,12 +99,12 @@ periodical sync will be handled by a CronJob, running in the same namespace as C
 
 To delete CSI Driver and all related resources:
 ```shell script
-kubectl delete cronjob        -n kube-system -l app=zadara-csi
-kubectl delete daemonset      -n kube-system -l app=zadara-csi
-kubectl delete deployment     -n kube-system -l app=zadara-csi
-kubectl delete configmap      -n kube-system -l app=zadara-csi
-kubectl delete secret         -n kube-system -l app=zadara-csi
-kubectl delete serviceaccount -n kube-system -l app=zadara-csi
+kubectl delete cronjob        -n zadara -l app=zadara-csi
+kubectl delete daemonset      -n zadara -l app=zadara-csi
+kubectl delete deployment     -n zadara -l app=zadara-csi
+kubectl delete configmap      -n zadara -l app=zadara-csi
+kubectl delete secret         -n zadara -l app=zadara-csi
+kubectl delete serviceaccount -n zadara -l app=zadara-csi
 kubectl delete clusterrolebinding -l app=zadara-csi
 kubectl delete clusterrole        -l app=zadara-csi
 kubectl delete csidriver          -l app=zadara-csi

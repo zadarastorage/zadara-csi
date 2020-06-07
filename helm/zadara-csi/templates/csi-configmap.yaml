@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: kube-system
+  namespace: {{ .Values.namespace }}
   name: {{ .Release.Name }}-csi-config-map
   labels:
     {{- include "helm.labels" . | nindent 4 }}

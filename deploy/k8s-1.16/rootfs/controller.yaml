@@ -8,9 +8,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -22,9 +22,9 @@ spec:
       app.kubernetes.io/component: controller
       app.kubernetes.io/name: zadara-csi
       app.kubernetes.io/instance: release
-      app.kubernetes.io/version: "1.2.3"
+      app.kubernetes.io/version: "1.2.4"
       app: zadara-csi
-      version: "1.2.3"
+      version: "1.2.4"
       release: release
       stage: "production"
       publisher: "zadara"
@@ -35,9 +35,9 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: zadara-csi
         app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "1.2.3"
+        app.kubernetes.io/version: "1.2.4"
         app: zadara-csi
-        version: 1.2.3
+        version: 1.2.4
         release: release
         stage: "production"
         publisher: "zadara"
@@ -108,7 +108,7 @@ spec:
             - mountPath: /csi
               name: socket-dir
         - name: csi-zadara-driver
-          image: "zadara/csi-driver:1.2.3"
+          image: "zadara/csi-driver:1.2.4"
           imagePullPolicy: "IfNotPresent"
           args:
             - "--hostname=example.zadaravpsa.com"
@@ -157,9 +157,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -173,9 +173,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -226,9 +226,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -251,9 +251,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -280,9 +280,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -305,9 +305,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -334,9 +334,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"

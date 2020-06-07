@@ -8,9 +8,9 @@ metadata:
     app.kubernetes.io/component: expander
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -30,9 +30,9 @@ spec:
         app.kubernetes.io/component: expander
         app.kubernetes.io/name: zadara-csi
         app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "1.2.3"
+        app.kubernetes.io/version: "1.2.4"
         app: zadara-csi
-        version: 1.2.3
+        version: 1.2.4
         release: release
         stage: "production"
         publisher: "zadara"
@@ -47,9 +47,9 @@ spec:
             app.kubernetes.io/component: expander
             app.kubernetes.io/name: zadara-csi
             app.kubernetes.io/instance: release
-            app.kubernetes.io/version: "1.2.3"
+            app.kubernetes.io/version: "1.2.4"
             app: zadara-csi
-            version: 1.2.3
+            version: 1.2.4
             release: release
             stage: "production"
             publisher: "zadara"
@@ -62,7 +62,7 @@ spec:
           serviceAccountName: release-csi-zadara-expander-sa
           containers:
             - name: csi-zadara-expander
-              image: "zadara/csi-driver:1.2.3"
+              image: "zadara/csi-driver:1.2.4"
               imagePullPolicy: "IfNotPresent"
               command:
                 - "expander"
@@ -91,9 +91,9 @@ metadata:
     app.kubernetes.io/component: expander
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -107,9 +107,9 @@ metadata:
     app.kubernetes.io/component: expander
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -130,9 +130,9 @@ metadata:
     app.kubernetes.io/component: expander
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"

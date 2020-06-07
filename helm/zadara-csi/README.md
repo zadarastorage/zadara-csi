@@ -103,7 +103,7 @@ Currently Helm charts are only available locally, as part of this repository.
     ```yaml
     image:
       repository: zadara/csi-driver
-      tag: 1.2.3
+      tag: 1.2.4
       pullPolicy: IfNotPresent
     vpsa:
       url: "example.zadaravpsa.com"
@@ -267,10 +267,10 @@ Zadara-CSI plugin supports fine-grained configuration via ConfigMap. Changes in 
 
 To update ConfigMap follow the example below:
 ```shell script
-$ kubectl get cm -n kube-system -l app=zadara-csi  # get ConfigMap name
+$ kubectl get cm -n zadara -l app=zadara-csi  # get ConfigMap name
 NAME                          DATA   AGE
 gilded-chimp-csi-config-map   1      7m34s
-$ kubectl edit cm -n kube-system gilded-chimp-csi-config-map
+$ kubectl edit cm -n zadara gilded-chimp-csi-config-map
 ```
 
 | variable | default | description |

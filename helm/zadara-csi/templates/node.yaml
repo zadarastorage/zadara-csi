@@ -1,9 +1,9 @@
 ---
 kind: DaemonSet
-apiVersion: apps/v1{{ if semverCompare "<1.16" .Capabilities.KubeVersion.GitVersion }}beta2{{ end }}
+apiVersion: apps/v1
 metadata:
   name: {{ .Release.Name }}-csi-zadara-node
-  namespace: kube-system
+  namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: node
     {{- include "helm.labels" . | nindent 4 }}
@@ -75,12 +75,6 @@ spec:
                   key: access-token
             - name: ISCSIADM_MODE
               value: "{{ .Values.plugin.iscsiMode }}"
-            - name: POSTSTART_FINISHED_MARKER
-              value: "/run/poststart_finished"
-          lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/poststart_actions.sh"]
           livenessProbe:
             httpGet:
               path: /healthz
@@ -159,7 +153,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ .Release.Name }}-csi-zadara-node-sa
-  namespace: kube-system
+  namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: node
     {{- include "helm.labels" . | nindent 4 }}
@@ -168,7 +162,7 @@ kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ .Release.Name }}-csi-zadara-node-driver-registrar-role
-  namespace: kube-system
+  namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: node
     {{- include "helm.labels" . | nindent 4 }}
@@ -187,7 +181,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ .Release.Name }}-csi-zadara-node-sa
-    namespace: kube-system
+    namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ .Release.Name }}-csi-zadara-node-driver-registrar-role

@@ -1,9 +1,9 @@
 ---
 kind: Deployment
-apiVersion: apps/v1{{ if semverCompare "<1.16" .Capabilities.KubeVersion.GitVersion }}beta1{{ end }}
+apiVersion: apps/v1
 metadata:
   name: {{ .Release.Name }}-csi-zadara-controller
-  namespace: kube-system
+  namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
@@ -129,7 +129,7 @@ kind: ServiceAccount
 apiVersion: v1
 metadata:
   name: {{ .Release.Name }}-csi-zadara-controller-sa
-  namespace: kube-system
+  namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
@@ -189,7 +189,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ .Release.Name }}-csi-zadara-controller-sa
-    namespace: kube-system
+    namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ .Release.Name }}-csi-zadara-provisioner-role
@@ -227,7 +227,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ .Release.Name }}-csi-zadara-controller-sa
-    namespace: kube-system
+    namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ .Release.Name }}-csi-zadara-attacher-role
@@ -265,7 +265,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ .Release.Name }}-csi-zadara-controller-sa
-    namespace: kube-system
+    namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ .Release.Name }}-csi-zadara-resizer

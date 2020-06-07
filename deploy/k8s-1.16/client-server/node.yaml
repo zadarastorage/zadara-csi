@@ -8,9 +8,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -21,9 +21,9 @@ spec:
       app.kubernetes.io/component: node
       app.kubernetes.io/name: zadara-csi
       app.kubernetes.io/instance: release
-      app.kubernetes.io/version: "1.2.3"
+      app.kubernetes.io/version: "1.2.4"
       app: zadara-csi
-      version: "1.2.3"
+      version: "1.2.4"
       release: release
       stage: "production"
       publisher: "zadara"
@@ -34,9 +34,9 @@ spec:
         app.kubernetes.io/component: node
         app.kubernetes.io/name: zadara-csi
         app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "1.2.3"
+        app.kubernetes.io/version: "1.2.4"
         app: zadara-csi
-        version: 1.2.3
+        version: 1.2.4
         release: release
         stage: "production"
         publisher: "zadara"
@@ -84,7 +84,7 @@ spec:
             - mountPath: /csi
               name: socket-dir
         - name: csi-zadara-driver
-          image: "zadara/csi-driver:1.2.3"
+          image: "zadara/csi-driver:1.2.4"
           imagePullPolicy: "IfNotPresent"
           args:
             - "--hostname=example.zadaravpsa.com"
@@ -99,12 +99,6 @@ spec:
                   key: access-token
             - name: ISCSIADM_MODE
               value: "client-server"
-            - name: POSTSTART_FINISHED_MARKER
-              value: "/run/poststart_finished"
-          lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/poststart_actions.sh"]
           livenessProbe:
             httpGet:
               path: /healthz
@@ -174,9 +168,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -191,9 +185,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"
@@ -211,9 +205,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.3"
+    app.kubernetes.io/version: "1.2.4"
     app: zadara-csi
-    version: 1.2.3
+    version: 1.2.4
     release: release
     stage: "production"
     publisher: "zadara"

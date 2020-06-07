@@ -1,10 +1,10 @@
-{{- if .Values.plugin.autoExpandSupport }}
 ---
+{{- if .Values.plugin.autoExpandSupport }}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-csi-autoexpand-sync
-  namespace: kube-system
+  namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: expander
     {{- include "helm.labels" . | nindent 4 }}
@@ -58,16 +58,20 @@ spec:
             - name: config-dir
               configMap:
                 name: {{ .Release.Name }}-csi-config-map
+{{ end -}}
 ---
+{{- if .Values.plugin.autoExpandSupport }}
 kind: ServiceAccount
 apiVersion: v1
 metadata:
   name: {{ .Release.Name }}-csi-zadara-expander-sa
-  namespace: kube-system
+  namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: expander
     {{- include "helm.labels" . | nindent 4 }}
+{{ end -}}
 ---
+{{- if .Values.plugin.autoExpandSupport }}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -82,7 +86,9 @@ rules:
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
     verbs: ["get", "list", "update"]
+{{ end -}}
 ---
+{{- if .Values.plugin.autoExpandSupport }}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -93,7 +99,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ .Release.Name }}-csi-zadara-expander-sa
-    namespace: kube-system
+    namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ .Release.Name }}-csi-zadara-expander
