@@ -1,3 +1,64 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: release-csi-zadara-node-sa
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: node
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: release-csi-zadara-node-driver-registrar-role
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: node
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: release-csi-zadara-node-driver-registrar-binding
+  labels:
+    app.kubernetes.io/component: node
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+subjects:
+  - kind: ServiceAccount
+    name: release-csi-zadara-node-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: release-csi-zadara-node-driver-registrar-role
+  apiGroup: rbac.authorization.k8s.io
 ---
 kind: DaemonSet
 apiVersion: apps/v1
@@ -8,9 +69,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
+    app.kubernetes.io/version: "1.2.5"
     app: zadara-csi
-    version: 1.2.4
+    version: 1.2.5
     release: release
     stage: "production"
     publisher: "zadara"
@@ -21,9 +82,9 @@ spec:
       app.kubernetes.io/component: node
       app.kubernetes.io/name: zadara-csi
       app.kubernetes.io/instance: release
-      app.kubernetes.io/version: "1.2.4"
+      app.kubernetes.io/version: "1.2.5"
       app: zadara-csi
-      version: "1.2.4"
+      version: "1.2.5"
       release: release
       stage: "production"
       publisher: "zadara"
@@ -34,9 +95,9 @@ spec:
         app.kubernetes.io/component: node
         app.kubernetes.io/name: zadara-csi
         app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "1.2.4"
+        app.kubernetes.io/version: "1.2.5"
         app: zadara-csi
-        version: 1.2.4
+        version: 1.2.5
         release: release
         stage: "production"
         publisher: "zadara"
@@ -84,7 +145,7 @@ spec:
             - mountPath: /csi
               name: socket-dir
         - name: csi-zadara-driver
-          image: "zadara/csi-driver:1.2.4"
+          image: "zadara/csi-driver:1.2.5"
           imagePullPolicy: "IfNotPresent"
           args:
             - "--hostname=example.zadaravpsa.com"
@@ -157,66 +218,4 @@ spec:
         - name: config-dir
           configMap:
             name: release-csi-config-map
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: release-csi-zadara-node-sa
-  namespace: kube-system
-  labels:
-    app.kubernetes.io/component: node
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
----
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: release-csi-zadara-node-driver-registrar-role
-  namespace: kube-system
-  labels:
-    app.kubernetes.io/component: node
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
-rules:
-  - apiGroups: [""]
-    resources: ["events"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: release-csi-zadara-node-driver-registrar-binding
-  labels:
-    app.kubernetes.io/component: node
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
-subjects:
-  - kind: ServiceAccount
-    name: release-csi-zadara-node-sa
-    namespace: kube-system
-roleRef:
-  kind: ClusterRole
-  name: release-csi-zadara-node-driver-registrar-role
-  apiGroup: rbac.authorization.k8s.io
 ---

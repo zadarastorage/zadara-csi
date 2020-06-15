@@ -1,3 +1,204 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: release-csi-zadara-controller-sa
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: release-csi-zadara-provisioner-role
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["csinodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents"]
+    verbs: ["create", "get", "list", "watch", "update", "delete"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshots"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshots/status"]
+    verbs: ["update"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["create", "list", "watch", "delete", "get", "update"]
+---
+# Attacher must be able to work with PVs, nodes and VolumeAttachments
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: release-csi-zadara-attacher-role
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["csinodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["volumeattachments"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+---
+# Resizer must be able to work with PVCs, PVs, SCs.
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: release-csi-zadara-resizer
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims/status"]
+    verbs: ["update", "patch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: release-csi-zadara-provisioner-binding
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+subjects:
+  - kind: ServiceAccount
+    name: release-csi-zadara-controller-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: release-csi-zadara-provisioner-role
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: release-csi-zadara-attacher-binding
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+subjects:
+  - kind: ServiceAccount
+    name: release-csi-zadara-controller-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: release-csi-zadara-attacher-role
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: release-csi-resizer-role
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+subjects:
+  - kind: ServiceAccount
+    name: release-csi-zadara-controller-sa
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: release-csi-zadara-resizer
+  apiGroup: rbac.authorization.k8s.io
 ---
 kind: Deployment
 apiVersion: apps/v1
@@ -8,9 +209,9 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
+    app.kubernetes.io/version: "1.2.5"
     app: zadara-csi
-    version: 1.2.4
+    version: 1.2.5
     release: release
     stage: "production"
     publisher: "zadara"
@@ -22,9 +223,9 @@ spec:
       app.kubernetes.io/component: controller
       app.kubernetes.io/name: zadara-csi
       app.kubernetes.io/instance: release
-      app.kubernetes.io/version: "1.2.4"
+      app.kubernetes.io/version: "1.2.5"
       app: zadara-csi
-      version: "1.2.4"
+      version: "1.2.5"
       release: release
       stage: "production"
       publisher: "zadara"
@@ -35,9 +236,9 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: zadara-csi
         app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "1.2.4"
+        app.kubernetes.io/version: "1.2.5"
         app: zadara-csi
-        version: 1.2.4
+        version: 1.2.5
         release: release
         stage: "production"
         publisher: "zadara"
@@ -108,7 +309,7 @@ spec:
             - mountPath: /csi
               name: socket-dir
         - name: csi-zadara-driver
-          image: "zadara/csi-driver:1.2.4"
+          image: "zadara/csi-driver:1.2.5"
           imagePullPolicy: "IfNotPresent"
           args:
             - "--hostname=example.zadaravpsa.com"
@@ -147,206 +348,4 @@ spec:
         - name: config-dir
           configMap:
             name: release-csi-config-map
----
-kind: ServiceAccount
-apiVersion: v1
-metadata:
-  name: release-csi-zadara-controller-sa
-  namespace: kube-system
-  labels:
-    app.kubernetes.io/component: controller
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
----
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: release-csi-zadara-provisioner-role
-  labels:
-    app.kubernetes.io/component: controller
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
-rules:
-  - apiGroups: [""]
-    resources: ["secrets"]
-    verbs: ["get", "list"]
-  - apiGroups: [""]
-    resources: ["persistentvolumes"]
-    verbs: ["get", "list", "watch", "create", "delete"]
-  - apiGroups: [""]
-    resources: ["persistentvolumeclaims"]
-    verbs: ["get", "list", "watch", "update"]
-  - apiGroups: ["storage.k8s.io"]
-    resources: ["storageclasses"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["storage.k8s.io"]
-    resources: ["csinodes"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
-    resources: ["events"]
-    verbs: ["list", "watch", "create", "update", "patch"]
-  - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["snapshot.storage.k8s.io"]
-    resources: ["volumesnapshotclasses"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["snapshot.storage.k8s.io"]
-    resources: ["volumesnapshotcontents"]
-    verbs: ["create", "get", "list", "watch", "update", "delete"]
-  - apiGroups: ["snapshot.storage.k8s.io"]
-    resources: ["volumesnapshots"]
-    verbs: ["get", "list", "watch", "update"]
-  - apiGroups: ["snapshot.storage.k8s.io"]
-    resources: ["volumesnapshots/status"]
-    verbs: ["update"]
-  - apiGroups: ["apiextensions.k8s.io"]
-    resources: ["customresourcedefinitions"]
-    verbs: ["create", "list", "watch", "delete", "get", "update"]
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: release-csi-zadara-provisioner-binding
-  labels:
-    app.kubernetes.io/component: controller
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
-subjects:
-  - kind: ServiceAccount
-    name: release-csi-zadara-controller-sa
-    namespace: kube-system
-roleRef:
-  kind: ClusterRole
-  name: release-csi-zadara-provisioner-role
-  apiGroup: rbac.authorization.k8s.io
----
-# Attacher must be able to work with PVs, nodes and VolumeAttachments
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: release-csi-zadara-attacher-role
-  labels:
-    app.kubernetes.io/component: controller
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
-rules:
-  - apiGroups: [""]
-    resources: ["persistentvolumes"]
-    verbs: ["get", "list", "watch", "update", "patch"]
-  - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["storage.k8s.io"]
-    resources: ["csinodes"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["storage.k8s.io"]
-    resources: ["volumeattachments"]
-    verbs: ["get", "list", "watch", "update", "patch"]
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: release-csi-zadara-attacher-binding
-  labels:
-    app.kubernetes.io/component: controller
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
-subjects:
-  - kind: ServiceAccount
-    name: release-csi-zadara-controller-sa
-    namespace: kube-system
-roleRef:
-  kind: ClusterRole
-  name: release-csi-zadara-attacher-role
-  apiGroup: rbac.authorization.k8s.io
----
-# Resizer must be able to work with PVCs, PVs, SCs.
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: release-csi-zadara-resizer
-  labels:
-    app.kubernetes.io/component: controller
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
-rules:
-  - apiGroups: [""]
-    resources: ["persistentvolumes"]
-    verbs: ["get", "list", "watch", "update", "patch"]
-  - apiGroups: [""]
-    resources: ["persistentvolumeclaims"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
-    resources: ["persistentvolumeclaims/status"]
-    verbs: ["update", "patch"]
-  - apiGroups: [""]
-    resources: ["events"]
-    verbs: ["list", "watch", "create", "update", "patch"]
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: release-csi-resizer-role
-  labels:
-    app.kubernetes.io/component: controller
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
-subjects:
-  - kind: ServiceAccount
-    name: release-csi-zadara-controller-sa
-    namespace: kube-system
-roleRef:
-  kind: ClusterRole
-  name: release-csi-zadara-resizer
-  apiGroup: rbac.authorization.k8s.io
 ---

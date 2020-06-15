@@ -6,7 +6,7 @@ image:
   # repository is the image name on DockerHub
   repository: zadara/csi-driver
   # tag is the image version on DockerHub
-  tag: 1.2.4
+  tag: 1.2.5
   # pullPolicy of the image https://kubernetes.io/docs/concepts/containers/images/#updating-images
   pullPolicy: IfNotPresent
 # vpsa defines parameters required to access the VPSA provisioning Volumes

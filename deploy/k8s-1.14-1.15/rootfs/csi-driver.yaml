@@ -1,4 +1,3 @@
----
 # Register driver at cluster-level
 # https://kubernetes-csi.github.io/docs/csi-driver-object.html
 #
@@ -13,9 +12,9 @@ metadata:
   labels:
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
+    app.kubernetes.io/version: "1.2.5"
     app: zadara-csi
-    version: 1.2.4
+    version: 1.2.5
     release: release
     stage: "production"
     publisher: "zadara"

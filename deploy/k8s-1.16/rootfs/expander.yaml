@@ -1,87 +1,3 @@
----
-apiVersion: batch/v1beta1
-kind: CronJob
-metadata:
-  name: release-csi-autoexpand-sync
-  namespace: kube-system
-  labels:
-    app.kubernetes.io/component: expander
-    app.kubernetes.io/name: zadara-csi
-    app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
-    app: zadara-csi
-    version: 1.2.4
-    release: release
-    stage: "production"
-    publisher: "zadara"
-    provisioner: csi.zadara.com
-spec:
-  schedule: "*/10 * * * *"
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 2
-  # Running Job of this CronJob will prevent new Jobs from starting
-  concurrencyPolicy: Forbid
-  # Do not start the Job if it misses scheduled time by startingDeadlineSeconds for any reason.
-  # Optimally should be close to the interval of schedule.
-  startingDeadlineSeconds: 1200
-  jobTemplate:
-    metadata:
-      labels:
-        app.kubernetes.io/component: expander
-        app.kubernetes.io/name: zadara-csi
-        app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "1.2.4"
-        app: zadara-csi
-        version: 1.2.4
-        release: release
-        stage: "production"
-        publisher: "zadara"
-        provisioner: csi.zadara.com
-    spec:
-      # If Pod of the Job failed: Deadline Exceed (activeDeadlineSeconds), or Client errors,
-      # it will run again up to backoffLimit times.
-      backoffLimit: 1
-      template:
-        metadata:
-          labels:
-            app.kubernetes.io/component: expander
-            app.kubernetes.io/name: zadara-csi
-            app.kubernetes.io/instance: release
-            app.kubernetes.io/version: "1.2.4"
-            app: zadara-csi
-            version: 1.2.4
-            release: release
-            stage: "production"
-            publisher: "zadara"
-            provisioner: csi.zadara.com
-        spec:
-          # Let Job controller manage Pod restarts
-          restartPolicy: Never
-          # Pod will be killed, if not completed in activeDeadlineSeconds
-          activeDeadlineSeconds: 60
-          serviceAccountName: release-csi-zadara-expander-sa
-          containers:
-            - name: csi-zadara-expander
-              image: "zadara/csi-driver:1.2.4"
-              imagePullPolicy: "IfNotPresent"
-              command:
-                - "expander"
-                - "--hostname=example.zadaravpsa.com"
-                - "--secure=true"
-              env:
-                - name: VPSA_ACCESS_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: release-vpsa-access-token
-                      key: access-token
-              volumeMounts:
-                - name: config-dir
-                  mountPath: /etc/csi
-          volumes:
-            - name: config-dir
-              configMap:
-                name: release-csi-config-map
----
 kind: ServiceAccount
 apiVersion: v1
 metadata:
@@ -91,9 +7,9 @@ metadata:
     app.kubernetes.io/component: expander
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
+    app.kubernetes.io/version: "1.2.5"
     app: zadara-csi
-    version: 1.2.4
+    version: 1.2.5
     release: release
     stage: "production"
     publisher: "zadara"
@@ -107,9 +23,9 @@ metadata:
     app.kubernetes.io/component: expander
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
+    app.kubernetes.io/version: "1.2.5"
     app: zadara-csi
-    version: 1.2.4
+    version: 1.2.5
     release: release
     stage: "production"
     publisher: "zadara"
@@ -130,9 +46,9 @@ metadata:
     app.kubernetes.io/component: expander
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.4"
+    app.kubernetes.io/version: "1.2.5"
     app: zadara-csi
-    version: 1.2.4
+    version: 1.2.5
     release: release
     stage: "production"
     publisher: "zadara"
@@ -145,4 +61,87 @@ roleRef:
   kind: ClusterRole
   name: release-csi-zadara-expander
   apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: release-csi-autoexpand-sync
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/component: expander
+    app.kubernetes.io/name: zadara-csi
+    app.kubernetes.io/instance: release
+    app.kubernetes.io/version: "1.2.5"
+    app: zadara-csi
+    version: 1.2.5
+    release: release
+    stage: "production"
+    publisher: "zadara"
+    provisioner: csi.zadara.com
+spec:
+  schedule: "*/10 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  # Running Job of this CronJob will prevent new Jobs from starting
+  concurrencyPolicy: Forbid
+  # Do not start the Job if it misses scheduled time by startingDeadlineSeconds for any reason.
+  # Optimally should be close to the interval of schedule.
+  startingDeadlineSeconds: 1200
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/component: expander
+        app.kubernetes.io/name: zadara-csi
+        app.kubernetes.io/instance: release
+        app.kubernetes.io/version: "1.2.5"
+        app: zadara-csi
+        version: 1.2.5
+        release: release
+        stage: "production"
+        publisher: "zadara"
+        provisioner: csi.zadara.com
+    spec:
+      # If Pod of the Job failed: Deadline Exceed (activeDeadlineSeconds), or Client errors,
+      # it will run again up to backoffLimit times.
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/component: expander
+            app.kubernetes.io/name: zadara-csi
+            app.kubernetes.io/instance: release
+            app.kubernetes.io/version: "1.2.5"
+            app: zadara-csi
+            version: 1.2.5
+            release: release
+            stage: "production"
+            publisher: "zadara"
+            provisioner: csi.zadara.com
+        spec:
+          # Let Job controller manage Pod restarts
+          restartPolicy: Never
+          # Pod will be killed, if not completed in activeDeadlineSeconds
+          activeDeadlineSeconds: 60
+          serviceAccountName: release-csi-zadara-expander-sa
+          containers:
+            - name: csi-zadara-expander
+              image: "zadara/csi-driver:1.2.5"
+              imagePullPolicy: "IfNotPresent"
+              command:
+                - "expander"
+                - "--hostname=example.zadaravpsa.com"
+                - "--secure=true"
+              env:
+                - name: VPSA_ACCESS_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: release-vpsa-access-token
+                      key: access-token
+              volumeMounts:
+                - name: config-dir
+                  mountPath: /etc/csi
+          volumes:
+            - name: config-dir
+              configMap:
+                name: release-csi-config-map
 ---
