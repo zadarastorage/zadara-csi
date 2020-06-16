@@ -88,6 +88,8 @@ function install_iscsi() {
       else
           echo "[INFO] open-iscsi already installed"
       fi
+      systemctl enable iscsid
+      systemctl start iscsid
   elif [ "$CONFORM_TO" = "redhat" ]; then
       # TODO: yum -y install device-mapper-multipath
       if [ ! -f /sbin/iscsid ]; then
@@ -95,6 +97,10 @@ function install_iscsi() {
       else
           echo "[INFO] iscsi-initiator-utils already installed"
       fi
+      systemctl enable iscsid
+      systemctl start iscsid
+      systemctl enable iscsi
+      systemctl start iscsi
   else
       echo "[ERROR] failed to auto-install open-iscsi package for $os_name. Please install manually"
       exit 1

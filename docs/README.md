@@ -38,11 +38,23 @@
 
 - Create at least one Storage Pool on VPSA.
 
-- iSCSI initiator tools must be installed on K8s nodes:
+- iSCSI initiator tools must be installed and running on K8s nodes:
 
-    `apt-get install open-iscsi` on Ubuntu and other Debian-based
+    On Ubuntu and other Debian-based:
+    ```
+    apt-get install open-iscsi
+    systemctl enable iscsid
+    systemctl start iscsid
+    ```
 
-    `yum install iscsi-initiator-utils` on RedHat-based distribution
+    On RedHat-based distribution:
+    ```
+    yum install iscsi-initiator-utils
+    systemctl enable iscsid
+    systemctl start iscsid
+    systemctl enable iscsi
+    systemctl start iscsi
+    ```
 
     Alternatively, you can run `./assets/prepare_node.sh -p`, to install one of the above for your Linux distribution.
 
