@@ -1,11 +1,14 @@
+{{ $installSuccessful := true }}
+
 {{- if or (not .Values.vpsa.url) (not .Values.vpsa.token) (eq .Values.vpsa.url "example.zadaravpsa.com") (eq .Values.vpsa.token "FAKETOKEN1234567-123") -}}
+{{ $installSuccessful = false }}
 ##############################################################################
 ####   ERROR: Missing required values                                     ####
 ##############################################################################
 It appears that VPSA credentials are not set.
 Zadara-CSI Plugin will not be able to reach your VPSA.
 To fix:
-1. Set VPSA credentials. You can use the following example:
+- Set VPSA credentials. You can use the following example:
 cat << EOF > my_values.yaml
 ---
 vpsa:
@@ -13,26 +16,32 @@ vpsa:
   https: true
   token: "FAKETOKEN1234567-123"
 EOF
-2. Delete current release:
-  helm delete {{ .Release.Name }}
-3. Install the chart again with updated credentials
-  helm install -f my_values.yaml {{ .Chart.Name }}
-{{- else if and (ne .Values.plugin.iscsiMode "rootfs") (ne .Values.plugin.iscsiMode "client-server") -}}
+{{- end -}}
+
+{{- if and (ne .Values.plugin.iscsiMode "rootfs") (ne .Values.plugin.iscsiMode "client-server") -}}
+{{ $installSuccessful = false }}
 ##############################################################################
 ####   ERROR: Invalid plugin.iscsiMode                                    ####
 ##############################################################################
 Invalid value of 'plugin.iscsiMode': {{ .Values.plugin.iscsiMode }}
 Allowed values are "rootfs" or "client-server".
 Try one of the following:
-  helm install --set plugin.iscsiMode="rootfs"        {{ .Chart.Name }}
-  helm install --set plugin.iscsiMode="client-server" {{ .Chart.Name }}
-{{- else if and .Values.customTrustedCertificates.existingSecret (not (lookup "v1" "Secret" .Values.namespace .Values.customTrustedCertificates.existingSecret)) -}}
+  helm install {{ .Release.Name }} --set plugin.iscsiMode="rootfs"        {{ .Chart.Name }}
+  helm install {{ .Release.Name }} --set plugin.iscsiMode="client-server" {{ .Chart.Name }}
+{{- end -}}
+
+{{- if .Values.customTrustedCertificates -}}
+{{- if and .Values.customTrustedCertificates.existingSecret (not (lookup "v1" "Secret" .Values.namespace .Values.customTrustedCertificates.existingSecret)) -}}
+{{ $installSuccessful = false }}
 ##############################################################################
 ####   ERROR: Missing required resources                                  ####
 ##############################################################################
 Secret "{{ .Values.customTrustedCertificates.existingSecret }}" not found in namespace "{{ .Values.namespace }}"
 Please, check customTrustedCertificates.existingSecret in your values.yaml
-{{- else -}}
+{{- end -}}
+{{- end -}}
+
+{{- if $installSuccessful -}}
 ##############################################################################
 ####   Successfully installed Zadara-CSI                                  ####
 ##############################################################################
@@ -70,4 +79,9 @@ EOF
 kubectl create -f sc_and_pvc.yaml  # create StorageClass and PersistentVolumeClaim
 kubectl get sc  # verify StorageClass creation
 kubectl get pvc  # verify PersistentVolumeClaim creation
+{{- else }}
+- Delete current release:
+  helm uninstall {{ .Release.Name }}
+- Install the chart again with updated credentials
+  helm install {{ .Release.Name }} -f my_values.yaml {{ .Chart.Name }}
 {{- end -}}
