@@ -7,9 +7,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.6"
+    app.kubernetes.io/version: "1.3.1"
     app: zadara-csi
-    version: 1.2.6
+    version: 1.3.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -24,9 +24,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.6"
+    app.kubernetes.io/version: "1.3.1"
     app: zadara-csi
-    version: 1.2.6
+    version: 1.3.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -44,9 +44,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.6"
+    app.kubernetes.io/version: "1.3.1"
     app: zadara-csi
-    version: 1.2.6
+    version: 1.3.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -69,9 +69,9 @@ metadata:
     app.kubernetes.io/component: node
     app.kubernetes.io/name: zadara-csi
     app.kubernetes.io/instance: release
-    app.kubernetes.io/version: "1.2.6"
+    app.kubernetes.io/version: "1.3.1"
     app: zadara-csi
-    version: 1.2.6
+    version: 1.3.1
     release: release
     stage: "production"
     publisher: "zadara"
@@ -82,9 +82,9 @@ spec:
       app.kubernetes.io/component: node
       app.kubernetes.io/name: zadara-csi
       app.kubernetes.io/instance: release
-      app.kubernetes.io/version: "1.2.6"
+      app.kubernetes.io/version: "1.3.1"
       app: zadara-csi
-      version: "1.2.6"
+      version: "1.3.1"
       release: release
       stage: "production"
       publisher: "zadara"
@@ -95,9 +95,9 @@ spec:
         app.kubernetes.io/component: node
         app.kubernetes.io/name: zadara-csi
         app.kubernetes.io/instance: release
-        app.kubernetes.io/version: "1.2.6"
+        app.kubernetes.io/version: "1.3.1"
         app: zadara-csi
-        version: 1.2.6
+        version: 1.3.1
         release: release
         stage: "production"
         publisher: "zadara"
@@ -145,11 +145,13 @@ spec:
             - mountPath: /csi
               name: socket-dir
         - name: csi-zadara-driver
-          image: "zadara/csi-driver:1.2.6"
+          image: "zadara/csi-driver:1.3.1"
           imagePullPolicy: "IfNotPresent"
           args:
+            - "zadara-csi"
             - "--hostname=example.zadaravpsa.com"
-            - "--secure=true"
+            - "--use-tls=true"
+            - "--verify-tls=true"
             - "--name=csi.zadara.com"
             - "--endpoint=unix:///csi/csi.sock"
           env:

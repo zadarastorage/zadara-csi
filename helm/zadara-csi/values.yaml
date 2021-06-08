@@ -1,22 +1,27 @@
 ---
 # namespace where all CSI pods will run
 namespace: "kube-system"
+
 # image is Docker image of CSI driver to be used
 image:
   # repository is the image name on DockerHub
   repository: zadara/csi-driver
   # tag is the image version on DockerHub
-  tag: 1.2.6
+  tag: 1.3.1
   # pullPolicy of the image https://kubernetes.io/docs/concepts/containers/images/#updating-images
   pullPolicy: IfNotPresent
+
 # vpsa defines parameters required to access the VPSA provisioning Volumes
 vpsa:
   # url or IP of VPSA provisioning Volumes, without "http(s)://" prefix
   url: "example.zadaravpsa.com"
-  # https defines whether to use HTTPS or HTTP to access VPSA
-  https: true
+  # useTLS defines whether to use TLS (HTTPS) to access VPSA
+  useTLS: true
+  # verifyTLS defines whether to verify TLS certificate when using HTTPS
+  verifyTLS: true
   # token to access VPSA
   token: "FAKETOKEN1234567-123"
+
 # plugin configuration
 plugin:
   # provisioner is the name of CSI plugin, for use in StorageClass, e.g. us-west.csi.zadara.com  on-prem.csi.zadara.com
@@ -25,11 +30,22 @@ plugin:
   iscsiMode: "rootfs"
   # healthzPort is used for liveness probes, needs to be unique for each plugin instance in a cluster
   healthzPort: 9808
-  # autoExpandSupport enables periodical sync of capacity between VPSA Volumes with auto-expand enabled and K8s PVCs
+  # autoExpandSupport enables periodical sync of capacity between VPSA Volumes with auto-expand enabled and K8s PVCs. Use `autoExpandSupport: false` to disable
   autoExpandSupport:
     # schedule for periodical capacity sync in cron format
     schedule: "*/10 * * * *"
+
 # labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary 'key: "value"' pairs
 labels:
   # stage can be 'dev', 'staging', 'production', or any other option of your choice
   stage: "production"
+
+# # additional customTrustedCertificates to install in CSI pods
+# customTrustedCertificates:
+#   # # existingSecret: name of an existing secret from the same namespace, each key containing a pem-encoded certificate
+#   # existingSecret: my-root-ca
+#   # # plainText: create a new secret with the following contents (limited to 1 certificate, mainly for testing purposes)
+#   # plainText: -|
+#   #   -----BEGIN CERTIFICATE-----
+#   #   ...
+#   #   -----END CERTIFICATE-----

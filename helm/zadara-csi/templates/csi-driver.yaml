@@ -5,8 +5,14 @@
 # Usage:
 #  kubectl create -f csi-driver.yaml
 #
-# Requires K8s 1.14+
+# Kubernetes 1.12 - 1.13: Alpha
+# Kubernetes 1.14: Beta
+# Kubernetes 1.18: GA
+{{- if .Capabilities.APIVersions.Has "storage.k8s.io/v1/CSIDriver" }}
+apiVersion: storage.k8s.io/v1
+{{- else }}
 apiVersion: storage.k8s.io/v1beta1
+{{- end }}
 kind: CSIDriver
 metadata:
   name: "{{ .Values.plugin.provisioner }}"

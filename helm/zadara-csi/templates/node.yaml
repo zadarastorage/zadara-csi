@@ -63,8 +63,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           args:
+            - "zadara-csi"
             - "--hostname={{ .Values.vpsa.url }}"
-            - "--secure={{ .Values.vpsa.https }}"
+            - "--use-tls={{ .Values.vpsa.useTLS }}"
+            - "--verify-tls={{ .Values.vpsa.verifyTLS }}"
             - "--name={{ .Values.plugin.provisioner }}"
             - "--endpoint=unix:///csi/csi.sock"
           env:
@@ -114,6 +116,10 @@ spec:
               mountPath: /dev
             - name: config-dir
               mountPath: /etc/csi
+            {{- if .Values.customTrustedCertificates }}
+            - name: cert-dir
+              mountPath: /usr/local/share/ca-certificates/zadara
+            {{- end }}
       volumes:
         {{- if eq .Values.plugin.iscsiMode "rootfs" }}
         - name: host-root
@@ -147,6 +153,16 @@ spec:
         - name: config-dir
           configMap:
             name: {{ .Release.Name }}-csi-config-map
+        {{- if .Values.customTrustedCertificates }}
+        - name: cert-dir
+          secret:
+        {{- if .Values.customTrustedCertificates.plainText }}
+            secretName: {{ .Release.Name }}-custom-tls-cert
+        {{- end }}
+        {{- if .Values.customTrustedCertificates.existingSecret }}
+            secretName: {{ .Values.customTrustedCertificates.existingSecret }}
+        {{- end }}
+        {{- end }}
 
 ---
 apiVersion: v1

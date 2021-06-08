@@ -65,4 +65,4 @@ if [ ! "$NS_POD" ]; then
   exit 1
 fi
 
-$KUBECTL exec -it -n $NS_POD -c csi-zadara-driver /bin/bash
+$KUBECTL exec -it -n $NS_POD -c csi-zadara-driver -- /bin/bash

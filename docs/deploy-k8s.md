@@ -47,14 +47,17 @@ stringData:
 #### Plugin arguments
 
 Edit following parameters in `controller.yaml` and `node.yaml`.
-In most cases, only `hostname`, and `secure` need to be changed.
+In most cases, only `hostname`, and TLS parameters need to be changed.
 
 | parameter | description | required | examples |
 |-----------|-----------|-----------|----------|
 | `hostname` | VPSA hostname, or IP  | Yes | `example.zadaravpsa.com`, `10.0.10.1`
-| `secure` | Whether or not to use HTTPS | No. Defaults to `true` | `true`, `false`, `0`, `1`. <br>Pass as `--secure=false`
+| `use-tls` | Whether or not to use TLS (HTTPS) | No. Defaults to `true` | `true`, `false`, `0`, `1`. <br>Pass as `--use-tls=false`
+| `verify-tls` | Whether or not verify ceritificate, when using TLS | No. Defaults to `true` | `true`, `false`, `0`, `1`. <br>Pass as `--verify-tls=false`
 |`name` | Plugin name, to identify plugin instance and use in `provisioner` field of StorageClass  | No. Defaults to `csi.zadara.com` | `us-west.csi.zadara.com`, `on-prem.csi.zadara.com`, `all-flash.csi.zadara.com`
 |`nodeid` | Kubernetes Node id | No. Defaults to hostname of a current node, as returned by `uname -n` | `VM-001`, `node42`
+
+Typically, TLS should be enabled when VPSA hostname is a DNS name like `vsa-00000042-zadara-test-01.zadaravpsa.com`, and disabled when the hostname is an IP address.
 
 Plugin arguments appear in `controller.yaml` and `node.yaml` similar to the following snippet:
 ```yaml
@@ -63,7 +66,8 @@ Plugin arguments appear in `controller.yaml` and `node.yaml` similar to the foll
       imagePullPolicy: "IfNotPresent"
       args:
         - "--hostname=example.zadaravpsa.com"
-        - "--secure=true"
+        - "--use-tls=true"
+        - "--verify-tls=true"
         - "--name=csi.zadara.com"
 ```
 
