@@ -148,7 +148,7 @@ Paste `.crt` contents into `customTrustedCertificates.plainText` in  `values.yam
 
 ```
 customTrustedCertificates:
-  plainText: -|
+  plainText: |-
     -----BEGIN CERTIFICATE-----
     ...
     -----END CERTIFICATE-----

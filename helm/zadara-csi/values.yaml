@@ -45,7 +45,7 @@ labels:
 #   # # existingSecret: name of an existing secret from the same namespace, each key containing a pem-encoded certificate
 #   # existingSecret: my-root-ca
 #   # # plainText: create a new secret with the following contents (limited to 1 certificate, mainly for testing purposes)
-#   # plainText: -|
+#   # plainText: |-
 #   #   -----BEGIN CERTIFICATE-----
 #   #   ...
 #   #   -----END CERTIFICATE-----

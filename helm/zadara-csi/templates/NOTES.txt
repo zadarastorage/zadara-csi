@@ -31,13 +31,15 @@ Try one of the following:
 {{- end -}}
 
 {{- if .Values.customTrustedCertificates -}}
-{{- if and .Values.customTrustedCertificates.existingSecret (not (lookup "v1" "Secret" .Values.namespace .Values.customTrustedCertificates.existingSecret)) -}}
+{{- if and .Values.customTrustedCertificates.existingSecret -}}
+{{- if not (lookup "v1" "Secret" .Values.namespace .Values.customTrustedCertificates.existingSecret) -}}
 {{ $installSuccessful = false }}
 ##############################################################################
 ####   ERROR: Missing required resources                                  ####
 ##############################################################################
 Secret "{{ .Values.customTrustedCertificates.existingSecret }}" not found in namespace "{{ .Values.namespace }}"
 Please, check customTrustedCertificates.existingSecret in your values.yaml
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
