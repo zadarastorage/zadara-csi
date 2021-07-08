@@ -1,35 +1,40 @@
 ---
 pod:
-  name: unipool-pod
-  container:
-    name: unipool-container
+  name: io-test
   # image for the container to run
-  image: zadaraqa/zubnutu
+  image: busybox:latest
   # args for container's entry point. Used as is - you can add or change values as you want
   args:
-    - "-D"
+    - "dd"
+    - "if=/dev/urandom"
+    - "of=/mnt/csi/test_file"
+    - "bs=1M"
+    - "count=10000"
   # env sets environment variables for the container. Used as is - you can add or change values as you want
   env:
     - name: MNT_DIR_NAME
       value: "/mnt/csi"
-    - name: PROC_COUNT
-      value: 1
+
 # storageClass definition https://kubernetes.io/docs/concepts/storage/storage-classes/
 storageClass:
   # reclaimPolicy: Retain or Delete https://kubernetes.io/docs/concepts/storage/storage-classes/#reclaim-policy
   reclaimPolicy: Delete
   # provisioner name to use in StorageClass definition, should be cluster-wide unique
   provisioner: csi.zadara.com
-  # poolid can be omitted for VPSA with only one pool
+  # # poolid can be omitted for VPSA with only one pool
   # poolid: pool-00010003
+
 # nas (optional) PVC parameters https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+# 'nas: false' to disable
 nas:
   name: nas-pvc
   accessMode: ReadWriteMany
   readOnly: false
   capacity: 50Gi
   mountPath: "/mnt/csi"
+
 # block (optional) PVC parameters https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+# 'block: false' to disable
 block:
   name: block-pvc
   accessMode: ReadWriteOnce

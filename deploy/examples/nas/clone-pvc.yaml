@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cloned-nas
+spec:
+  storageClassName: io-test-nas
+  dataSource:
+    name: io-test-nas-pvc
+    kind: PersistentVolumeClaim
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi

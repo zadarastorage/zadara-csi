@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: block-from-snapshot
+spec:
+  storageClassName: io-test-block
+  dataSource:
+    name: block-snapshot-test
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

@@ -1,12 +1,12 @@
 ## Pre-release:
 
-### before 0.2.0 
+### before 0.2.0
 
 Plugin version 0.13.0
 
 #### Features
 
-- Support multiple plugin instances (with different `provisioner` name) 
+- Support multiple plugin instances (with different `provisioner` name)
 
 - Use `iscsi-recv` service to run `iscsiadm` on host
 
@@ -38,7 +38,7 @@ Plugin version 0.13.0
 
 - Add labels to zadara-csi resources
 
-#### Fixes 
+#### Fixes
 
 #### Other
 
@@ -54,7 +54,7 @@ Plugin version 0.14.0
 
 - Support 2 options to manage iSCSI connections on host: `rootfs` or `client-server`
 
-#### Fixes 
+#### Fixes
 
 #### Other
 
@@ -68,7 +68,7 @@ Plugin version 0.14.0
 
 - Allow to add arbitrary labels to zadara-csi resources
 
-#### Fixes 
+#### Fixes
 
 #### Other
 

@@ -19,46 +19,40 @@ spec:
         {{- include "helm.labels" . | nindent 8 }}
     spec:
       priorityClassName: system-node-critical
-      serviceAccount: {{ .Release.Name }}-csi-zadara-node-sa
+      serviceAccountName: {{ .Release.Name }}-csi-zadara-node-sa
       hostNetwork: true
       containers:
+        #######################################################################
         - name: csi-node-driver-registrar
-          image: quay.io/k8scsi/csi-node-driver-registrar:v1.2.0
+          image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.2.0
           imagePullPolicy: "IfNotPresent"
           args:
             - "--csi-address=$(ADDRESS)"
             - "--kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)"
             - "--v=5"
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - "/bin/sh"
-                  - "-c"
-                  - "rm -rf /registration/{{ .Values.plugin.provisioner }} /registration/{{ .Values.plugin.provisioner }}-reg.sock"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
             - name: DRIVER_REG_SOCK_PATH
               value: /var/lib/kubelet/plugins/{{ .Values.plugin.provisioner }}/csi.sock
-            - name: KUBE_NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
             - name: registration-dir
               mountPath: /registration
+        #######################################################################
         - name: liveness-probe
-          image: quay.io/k8scsi/livenessprobe:v1.1.0
+          image: k8s.gcr.io/sig-storage/livenessprobe:v2.3.0
           imagePullPolicy: "IfNotPresent"
           args:
-            - --csi-address=/csi/csi.sock
-            - --health-port={{ .Values.plugin.healthzPort }}
+            - "--csi-address=/csi/csi.sock"
+            - "--health-port={{ .Values.plugin.healthzPort }}"
+            - "--probe-timeout=3s"
+            - "--v=5"
           volumeMounts:
             - mountPath: /csi
               name: socket-dir
+        #######################################################################
         - name: csi-zadara-driver
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
@@ -163,42 +157,3 @@ spec:
             secretName: {{ .Values.customTrustedCertificates.existingSecret }}
         {{- end }}
         {{- end }}
-
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: {{ .Release.Name }}-csi-zadara-node-sa
-  namespace: {{ .Values.namespace }}
-  labels:
-    app.kubernetes.io/component: node
-    {{- include "helm.labels" . | nindent 4 }}
----
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: {{ .Release.Name }}-csi-zadara-node-driver-registrar-role
-  namespace: {{ .Values.namespace }}
-  labels:
-    app.kubernetes.io/component: node
-    {{- include "helm.labels" . | nindent 4 }}
-rules:
-  - apiGroups: [""]
-    resources: ["events"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: {{ .Release.Name }}-csi-zadara-node-driver-registrar-binding
-  labels:
-    app.kubernetes.io/component: node
-    {{- include "helm.labels" . | nindent 4 }}
-subjects:
-  - kind: ServiceAccount
-    name: {{ .Release.Name }}-csi-zadara-node-sa
-    namespace: {{ .Values.namespace }}
-roleRef:
-  kind: ClusterRole
-  name: {{ .Release.Name }}-csi-zadara-node-driver-registrar-role
-  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,12 @@
+
+# namespace where snapshot Controller will run
+namespace: kube-system
+
+# snapshotController https://kubernetes-csi.github.io/docs/snapshot-controller.html
+snapshotController:
+  replicas: 1
+  image: k8s.gcr.io/sig-storage/snapshot-controller:v4.1.1
+
+imagePullSecrets: [] # TODO use
+# imagePullPolicy for all images used by this chart
+imagePullPolicy: IfNotPresent

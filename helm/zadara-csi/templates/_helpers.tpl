@@ -72,3 +72,28 @@ release: {{ .Release.Name }}
 publisher: "zadara"
 provisioner: {{ .Values.plugin.provisioner }}
 {{- end -}}
+
+{{/*
+Choose snapshots API version based on installed CRDs.
+If CRDs are not installed, then based on k8s version.
+*/}}
+{{- define "snapshots.autoVersion" -}}
+{{- if .Capabilities.APIVersions.Has "snapshot.storage.k8s.io/v1/VolumeSnapshot" -}}
+v1
+{{- else if .Capabilities.APIVersions.Has "snapshot.storage.k8s.io/v1beta1/VolumeSnapshot" -}}
+v1beta1
+{{- else -}}
+{{ ternary "v1" "v1beta1" (semverCompare ">=1.20.0" .Capabilities.KubeVersion.Version) }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Expected snapshots API version: either from user, or whatever "auto" resolves to.
+*/}}
+{{- define "snapshots.version" -}}
+{{- if ne .Values.snapshots.apiVersion "auto" -}}
+{{ .Values.snapshots.apiVersion }}
+{{- else -}}
+{{ include "snapshots.autoVersion" . }}
+{{- end -}}
+{{- end -}}

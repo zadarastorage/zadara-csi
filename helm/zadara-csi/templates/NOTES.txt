@@ -18,12 +18,39 @@ vpsa:
 EOF
 {{- end -}}
 
+{{- if and (ne .Values.snapshots.apiVersion "v1beta1") (ne .Values.snapshots.apiVersion "v1") (ne .Values.snapshots.apiVersion "auto") -}}
+{{ $installSuccessful = false }}
+##############################################################################
+####   ERROR: Invalid snapshots.apiVersion                                ####
+##############################################################################
+Invalid value of snapshots.apiVersion: {{ .Values.snapshots.apiVersion }}
+Allowed values are "v1beta1", "v1" or "auto".
+{{- end -}}
+
+{{ $snapshotsGroupVersion := printf "snapshot.storage.k8s.io/%s" (include "snapshots.version" .) }}
+{{ $snapshotsCRDsPresent := true }}
+{{- if not (.Capabilities.APIVersions.Has $snapshotsGroupVersion) }}
+{{ $snapshotsCRDsPresent = false }}
+##############################################################################
+####   WARNING: Missing storage.k8s.io CRDs                               ####
+##############################################################################
+Chart is configured with snapshots.apiVersion: {{ .Values.snapshots.apiVersion }}{{ if eq .Values.snapshots.apiVersion "auto" }} [{{ include "snapshots.autoVersion" . }}]{{ end }},
+but "{{ $snapshotsGroupVersion }}" CRDs are not installed.
+Volume provisioning functionality is not affected, but you will not be able to create Snapshots.
+
+To install: https://github.com/zadarastorage/zadara-csi/tree/release/helm
+Recommended versions:
+    K8s >=1.20: snapshot.storage.k8s.io/v1
+    K8s  <1.20: snapshot.storage.k8s.io/v1beta1
+We strongly advise not to use storage.k8s.io/v1beta1 with K8s 1.20+.
+{{ end -}}
+
 {{- if and (ne .Values.plugin.iscsiMode "rootfs") (ne .Values.plugin.iscsiMode "client-server") -}}
 {{ $installSuccessful = false }}
 ##############################################################################
 ####   ERROR: Invalid plugin.iscsiMode                                    ####
 ##############################################################################
-Invalid value of 'plugin.iscsiMode': {{ .Values.plugin.iscsiMode }}
+Invalid value of plugin.iscsiMode: {{ .Values.plugin.iscsiMode }}
 Allowed values are "rootfs" or "client-server".
 Try one of the following:
   helm install {{ .Release.Name }} --set plugin.iscsiMode="rootfs"        {{ .Chart.Name }}
@@ -31,7 +58,7 @@ Try one of the following:
 {{- end -}}
 
 {{- if .Values.customTrustedCertificates -}}
-{{- if and .Values.customTrustedCertificates.existingSecret -}}
+{{- if .Values.customTrustedCertificates.existingSecret -}}
 {{- if not (lookup "v1" "Secret" .Values.namespace .Values.customTrustedCertificates.existingSecret) -}}
 {{ $installSuccessful = false }}
 ##############################################################################
@@ -48,18 +75,28 @@ Please, check customTrustedCertificates.existingSecret in your values.yaml
 ####   Successfully installed Zadara-CSI                                  ####
 ##############################################################################
 Thank you for installing {{ .Chart.Name }}!
-Your release is named {{ .Release.Name }}
+{{- if $snapshotsCRDsPresent }}
+Snapshots API version: {{ $snapshotsGroupVersion }}
+{{- end }}
 
-Try following example to create a NAS volume on your VPSA:
+# Verify installation:
+kubectl get pods -n {{ .Values.namespace }} -l provisioner={{ .Values.plugin.provisioner }}
+
+##############################################################################
+####   Example: Create a NAS volume on your VPSA                          ####
+##############################################################################
+
+# You can paste this whole snippet into your shell:
 
 cat << EOF > sc_and_pvc.yaml
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: csi-zadara-{{ .Release.Name }}-nas
+  name: {{ .Release.Name }}-nas
 provisioner: {{ .Values.plugin.provisioner }}
-reclaimPolicy: Retain
+# for real workloads consider using "reclaimPolicy: Retain"
+reclaimPolicy: Delete
 allowVolumeExpansion: true
 # # remove comment for VPSA with multiple Storage Pools
 # parameters:
@@ -68,7 +105,7 @@ allowVolumeExpansion: true
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: zadara-{{ .Release.Name }}-nas-pvc
+  name: {{ .Release.Name }}-nas-pvc
 spec:
   accessModes:
     - ReadWriteMany
@@ -76,14 +113,19 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  storageClassName: csi-zadara-{{ .Release.Name }}-nas
+  storageClassName: {{ .Release.Name }}-nas
 EOF
+
 kubectl create -f sc_and_pvc.yaml  # create StorageClass and PersistentVolumeClaim
-kubectl get sc  # verify StorageClass creation
-kubectl get pvc  # verify PersistentVolumeClaim creation
-{{- else }}
-- Delete current release:
+
+kubectl get sc  {{ .Release.Name }}-nas              # verify StorageClass creation
+kubectl get pvc {{ .Release.Name }}-nas-pvc --watch  # verify PersistentVolumeClaim creation
+
+{{ else }}
+##############################################################################
+- Uninstall current release:
   helm uninstall {{ .Release.Name }}
-- Install the chart again with updated credentials
+- Fix values.yaml
+- Install the chart again:
   helm install {{ .Release.Name }} -f my_values.yaml {{ .Chart.Name }}
 {{- end -}}

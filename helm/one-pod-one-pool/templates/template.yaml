@@ -72,7 +72,7 @@ metadata:
   name: {{ .Release.Name }}-{{ .Values.pod.name }}
 spec:
   containers:
-    - name: {{ .Values.pod.container.name }}
+    - name: {{ .Release.Name }}-{{ .Values.pod.name }}
       image: {{ .Values.pod.image }}
       {{- if .Values.pod.args }}
       args:

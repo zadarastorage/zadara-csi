@@ -31,11 +31,6 @@ function print_usage_and_exit {
     exit 1
 }
 
-if [ `whoami` = 'root' ]; then
-  echo "Please, run as regular user (e.g. zadara)"
-  exit 1
-fi
-
 if [ $# -eq 0 ]; then
   print_usage_and_exit
 fi

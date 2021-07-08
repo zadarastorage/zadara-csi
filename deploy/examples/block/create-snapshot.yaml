@@ -1,0 +1,12 @@
+---
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: block-snapshot-test
+spec:
+  volumeSnapshotClassName: zadara-csi-snapclass
+  # source: exactly one of:
+  # - persistentVolumeClaimName (for new snapshots)
+  # - volumeSnapshotContentName (for importing existing snapshots into k8s)
+  source:
+    persistentVolumeClaimName: io-test-block-pvc

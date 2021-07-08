@@ -1,0 +1,13 @@
+apiVersion: v2
+name: snapshots-v1beta1
+description: |-
+  Common infrastructure for v1beta1 CSI Snapshots.
+  Includes snapshots CRDs, cluster-global Snapshot Controller, and RBAC for it.
+  Sources:
+  https://kubernetes-csi.github.io/docs/snapshot-controller.html
+  https://github.com/kubernetes-csi/external-snapshotter/tree/master/deploy/kubernetes/snapshot-controller
+type: application
+version: "3.3.0-v1"
+# appVersion corresponds to Github tags of https://github.com/kubernetes-csi/external-snapshotter
+appVersion: "3.3.0"
+kubeVersion: ">= 1.17.0"
