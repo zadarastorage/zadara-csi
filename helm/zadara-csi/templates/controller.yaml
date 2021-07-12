@@ -85,7 +85,7 @@ spec:
           env:
             - name: ADDRESS
               value: /csi/csi.sock
-          {{ $snapshotsVersion := include "snapshots.version" . }}
+          {{- $snapshotsVersion := include "snapshots.version" . }}
           {{- if eq $snapshotsVersion "v1beta1" }}
           image: k8s.gcr.io/sig-storage/csi-snapshotter:v3.0.3
           args:
@@ -196,7 +196,7 @@ spec:
               mountPath: /etc/csi
             {{- if .Values.customTrustedCertificates }}
             - name: cert-dir
-              mountPath: /usr/local/share/ca-certificates/zadara
+              mountPath: /etc/pki/ca-trust/source/anchors
             {{- end }}
       volumes:
         - name: socket-dir

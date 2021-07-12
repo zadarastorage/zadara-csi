@@ -63,7 +63,7 @@ spec:
                   mountPath: /etc/csi
                 {{- if .Values.customTrustedCertificates }}
                 - name: cert-dir
-                  mountPath: /usr/local/share/ca-certificates/zadara
+                  mountPath: /etc/pki/ca-trust/source/anchors
                 {{- end }}
           volumes:
             - name: config-dir

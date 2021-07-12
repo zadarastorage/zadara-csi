@@ -209,7 +209,7 @@ Helm Chart status:
 ```
 $ helm list
 NAME             NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.0.0        1.3.2
+zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.0.1        1.3.3
 
 $ helm status zadara-csi
 NAME: zadara-csi
@@ -293,6 +293,33 @@ If CRDs are not installed, the chart will use `v1` for K8s 1.20+, and `v1beta1` 
 CSI Driver can be configured to use HTTPS with custom certificate (e.g. self-signed).
 
 You can either reference a Secret, or provide a certificate directly in `values.yaml` (a Secret will be created automatically).
+
+Before proceeding, please make sure that the certificate has `X509v3 Basic Constraints: CA: TRUE`.
+To decode a certificate you can run:
+```
+openssl x509 -in <CERTIFICATE> -noout -text
+```
+For example:
+```
+$ openssl x509 -in CA.crt -noout -text | grep -e 'X509v3 Basic Constraints' -e 'CA:'
+            X509v3 Basic Constraints:
+                CA:TRUE
+```
+
+To verify, check `csi-zadara-driver` container logs (in any CSI pod), for example:
+
+```
+$ kubectl logs -n kube-system zadara-csi-csi-zadara-controller-bd4c4858-z8jkd csi-zadara-driver
+Jul 11 10:22:18 [INFO] Executing pre-start actions...
+Jul 11 10:22:18 [INFO] Add trusted CA certificates:
+zadara-csi-tls.crt
+Jul 11 10:22:18 [INFO] Installed trusted certificates:
+pkcs11:id=%D8%53%1E%C7%82%D1%BC%25%FB%CC%25%DC%1A%F7%70%5F%FB%3A%66%3F;type=cert
+    type: certificate
+    label: zadaravpsa.com
+    trust: anchor
+    category: authority
+```
 
 #### Using existing Secret
 
