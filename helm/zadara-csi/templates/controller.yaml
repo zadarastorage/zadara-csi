@@ -24,8 +24,8 @@ spec:
       containers:
         #######################################################################
         - name: csi-provisioner
-          image: k8s.gcr.io/sig-storage/csi-provisioner:v2.2.2
-          imagePullPolicy: "IfNotPresent"
+          image: "{{ .Values.image.provisioner.repository }}:{{ .Values.image.provisioner.tag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           args:
             - "--csi-address=$(ADDRESS)"
             - "--leader-election"
@@ -53,8 +53,8 @@ spec:
               mountPath: /csi
         #######################################################################
         - name: csi-attacher
-          image: k8s.gcr.io/sig-storage/csi-attacher:v3.2.1
-          imagePullPolicy: "IfNotPresent"
+          image: "{{ .Values.image.attacher.repository }}:{{ .Values.image.attacher.tag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           args:
             - "--csi-address=$(ADDRESS)"
             - "--leader-election"
@@ -81,20 +81,20 @@ spec:
               mountPath: /csi
         #######################################################################
         - name: csi-snapshotter
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
           {{- $snapshotsVersion := include "snapshots.version" . }}
           {{- if eq $snapshotsVersion "v1beta1" }}
-          image: k8s.gcr.io/sig-storage/csi-snapshotter:v3.0.3
+          image: "{{ .Values.image.snapshotter.repository }}:{{ .Values.image.snapshotter.tagV1Beta1 }}"
           args:
           - "--csi-address=$(ADDRESS)"
           - "--leader-election"
           - "--timeout=180s"
           - "--v=5"
           {{- else }}
-          image: k8s.gcr.io/sig-storage/csi-snapshotter:v4.1.1
+          image: "{{ .Values.image.snapshotter.repository }}:{{ .Values.image.snapshotter.tagV1 }}"
           args:
             - "--csi-address=$(ADDRESS)"
             - "--leader-election"
@@ -119,8 +119,8 @@ spec:
               mountPath: /csi
         #######################################################################
         - name: csi-resizer
-          image: k8s.gcr.io/sig-storage/csi-resizer:v1.2.0
-          imagePullPolicy: "IfNotPresent"
+          image: "{{ .Values.image.resizer.repository }}:{{ .Values.image.resizer.tag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           args:
             - "--csi-address=$(ADDRESS)"
             - "--leader-election"
@@ -147,8 +147,8 @@ spec:
               mountPath: /csi
         #######################################################################
         - name: liveness-probe
-          image: k8s.gcr.io/sig-storage/livenessprobe:v2.3.0
-          imagePullPolicy: "IfNotPresent"
+          image: "{{ .Values.image.livenessProbe.repository }}:{{ .Values.image.livenessProbe.tag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           args:
             - "--csi-address=/csi/csi.sock"
             - "--health-port={{ .Values.plugin.healthzPort }}"
@@ -159,8 +159,8 @@ spec:
               name: socket-dir
         #######################################################################
         - name: csi-zadara-driver
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          image: "{{ .Values.image.csiDriver.repository }}:{{ .Values.image.csiDriver.tag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           args:
             - "zadara-csi"
             - "--hostname={{ .Values.vpsa.url }}"
@@ -214,3 +214,9 @@ spec:
             secretName: {{ .Values.customTrustedCertificates.existingSecret }}
         {{- end }}
         {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}

@@ -1,59 +1,84 @@
 ---
-# namespace where all CSI pods will run
+# -- namespace where all CSI pods will run
 namespace: "kube-system"
 
-# image is Docker image of CSI driver to be used
 image:
-  # repository is the image name on DockerHub
-  repository: zadara/csi-driver
-  # tag is the image version on DockerHub
-  tag: 1.3.3
-  # pullPolicy of the image https://kubernetes.io/docs/concepts/containers/images/#updating-images
-  pullPolicy: IfNotPresent
+  # -- csiDriver is the main CSI container, provided by Zadara.
+  # `repository` and `tag` are used similarly for all images below.
+  csiDriver:
+    # -- repository to pull image from, Dockerhub by default.
+    # Also available at `registry.connect.redhat.com/zadara/csi`
+    repository: zadara/csi-driver
+    # -- image tag. Modifying tags is not recommended and may cause compatibility issues.
+    tag: 1.3.4
+  provisioner:
+    repository: k8s.gcr.io/sig-storage/csi-provisioner
+    tag: v2.2.2
+  attacher:
+    repository: k8s.gcr.io/sig-storage/csi-attacher
+    tag: v3.2.1
+  resizer:
+    repository: k8s.gcr.io/sig-storage/csi-resizer
+    tag: v1.2.0
+  livenessProbe:
+    repository: k8s.gcr.io/sig-storage/livenessprobe
+    tag: v2.3.0
+  nodeDriverRegistrar:
+    repository: k8s.gcr.io/sig-storage/csi-node-driver-registrar
+    tag: v2.2.0
+  snapshotter:
+    repository: k8s.gcr.io/sig-storage/csi-snapshotter
+    # -- `tagV1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`)
+    tagV1: v4.1.1
+    # -- `tagV1Beta1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`)
+    tagV1Beta1: v3.0.3
 
-# vpsa defines parameters required to access the VPSA provisioning Volumes
+# -- imagePullSecrets: credentials for private registry. A list of names of Secrets in the same namespace.
+# Create `imagePullSecrets`: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# -- imagePullPolicy *for all images* used by this chart
+imagePullPolicy: IfNotPresent
+
 vpsa:
-  # url or IP of VPSA provisioning Volumes, without "http(s)://" prefix
+  # -- url or IP of VPSA provisioning Volumes, without "http(s)://" prefix
   url: "example.zadaravpsa.com"
-  # useTLS defines whether to use TLS (HTTPS) to access VPSA
+  # -- useTLS defines whether to use TLS (HTTPS) to access VPSA
   useTLS: true
-  # verifyTLS defines whether to verify TLS certificate when using HTTPS
+  # -- verifyTLS defines whether to verify TLS certificate when using HTTPS
   verifyTLS: true
-  # token to access VPSA
+  # -- token to access VPSA
   token: "FAKETOKEN1234567-123"
 
-# plugin configuration
 plugin:
-  # provisioner is the name of CSI plugin, for use in StorageClass, e.g. us-west.csi.zadara.com  on-prem.csi.zadara.com
+  # -- provisioner is the name of CSI plugin, for use in StorageClass, e.g. `us-west.csi.zadara.com`, `on-prem.csi.zadara.com`
   provisioner: csi.zadara.com
-  # iscsiMode (rootfs|client-server) allows to chose a way for the plugin to reach iscsiadm on host
+  # -- iscsiMode (`rootfs` or `client-server`) allows to chose a way for the plugin to reach iscsiadm on host
   iscsiMode: "rootfs"
-  # healthzPort is used for liveness probes, needs to be unique for each plugin instance in a cluster
+  # -- healthzPort is used for liveness probes, needs to be unique for each plugin instance in a cluster
   healthzPort: 9808
-  # autoExpandSupport enables periodical sync of capacity between VPSA Volumes with auto-expand enabled and K8s PVCs.
+  # -- autoExpandSupport enables periodical sync of capacity between VPSA Volumes with auto-expand enabled and K8s PVCs.
   # Use `autoExpandSupport: false` to disable
   autoExpandSupport:
-    # schedule for periodical capacity sync in cron format
+    # -- schedule for periodical capacity sync in cron format
     schedule: "*/10 * * * *"
 
-# snapshots support: requires common one-per-cluster snapshots controller
-# install from helm/snapshots-v1[beta1] chart in this repo
-# more info: https://kubernetes.io/blog/2020/12/10/kubernetes-1.20-volume-snapshot-moves-to-ga/
+# -- snapshots support: requires common one-per-cluster snapshots controller.
+# Install from `helm/snapshots-v1[beta1]` chart in this repo.
+# More info: https://kubernetes.io/blog/2020/12/10/kubernetes-1.20-volume-snapshot-moves-to-ga/
 snapshots:
-  # apiVersion for CSI Snapshots: "v1beta1", "v1" (requires K8s >=1.20) or "auto" (based on installed CRDs and k8s version)
+  # -- apiVersion for CSI Snapshots: `v1beta1`, `v1` (requires K8s >=1.20) or "auto" (based on installed CRDs and k8s version)
   apiVersion: auto
 
-# labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary 'key: "value"' pairs
+# -- labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary 'key: "value"' pairs
 labels:
-  # stage can be 'dev', 'staging', 'production', or any other option of your choice
   stage: "production"
 
-# # additional customTrustedCertificates to install in CSI pods. Use either existingSecret or plainText.
-# customTrustedCertificates:
-#   # # existingSecret: name of an existing secret from the same namespace, each key containing a pem-encoded certificate
-#   # existingSecret: my-root-ca
-#   # # plainText: create a new secret with the following contents (limited to 1 certificate, mainly for testing purposes)
-#   # plainText: |-
-#   #   -----BEGIN CERTIFICATE-----
-#   #   ...
-#   #   -----END CERTIFICATE-----
+# -- additional customTrustedCertificates to install in CSI pods. Use either `existingSecret` or `plainText`.
+customTrustedCertificates: {}
+#    # -- existingSecret: name of an existing secret from the same namespace, each key containing a pem-encoded certificate
+#    existingSecret: my-root-ca
+#    # -- plainText: create a new secret with the following contents
+#    plainText: |-
+#      -----BEGIN CERTIFICATE-----
+#      ...
+#      -----END CERTIFICATE-----

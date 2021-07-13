@@ -1,11 +1,9 @@
 
-<!--- helm: 1 -->
 
 ## Description
 The Zadara VPSA CSI provider implements an interface between the Container Storage Interface (CSI)
 and Zadara VPSA Storage Array & VPSA All-Flash, for a dynamic provisioning of persistent Block and File volumes.
 
-<!--- end -->
 
 ### Versioning
 
@@ -35,7 +33,6 @@ and Zadara VPSA Storage Array & VPSA All-Flash, for a dynamic provisioning of pe
         - [Pods using block devices](#pods-using-block-devices)
 - [Usage Examples](#usage-examples)
 
-<!--- helm: 10 -->
 
 ## Prerequisites
 
@@ -109,6 +106,10 @@ This requires `run-on-host-server` service installed on host.
 
 ### Cluster Requirements
 
+#### Kubernetes versions
+
+Minimal supported K8s version: 1.18
+
 #### Helm
 
 CSI driver, Snapshot controller and usage examples are provided as Helm Charts.
@@ -140,6 +141,9 @@ and [Snapshot Controller](https://kubernetes-csi.github.io/docs/snapshot-control
 
 - If CRDs are *not installed*, proceed to the following steps.
 
+- Optional step: use custom image registry
+
+    See [instructions for configuring Helm Chart to use local image registry](./local-registry.md)
 
 - Install Snapshot Controller and CRDs.
 
@@ -189,13 +193,14 @@ and [Snapshot Controller](https://kubernetes-csi.github.io/docs/snapshot-control
     [Installation instructions and YAMLs](https://github.com/kubernetes-csi/external-snapshotter/tree/master/deploy/kubernetes/webhook-example)
     (OCI image is available at `k8s.gcr.io/sig-storage/snapshot-validation-webhook`)
 
-<!--- end -->
 
 ---
 
 ## Plugin deployment
 
 [Deploy Zadara CSI using Helm Chart](deploy-helm.md)
+
+[Using custom image registry](local-registry.md)
 
 After successful deployment you will see a Server created on your VPSA for each active K8s node.
 
@@ -212,7 +217,6 @@ The most common problems:
     - `run-on-host-server` service is not installed  (when using `client-server` iSCSI mode), or is disabled
     - IQN in `/etc/initiatorname.iscsi` is not unique for each node
 
-<!--- helm: 30 -->
 
 ## Configuration
 
@@ -229,15 +233,6 @@ If you are not sure what `provisioner` should be, it's value can be obtained aft
   Look for label such as `provisioner: on-prem.csi.zadara.com`
 - `helm status <release name>` will show an example of `StorageClass` with `provisioner` field.
 
-Notes on `parameters.volumeOptions`:
-- some options available in REST API documentation are not supported in StorageClass parameters.
-    Following parameters are set based on PVC: `name`, `capacity`, `pool`, `block`.
-    In addition, since CSI driver supports only NFS for NAS volumes, SMB parameters are not supported.
-
-- VPSA Volumes [auto-expand feature](http://guides.zadarastorage.com/release-notes/1908/whats-new.html#volume-auto-expand)
-    requires an additional configuration to sync VPSA Volumes capacity with Persistent Volume Claims.
-    This part is explained in plugin deployment instructions.
-
 Example:
 
 ```yaml
@@ -252,6 +247,8 @@ parameters:
   poolid: pool-00010003
   volumeOptions: '{"nfsanonuid":"65500", "nfsanongid":"65500"}'
 ```
+
+Read more about StorageClass configuration in [Usage Examples](examples.md#configuring-volume-options)
 
 ### Persistent Volume Claim (PVC)
 
@@ -312,7 +309,6 @@ add following parameters to container configuration:
 Please, do not use `privileged: true`: because of a [bug in Docker](https://bugzilla.redhat.com/show_bug.cgi?id=1614734),
 block device won't appear at requested `devicePath`.
 
-<!--- end -->
 
 ___
 

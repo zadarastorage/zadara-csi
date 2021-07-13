@@ -24,8 +24,8 @@ spec:
       containers:
         #######################################################################
         - name: csi-node-driver-registrar
-          image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.2.0
-          imagePullPolicy: "IfNotPresent"
+          image: "{{ .Values.image.nodeDriverRegistrar.repository }}:{{ .Values.image.nodeDriverRegistrar.tag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           args:
             - "--csi-address=$(ADDRESS)"
             - "--kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)"
@@ -42,8 +42,8 @@ spec:
               mountPath: /registration
         #######################################################################
         - name: liveness-probe
-          image: k8s.gcr.io/sig-storage/livenessprobe:v2.3.0
-          imagePullPolicy: "IfNotPresent"
+          image: "{{ .Values.image.livenessProbe.repository }}:{{ .Values.image.livenessProbe.tag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           args:
             - "--csi-address=/csi/csi.sock"
             - "--health-port={{ .Values.plugin.healthzPort }}"
@@ -54,8 +54,8 @@ spec:
               name: socket-dir
         #######################################################################
         - name: csi-zadara-driver
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          image: "{{ .Values.image.csiDriver.repository }}:{{ .Values.image.csiDriver.tag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           args:
             - "zadara-csi"
             - "--hostname={{ .Values.vpsa.url }}"
@@ -157,3 +157,9 @@ spec:
             secretName: {{ .Values.customTrustedCertificates.existingSecret }}
         {{- end }}
         {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}

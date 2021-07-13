@@ -1,4 +1,3 @@
-<!--- helm: 20 -->
 
 ## Deploying zadara-csi plugin using Helm charts
 
@@ -50,14 +49,13 @@ $ helm install --generate-name -f my_values.yaml ./helm/zadara-csi
 
 You can verify resulting YAML files by adding `--dry-run --debug` options to above commands.
 
-
 **Verify installation**
 
 Helm Chart status:
 ```
 $ helm list
 NAME             NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.0.1        1.3.3
+zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.1.0        1.3.4
 
 $ helm status zadara-csi
 NAME: zadara-csi
@@ -107,36 +105,49 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 
 ### Values explained
 
-| key                   | description |
-|-----------------------|-------------|
-`namespace`           | namespace where all CSI pods will run
-`image.repository`    | image name on DockerHub
-`image.tag`           | image version on DockerHub
-`image.pullPolicy`    | `pullPolicy` of the image https://kubernetes.io/docs/concepts/containers/images/#updating-images
-`vpsa.url`            |  url or IP of VPSA provisioning Volumes, without `http://` or `https://` prefix
-`vpsa.useTLS`         |  whether to use TLS (HTTPS) to access VPSA
-`vpsa.verifyTLS`      |  whether to verify TLS certificate when using HTTPS
-`vpsa.token`          |  token to access VPSA, e.g `FAKETOKEN1234567-123`
-`plugin.provisioner`  |  the name of CSI plugin, for use in StorageClass, e.g. `us-west.csi.zadara.com` or `on-prem.csi.zadara.com`
-`plugin.configDir`    |  directory on host FS, where the plugin will look for config, or create one if doesn't exist
-`plugin.configName`   |  name of dynamic config
-`plugin.iscsiMode`*    |  defines how the plugin will run `iscsiadm` commands on host. Allowed values: `rootfs` or `client-server`.
-`plugin.healthzPort`  |  healthzPort is an TCP ports for listening for HTTP requests of liveness probes, needs to be _unique for each plugin instance_ in a cluster.
-`plugin.autoExpandSupport`**  |  support for VPSA Volumes [auto-expand feature](http://guides.zadarastorage.com/release-notes/1908/whats-new.html#volume-auto-expand). Set to `false` to disable.
-`plugin.autoExpandSupport.schedule`  |  schedule for periodical sync of capacity between VPSA Volumes with auto-expand enabled and Persistent Volume Claims.
-`snapshots.apiVersion`*** | apiVersion for CSI Snapshots: `v1beta1`, `v1` (requires K8s >=1.20) or `auto`
-`labels`              |  labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary `key: "value"` pairs
-`customTrustedCertificates` | additional [custom trusted certificates](#adding-trusted-certificates) to install in CSI pods
-`customTrustedCertificates.existingSecret` | name of an existing secret from the same namespace, each key containing a pem-encoded certificate
-`customTrustedCertificates.plainText` | create a new secret with the following contents
+<!--- Auto-generated from values.yaml -->
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| namespace | string | `"kube-system"` | namespace where all CSI pods will run |
+| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"1.3.4"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
+| image.csiDriver.repository | string | `"zadara/csi-driver"` | repository to pull image from, Dockerhub by default. Also available at `registry.connect.redhat.com/zadara/csi` |
+| image.csiDriver.tag | string | `"1.3.4"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
+| image.provisioner.repository | string | `"k8s.gcr.io/sig-storage/csi-provisioner"` |  |
+| image.provisioner.tag | string | `"v2.2.2"` |  |
+| image.attacher.repository | string | `"k8s.gcr.io/sig-storage/csi-attacher"` |  |
+| image.attacher.tag | string | `"v3.2.1"` |  |
+| image.resizer.repository | string | `"k8s.gcr.io/sig-storage/csi-resizer"` |  |
+| image.resizer.tag | string | `"v1.2.0"` |  |
+| image.livenessProbe.repository | string | `"k8s.gcr.io/sig-storage/livenessprobe"` |  |
+| image.livenessProbe.tag | string | `"v2.3.0"` |  |
+| image.nodeDriverRegistrar.repository | string | `"k8s.gcr.io/sig-storage/csi-node-driver-registrar"` |  |
+| image.nodeDriverRegistrar.tag | string | `"v2.2.0"` |  |
+| image.snapshotter.repository | string | `"k8s.gcr.io/sig-storage/csi-snapshotter"` |  |
+| image.snapshotter.tagV1 | string | `"v4.1.1"` | `tagV1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`) |
+| image.snapshotter.tagV1Beta1 | string | `"v3.0.3"` | `tagV1Beta1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`) |
+| imagePullSecrets | list | `[]` | imagePullSecrets: credentials for private registry. A list of names of Secrets in the same namespace. Create `imagePullSecrets`: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
+| imagePullPolicy | string | `"IfNotPresent"` | imagePullPolicy *for all images* used by this chart |
+| vpsa.url | string | `"example.zadaravpsa.com"` | url or IP of VPSA provisioning Volumes, without "http(s)://" prefix |
+| vpsa.useTLS | bool | `true` | useTLS defines whether to use TLS (HTTPS) to access VPSA |
+| vpsa.verifyTLS | bool | `true` | verifyTLS defines whether to verify TLS certificate when using HTTPS |
+| vpsa.token | string | `"FAKETOKEN1234567-123"` | token to access VPSA |
+| plugin.provisioner | string | `"csi.zadara.com"` | provisioner is the name of CSI plugin, for use in StorageClass, e.g. `us-west.csi.zadara.com`, `on-prem.csi.zadara.com` |
+| plugin.iscsiMode | string | `"rootfs"` | iscsiMode (`rootfs` or `client-server`) allows to chose a way for the plugin to reach iscsiadm on host |
+| plugin.healthzPort | int | `9808` | healthzPort is used for liveness probes, needs to be unique for each plugin instance in a cluster |
+| plugin.autoExpandSupport | object | `{"schedule":"*/10 * * * *"}` | autoExpandSupport enables periodical sync of capacity between VPSA Volumes with auto-expand enabled and K8s PVCs. Use `autoExpandSupport: false` to disable |
+| plugin.autoExpandSupport.schedule | string | `"*/10 * * * *"` | schedule for periodical capacity sync in cron format |
+| snapshots | object | `{"apiVersion":"auto"}` | snapshots support: requires common one-per-cluster snapshots controller. Install from `helm/snapshots-v1[beta1]` chart in this repo. More info: https://kubernetes.io/blog/2020/12/10/kubernetes-1.20-volume-snapshot-moves-to-ga/ |
+| snapshots.apiVersion | string | `"auto"` | apiVersion for CSI Snapshots: `v1beta1`, `v1` (requires K8s >=1.20) or "auto" (based on installed CRDs and k8s version) |
+| labels | object | `{"stage":"production"}` | labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary 'key: "value"' pairs |
+| customTrustedCertificates | object | `{}` | additional customTrustedCertificates to install in CSI pods. Use either `existingSecret` or `plainText`. |
 
-\* For more info about `plugin.iscsiMode` see [Node iSCSI Connectivity](README.md#node-iscsi-connectivity) section.
+- `plugin.iscsiMode`: For more info see [Node iSCSI Connectivity](README.md#node-iscsi-connectivity) section.
 
-\** To enable auto-expand for CSI Volumes, you need to configure [Storage Class](README.md#storage-class) `parameters.volumeOptions`.
+- `plugin.autoExpandSupport` To enable auto-expand for CSI Volumes, you need to configure [Storage Class](README.md#storage-class) `parameters.volumeOptions`.
 Auto-expand requires VPSA version 19.08 or higher. When `plugin.autoExpandSupport` is enabled,
 periodical sync will be handled by a CronJob, running in the same namespace as CSI driver.
 
-\*** `auto` option: if CSI Snapshots CRDs are installed, the chart will use API version of CRDs.
+- `snapshots.apiVersion: auto`: if CSI Snapshots CRDs are installed, the chart will use API version of CRDs.
 If CRDs are not installed, the chart will use `v1` for K8s 1.20+, and `v1beta1` otherwise.
 
 ### Adding trusted certificates
@@ -201,4 +212,3 @@ customTrustedCertificates:
 
 A Secret will be created during Chart installation.
 
-<!--- end -->

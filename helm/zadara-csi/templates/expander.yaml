@@ -45,8 +45,8 @@ spec:
           serviceAccountName: {{ .Release.Name }}-csi-zadara-expander-sa
           containers:
             - name: csi-zadara-expander
-              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-              imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+              image: "{{ .Values.image.csiDriver.repository }}:{{ .Values.image.csiDriver.tag }}"
+              imagePullPolicy: "{{ .Values.imagePullPolicy }}"
               args:
                 - "expander"
                 - "--hostname={{ .Values.vpsa.url }}"
@@ -79,4 +79,10 @@ spec:
                 secretName: {{ .Values.customTrustedCertificates.existingSecret }}
             {{- end }}
             {{- end }}
+          {{- if .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- range .Values.imagePullSecrets }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
 {{ end -}}

@@ -12,7 +12,7 @@ The chart can be found in [helm/one-pod-one-pool](../helm/one-pod-one-pool) in t
     ```
     $ helm list
     NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-    zadara-csi-driver       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.0.1        1.3.3
+    zadara-csi-driver       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.1.0        1.3.4
     ```
 
 2. Get `provisioner` name of plugin
@@ -89,6 +89,135 @@ block:
   readOnly: false
   capacity: 50Gi
   devicePath: "/dev/sdx"
+```
+
+## Configuring volume options
+
+In this section we show additional examples for [Storage Class](README.md#storage-class) configuration.
+
+You can fine-tune Volume creation options using `parameters.volumeOptions` field of StorageClass.
+`volumeOptions` is a *string* in JSON format.
+
+Full list of options is available in [VPSA REST API documentation](http://vpsa-api.zadarastorage.com/#volumes)
+
+However, some options are not supported in StorageClass parameters:
+- Following parameters are set based on PVC: `name`, `capacity`, `pool`, `block`.
+- Since CSI driver supports only NFS for NAS volumes, SMB parameters are not supported.
+
+
+### Volumes with auto-expand support
+
+Know the difference:
+- `allowVolumeExpansion` in StorageClass allows you to modify capacity of a PVC.
+  This means you can *manually* resize a PVC on Kubernetes side (which will trigger volume resize on a VPSA).
+
+- `plugin.autoExpandSupport` in zadara-csi Helm Chart, and `parameters.volumeOptions: '{"autoexpand":"YES"}'`
+  will use [VPSA Volumes auto-expand feature](http://guides.zadarastorage.com/release-notes/1908/whats-new.html#volume-auto-expand).
+  Volumes are resized *automatically*, based on free capacity.
+  CSI `expander` CronJob will periodically update PVCs to reflect the actual Volume capacity.
+
+Example StorageClass with auto-expand:
+```yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: zadara-autoexpand
+provisioner: csi.zadara.com
+reclaimPolicy: Delete
+allowVolumeExpansion: true  # must be true, to keep PVCs in-sync with VPSA volumes
+parameters:
+  # poolid: pool-00010003  # set, when VPSA has multiple Storage Pools
+  volumeOptions: |-
+    {
+      "autoexpand":"YES",
+      "maxcapacity":"2000G",
+      "autoexpandby":"10G"
+    }
+```
+
+### Other common volumeOptions
+
+Add the following `parameters` to your StorageClass.
+
+Note how `volumeOptions` JSON string can be a single-line (with quotes) or multi-line (with `|-` symbol)
+
+Encrypted volumes:
+```yaml
+parameters:
+  volumeOptions: |-
+    {
+      "crypt":"YES"
+    }
+```
+
+Compression and deduplication for Flash Array VPSA:
+```yaml
+parameters:
+  volumeOptions: '{"compress":"YES", "dedupe":"YES"}'
+```
+
+# Resize Persistent Volume Claim
+
+VPSA supports online Volume expansion for block and NAS volumes.
+
+Resizing of a PVC can be done *with no downtime*: no need to stop IO or restart application Pods.
+
+- For NAS volumes additional capacity is available immediately.
+
+- Block volumes may require some extra configuration to add capacity to the file system (if present).
+  [Example for ext4](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/storage_administration_guide/ext4grow).
+  Typically, this can be done online as well.
+
+### Requirements and limitations:
+- To allow Persistent Volume Claims to be expanded, a StorageClass must be defined with `allowVolumeExpansion: true`.
+- Capacity cannot be decreased
+
+### Example
+
+We will show how to add capacity to PVC `io-test-nas-pvc` from [the previous example](#volume-provisioning):
+```
+$ kubectl get pvc
+NAME                    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS        AGE
+io-test-nas-pvc         Bound    pvc-4e5f9b7c-6e68-4476-95d4-6db0057ba839   50Gi       RWX            io-test-nas         7s
+```
+
+Check that `ALLOWVOLUMEEXPANSION` is enabled for the StorageClass:
+```
+$ kubectl get sc
+NAME                PROVISIONER      RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+io-test-nas         csi.zadara.com   Delete          Immediate           true                   72s
+```
+
+Update the PVC: set capacity to `150Gi`:
+```
+$ kubectl patch pvc io-test-nas-pvc -p '{"spec":{"resources":{"requests":{"storage": "150Gi"}}}}'
+persistentvolumeclaim/io-test-nas-pvc patched
+```
+
+You can also run `kubectl edit pvc io-test-nas-pvc` and update capacity interactively.
+
+Capacity is updated:
+```
+$ kubectl get pvc
+NAME                    STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS        AGE
+io-test-nas-pvc         Bound    pvc-4e5f9b7c-6e68-4476-95d4-6db0057ba839   150Gi      RWX            io-test-nas         2m7s
+```
+
+You can also check available capacity from inside the Pod.
+We use a Pod from [the previous example](#volume-provisioning):
+```
+$ kubectl get po
+NAME                READY   STATUS    RESTARTS   AGE
+io-test-dd-to-nas   1/1     Running   0          3m17s
+```
+Check capacity (only PVC volume shown):
+```
+$ kubectl exec io-test-dd-to-nas -- df -h
+Filesystem                Size      Used Available Use% Mounted on
+...
+10.10.12.2:/export/pvc-4e5f9b7c-6e68-4476-95d4-6db0057ba839
+                        150.0G    190.0M    149.8G   0% /mnt/csi
+...
 ```
 
 # Snapshots and clones

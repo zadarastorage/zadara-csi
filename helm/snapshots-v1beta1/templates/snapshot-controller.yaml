@@ -29,3 +29,9 @@ spec:
             - "--leader-election"
             - "--v=5"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}

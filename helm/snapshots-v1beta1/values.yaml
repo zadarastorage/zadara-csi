@@ -7,6 +7,8 @@ snapshotController:
   replicas: 1
   image: k8s.gcr.io/sig-storage/snapshot-controller:v3.0.3
 
-imagePullSecrets: [] # TODO use
+# imagePullSecrets: list of names of Secrets in the same namespace
+# how to create imagePullSecrets: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
 # imagePullPolicy for all images used by this chart
 imagePullPolicy: IfNotPresent
