@@ -167,7 +167,7 @@ and [Snapshot Controller](https://kubernetes-csi.github.io/docs/snapshot-control
     REVISION: 1
     TEST SUITE: None
     NOTES:
-    Thank you for installing snapshots-v1-4.1.1-v1!
+    Thank you for installing snapshots-v1-4.1.1+zadara.1!
 
     ##############################################################################
     ####   Verify CRDs installation:                                          ####
