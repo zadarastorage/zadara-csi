@@ -1,20 +1,20 @@
 ---
-{{- if .Values.plugin.autoExpandSupport }}
+{{ if .Values.plugin.autoExpandSupport.enable -}}
 kind: ServiceAccount
 apiVersion: v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-expander-sa
+  name: {{ .Release.Name }}-expander-sa
   namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: expander
     {{- include "helm.labels" . | nindent 4 }}
-{{ end -}}
+{{- end }}
 ---
-{{- if .Values.plugin.autoExpandSupport }}
+{{ if .Values.plugin.autoExpandSupport.enable -}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-expander
+  name: {{ .Release.Name }}-expander
   labels:
     app.kubernetes.io/component: expander
     {{- include "helm.labels" . | nindent 4 }}
@@ -25,22 +25,22 @@ rules:
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
     verbs: ["get", "list", "update"]
-{{ end -}}
+{{- end }}
 ---
-{{- if .Values.plugin.autoExpandSupport }}
+{{ if .Values.plugin.autoExpandSupport.enable -}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-expander-role
+  name: {{ .Release.Name }}-expander-role
   labels:
     app.kubernetes.io/component: expander
     {{- include "helm.labels" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-csi-zadara-expander-sa
+    name: {{ .Release.Name }}-expander-sa
     namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Release.Name }}-csi-zadara-expander
+  name: {{ .Release.Name }}-expander
   apiGroup: rbac.authorization.k8s.io
-{{ end -}}
+{{- end }}

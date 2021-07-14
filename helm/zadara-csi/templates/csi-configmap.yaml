@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: {{ .Values.namespace }}
-  name: {{ .Release.Name }}-csi-config-map
+  name: {{ .Release.Name }}-config-map
   labels:
     {{- include "helm.labels" . | nindent 4 }}
 data:

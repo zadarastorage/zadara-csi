@@ -2,48 +2,46 @@ apiVersion: v1
 entries:
   one-pod-one-pool:
   - apiVersion: v2
-    created: "2021-07-13T10:51:21.125438035-04:00"
+    created: "2021-07-14T04:20:09.019196097-04:00"
     description: Example deployment using Zadara-CSI NAS & Block volumes, with one-pool
       VPSA
-    digest: a83830b44a5b5da96197c593284863b053fb3922feade7340266f6cfcb7de560
+    digest: cc9817899643da01ba2f59fb7dcb163bf41cabf1bfb9d07e1a0792b2d029a176
     name: one-pod-one-pool
     urls:
-    - https://github.com/zadarastorage/zadara-csi/tree/release/helm/one-pod-one-pool-0.1.0.tgz
+    - one-pod-one-pool-0.1.0.tgz
     version: 0.1.0
   snapshots-v1:
   - apiVersion: v2
     appVersion: 4.1.1
-    created: "2021-07-13T10:51:21.126221084-04:00"
-    description: 'Common infrastructure for v1 CSI Snapshots. Includes snapshots CRDs,
-      cluster-global Snapshot Controller, and RBAC for it. Sources: https://kubernetes-csi.github.io/docs/snapshot-controller.html
-      https://github.com/kubernetes-csi/external-snapshotter/tree/master/deploy/kubernetes/snapshot-controller'
-    digest: 852ed8dbe47d6085ad12744989c561a6159e4eec725848bfc81b1cb30d33692a
+    created: "2021-07-14T04:20:09.020182291-04:00"
+    description: Common infrastructure for v1 CSI Snapshots. Includes snapshots CRDs,
+      cluster-global Snapshot Controller, and RBAC for it.
+    digest: 3ca1b6297e1fa5670256b252ee1d76d893f9f6aa1f35de7a3e3dd4cbdf7e15e0
     kubeVersion: '>= 1.20.0'
     name: snapshots-v1
     type: application
     urls:
-    - https://github.com/zadarastorage/zadara-csi/tree/release/helm/snapshots-v1-4.1.1-v1.tgz
+    - snapshots-v1-4.1.1-v1.tgz
     version: 4.1.1-v1
   snapshots-v1beta1:
   - apiVersion: v2
     appVersion: 3.3.0
-    created: "2021-07-13T10:51:21.126919016-04:00"
-    description: 'Common infrastructure for v1beta1 CSI Snapshots. Includes snapshots
-      CRDs, cluster-global Snapshot Controller, and RBAC for it. Sources: https://kubernetes-csi.github.io/docs/snapshot-controller.html
-      https://github.com/kubernetes-csi/external-snapshotter/tree/master/deploy/kubernetes/snapshot-controller'
-    digest: 64d299ec2e17fbd153da8f12fa0f7050a985084501a1e96e8d914b568ee9f51b
+    created: "2021-07-14T04:20:09.021038364-04:00"
+    description: Common infrastructure for v1beta1 CSI Snapshots. Includes snapshots
+      CRDs, cluster-global Snapshot Controller, and RBAC for it.
+    digest: 2d9ee488bf7f5de5981d377ce7fe4b043211f280b2915840ba28d640ae8e5a13
     kubeVersion: '>= 1.17.0'
     name: snapshots-v1beta1
     type: application
     urls:
-    - https://github.com/zadarastorage/zadara-csi/tree/release/helm/snapshots-v1beta1-3.3.0-v1.tgz
+    - snapshots-v1beta1-3.3.0-v1.tgz
     version: 3.3.0-v1
   zadara-csi:
   - apiVersion: v1
-    appVersion: 1.3.4
-    created: "2021-07-13T10:51:21.128574799-04:00"
+    appVersion: 1.3.5
+    created: "2021-07-14T04:20:09.022821113-04:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
-    digest: 411e5310e195e164daf1946be4e8e568aa91e2793ce5663c1b6bc5a09c2cad53
+    digest: 93dda58849bb9c610c3ed10f5ccf38ee9f211667da40cc8797aa827a2c9d8010
     home: https://github.com/zadarastorage/zadara-csi
     icon: https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v0.14.0/helm/zadara-csi/icon.png
     keywords:
@@ -64,6 +62,6 @@ entries:
       url: https://support.zadarastorage.com/
     name: zadara-csi
     urls:
-    - https://github.com/zadarastorage/zadara-csi/tree/release/helm/zadara-csi-2.1.0.tgz
-    version: 2.1.0
-generated: "2021-07-13T10:51:21.124621025-04:00"
+    - zadara-csi-2.2.0.tgz
+    version: 2.2.0
+generated: "2021-07-14T04:20:09.018174415-04:00"

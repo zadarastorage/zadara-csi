@@ -12,7 +12,7 @@ The chart can be found in [helm/one-pod-one-pool](../helm/one-pod-one-pool) in t
     ```
     $ helm list
     NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-    zadara-csi-driver       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.1.0        1.3.4
+    zadara-csi-driver       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.2.0        1.3.5
     ```
 
 2. Get `provisioner` name of plugin
@@ -283,7 +283,7 @@ Verify creation:
 ```
 $ kubectl get volumesnapshot nas-snapshot-test
 NAME                READYTOUSE   SOURCEPVC         SOURCESNAPSHOTCONTENT   RESTORESIZE   SNAPSHOTCLASS          SNAPSHOTCONTENT                                    CREATIONTIME   AGE
-nas-snapshot-test   true         io-test-nas-pvc                           0             zadara-csi-snapclass   snapcontent-a8b8258a-ed63-46f5-85be-719174374698   3m37s          3m37s
+nas-snapshot-test   true         io-test-nas-pvc                           50Gi          zadara-csi-snapclass   snapcontent-a8b8258a-ed63-46f5-85be-719174374698   3m37s          3m37s
 ```
 
 At this point, a Snapshot will be created on VPSA.
@@ -293,8 +293,8 @@ At this point, a Snapshot will be created on VPSA.
 In `./deploy/examples/nas/clone-snapshot.yaml` we have PVC definition,
 referencing VolumeSnapshot `nas-snapshot-test` that we have created earlier.
 
-Caveat: `resources.requests.storage` must be set.
-However, if requested capacity is smaller, then new PVC will be created with the same capacity as the original one.
+Caveat: `resources.requests.storage` must be the same as in source VolumeSnapshot.
+Kubernetes requires that new PVC request must be greater than or equal in size to the specified VolumeSnapshot data source.
 Setting capacity to a larger value will result in an error (this will be fixed in future versions).
 
 Clone VolumeSnapshot:

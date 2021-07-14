@@ -10,7 +10,7 @@ image:
     # Also available at `registry.connect.redhat.com/zadara/csi`
     repository: zadara/csi-driver
     # -- image tag. Modifying tags is not recommended and may cause compatibility issues.
-    tag: 1.3.4
+    tag: 1.3.5
   provisioner:
     repository: k8s.gcr.io/sig-storage/csi-provisioner
     tag: v2.2.2
@@ -50,15 +50,15 @@ vpsa:
   token: "FAKETOKEN1234567-123"
 
 plugin:
+  # -- controllerReplicas is number of replicas of Controller Deployment (responsible for provisioning and attaching volumes)
+  controllerReplicas: 1
   # -- provisioner is the name of CSI plugin, for use in StorageClass, e.g. `us-west.csi.zadara.com`, `on-prem.csi.zadara.com`
   provisioner: csi.zadara.com
   # -- iscsiMode (`rootfs` or `client-server`) allows to chose a way for the plugin to reach iscsiadm on host
   iscsiMode: "rootfs"
-  # -- healthzPort is used for liveness probes, needs to be unique for each plugin instance in a cluster
-  healthzPort: 9808
-  # -- autoExpandSupport enables periodical sync of capacity between VPSA Volumes with auto-expand enabled and K8s PVCs.
-  # Use `autoExpandSupport: false` to disable
   autoExpandSupport:
+    # -- enable or disable autoExpandSupport: will create a CronJob for periodical capacity sync between VPSA Volumes and K8s PVCs
+    enable: true
     # -- schedule for periodical capacity sync in cron format
     schedule: "*/10 * * * *"
 

@@ -2,13 +2,13 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-controller
+  name: {{ .Release.Name }}-controller
   namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
 spec:
-  replicas: 1  # TODO expose
+  replicas: {{ .Values.plugin.controllerReplicas }}
   selector:
     matchLabels:
       app.kubernetes.io/component: controller
@@ -20,7 +20,7 @@ spec:
         {{- include "helm.labels" . | nindent 8 }}
     spec:
       priorityClassName: system-cluster-critical
-      serviceAccountName: {{ .Release.Name }}-csi-zadara-controller-sa
+      serviceAccountName: {{ .Release.Name }}-controller-sa
       containers:
         #######################################################################
         - name: csi-provisioner
@@ -151,7 +151,7 @@ spec:
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           args:
             - "--csi-address=/csi/csi.sock"
-            - "--health-port={{ .Values.plugin.healthzPort }}"
+            - "--health-port=9808"
             - "--probe-timeout=3s"
             - "--v=5"
           volumeMounts:
@@ -187,7 +187,7 @@ spec:
             failureThreshold: 5
           ports:
             - name: healthz
-              containerPort: {{ .Values.plugin.healthzPort }}
+              containerPort: 9808
               protocol: TCP
           volumeMounts:
             - name: socket-dir
@@ -203,7 +203,7 @@ spec:
           emptyDir: {}
         - name: config-dir
           configMap:
-            name: {{ .Release.Name }}-csi-config-map
+            name: {{ .Release.Name }}-config-map
         {{- if .Values.customTrustedCertificates }}
         - name: cert-dir
           secret:

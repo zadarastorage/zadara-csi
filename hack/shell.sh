@@ -49,10 +49,15 @@ while getopts ":n:r:" opt; do
   esac
 done
 
+SELECTOR="-l publisher=zadara -l app.kubernetes.io/component=$WHAT"
+if [ "$RELEASE" ]; then
+	SELECTOR="$SELECTOR -l release=$RELEASE"
+fi
+
 if [ ! "$NODE" ]; then
-  NS_POD=$($KUBECTL get pods --all-namespaces 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | head -n1 | awk '{print $1, $2}')
+  NS_POD=$($KUBECTL get pods --all-namespaces $SELECTOR 2>&1 | tail -n +2 | grep -v "Evicted" | head -n1 | awk '{print $1, $2}')
 else
-  NS_POD=$($KUBECTL get pods --all-namespaces -o wide 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | grep "${NODE}" | awk '{print $1, $2}')
+  NS_POD=$($KUBECTL get pods --all-namespaces $SELECTOR -o wide 2>&1 | tail -n +2 | grep -v "Evicted" | grep "${NODE}" | awk '{print $1, $2}')
 fi
 
 if [ ! "$NS_POD" ]; then

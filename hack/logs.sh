@@ -23,9 +23,11 @@ function print_usage_and_exit {
     echo "                          If not specified - show logs for the 1st node/controller pod in list"
     echo "    -r helm-release-name: Helm release name as appears in 'helm list'"
     echo "                          Required if you have multiple instances of CSI plugin"
+    echo "    -t N:                 Tail last N lines"
     echo "Examples:"
     echo "  $0 controller -f"
     echo "  $0 controller -r warped-seahorse"
+    echo "  $0 node -t 100"
     echo "  $0 node -n 192.168.0.12 -r warped-seahorse"
     echo "  $0 node -n worker0 -lf"
     exit 1
@@ -45,7 +47,7 @@ case $WHAT in
     ;;
 esac
 
-while getopts ":n:r:lf" opt; do
+while getopts ":n:r:t:lf" opt; do
   case ${opt} in
     l ) LESS=true
       ;;
@@ -56,15 +58,26 @@ while getopts ":n:r:lf" opt; do
       ;;
     r ) RELEASE="${OPTARG}"-
       ;;
+    t ) TAIL="${OPTARG}"
+      ;;
     * ) print_usage_and_exit
       ;;
   esac
 done
 
+SELECTOR="-l publisher=zadara -l app.kubernetes.io/component=$WHAT"
+if [ "$RELEASE" ]; then
+	SELECTOR="$SELECTOR -l release=$RELEASE"
+fi
+
+if [ "$TAIL" ]; then
+	TAIL_ARG="--tail $TAIL"
+fi
+
 if [ ! "$NODE" ]; then
-  NS_POD=$($KUBECTL get pods --all-namespaces 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | head -n1 | awk '{print $1, $2}')
+  NS_POD=$($KUBECTL get pods --all-namespaces $SELECTOR 2>&1 | tail -n +2 | grep -v "Evicted" | head -n1 | awk '{print $1, $2}')
 else
-  NS_POD=$($KUBECTL get pods --all-namespaces -o wide 2>&1 | grep "${RELEASE}"csi-zadara-$WHAT | grep -v "Evicted" | grep "${NODE}" | awk '{print $1, $2}')
+  NS_POD=$($KUBECTL get pods --all-namespaces $SELECTOR -o wide 2>&1 | tail -n +2 | grep -v "Evicted" | grep "${NODE}" | awk '{print $1, $2}')
 fi
 
 if [ ! "$NS_POD" ]; then
@@ -73,7 +86,7 @@ if [ ! "$NS_POD" ]; then
 fi
 
 if [ "$LESS" ]; then
-  $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD -c csi-zadara-driver | less -R $FOLLOW_LESS
+  $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD -c csi-zadara-driver $TAIL_ARG | less -R $FOLLOW_LESS
 else
-  $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD -c csi-zadara-driver
+  $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD -c csi-zadara-driver $TAIL_ARG
 fi

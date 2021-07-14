@@ -2,7 +2,7 @@
 kind: ServiceAccount
 apiVersion: v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-controller-sa
+  name: {{ .Release.Name }}-controller-sa
   namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: controller
@@ -14,7 +14,7 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: {{ .Values.namespace }}
-  name: {{ .Release.Name }}-csi-zadara-leader-election-role
+  name: {{ .Release.Name }}-leader-election-role
 rules:
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
@@ -23,21 +23,21 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-leader-election-binding
+  name: {{ .Release.Name }}-leader-election-binding
   namespace: {{ .Values.namespace }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-csi-zadara-controller-sa
+    name: {{ .Release.Name }}-controller-sa
     namespace: {{ .Values.namespace }}
 roleRef:
   kind: Role
-  name: {{ .Release.Name }}-csi-zadara-leader-election-role
+  name: {{ .Release.Name }}-leader-election-role
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-provisioner-role
+  name: {{ .Release.Name }}-provisioner-role
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
@@ -74,24 +74,24 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-provisioner-binding
+  name: {{ .Release.Name }}-provisioner-binding
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-csi-zadara-controller-sa
+    name: {{ .Release.Name }}-controller-sa
     namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Release.Name }}-csi-zadara-provisioner-role
+  name: {{ .Release.Name }}-provisioner-role
   apiGroup: rbac.authorization.k8s.io
 ---
 # Attacher must be able to work with PVs, nodes and VolumeAttachments
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-attacher-role
+  name: {{ .Release.Name }}-attacher-role
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
@@ -112,23 +112,23 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-attacher-binding
+  name: {{ .Release.Name }}-attacher-binding
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-csi-zadara-controller-sa
+    name: {{ .Release.Name }}-controller-sa
     namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Release.Name }}-csi-zadara-attacher-role
+  name: {{ .Release.Name }}-attacher-role
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-snapshotter-role
+  name: {{ .Release.Name }}-snapshotter-role
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
@@ -149,24 +149,24 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-snapshotter-binding
+  name: {{ .Release.Name }}-snapshotter-binding
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-csi-zadara-controller-sa
+    name: {{ .Release.Name }}-controller-sa
     namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Release.Name }}-csi-zadara-snapshotter-role
+  name: {{ .Release.Name }}-snapshotter-role
   apiGroup: rbac.authorization.k8s.io
 ---
 # Resizer must be able to work with PVCs, PVs, SCs.
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-zadara-resizer
+  name: {{ .Release.Name }}-resizer
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
@@ -190,15 +190,15 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}-csi-resizer-role
+  name: {{ .Release.Name }}-resizer-role
   labels:
     app.kubernetes.io/component: controller
     {{- include "helm.labels" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Release.Name }}-csi-zadara-controller-sa
+    name: {{ .Release.Name }}-controller-sa
     namespace: {{ .Values.namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Release.Name }}-csi-zadara-resizer
+  name: {{ .Release.Name }}-resizer
   apiGroup: rbac.authorization.k8s.io

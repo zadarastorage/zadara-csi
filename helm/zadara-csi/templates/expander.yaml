@@ -1,7 +1,7 @@
 ---
-{{- if .Values.plugin.autoExpandSupport }}
+{{- if .Values.plugin.autoExpandSupport.enable }}
 # Kubernetes 1.8: Beta
-# Kubernetes 1.21: GA
+# Kubernetes 1.21: GA (no changes from beta)
 {{- if .Capabilities.APIVersions.Has "batch/v1/CronJob" }}
 apiVersion: batch/v1
 {{- else }}
@@ -9,7 +9,7 @@ apiVersion: batch/v1beta1
 {{- end }}
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-csi-autoexpand-sync
+  name: {{ .Release.Name }}-autoexpand-sync
   namespace: {{ .Values.namespace }}
   labels:
     app.kubernetes.io/component: expander
@@ -42,7 +42,7 @@ spec:
           restartPolicy: Never
           # Pod will be killed, if not completed in activeDeadlineSeconds
           activeDeadlineSeconds: 60
-          serviceAccountName: {{ .Release.Name }}-csi-zadara-expander-sa
+          serviceAccountName: {{ .Release.Name }}-expander-sa
           containers:
             - name: csi-zadara-expander
               image: "{{ .Values.image.csiDriver.repository }}:{{ .Values.image.csiDriver.tag }}"
@@ -68,7 +68,7 @@ spec:
           volumes:
             - name: config-dir
               configMap:
-                name: {{ .Release.Name }}-csi-config-map
+                name: {{ .Release.Name }}-config-map
             {{- if .Values.customTrustedCertificates }}
             - name: cert-dir
               secret:

@@ -55,7 +55,7 @@ Helm Chart status:
 ```
 $ helm list
 NAME             NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.1.0        1.3.4
+zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.2.0        1.3.5
 
 $ helm status zadara-csi
 NAME: zadara-csi
@@ -82,10 +82,10 @@ kubectl get pods -n kube-system -l provisioner=csi.zadara.com
 Pods status
 ```
 $ kubectl get pods -n kube-system -l provisioner=csi.zadara.com
-NAME                                                READY   STATUS      RESTARTS   AGE
-zadara-csi-csi-autoexpand-sync-27091180-mk5hv       0/1     Completed   0          2m46s
-zadara-csi-csi-zadara-controller-84c8884f5c-79v26   6/6     Running     0          6m3s
-zadara-csi-csi-zadara-node-58mb6                    3/3     Running     0          6m3s
+NAME                                            READY   STATUS      RESTARTS   AGE
+zadara-csi-autoexpand-sync-27091180-mk5hv       0/1     Completed   0          2m46s
+zadara-csi-controller-84c8884f5c-79v26          6/6     Running     0          6m3s
+zadara-csi-node-58mb6                           3/3     Running     0          6m3s
 ```
 
 - `node` pods belong to a DaemonSet, meaning that one Pod will be created for each K8s Node
@@ -109,9 +109,9 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | namespace | string | `"kube-system"` | namespace where all CSI pods will run |
-| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"1.3.4"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
+| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"1.3.5"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
 | image.csiDriver.repository | string | `"zadara/csi-driver"` | repository to pull image from, Dockerhub by default. Also available at `registry.connect.redhat.com/zadara/csi` |
-| image.csiDriver.tag | string | `"1.3.4"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
+| image.csiDriver.tag | string | `"1.3.5"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
 | image.provisioner.repository | string | `"k8s.gcr.io/sig-storage/csi-provisioner"` |  |
 | image.provisioner.tag | string | `"v2.2.2"` |  |
 | image.attacher.repository | string | `"k8s.gcr.io/sig-storage/csi-attacher"` |  |
@@ -131,10 +131,10 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 | vpsa.useTLS | bool | `true` | useTLS defines whether to use TLS (HTTPS) to access VPSA |
 | vpsa.verifyTLS | bool | `true` | verifyTLS defines whether to verify TLS certificate when using HTTPS |
 | vpsa.token | string | `"FAKETOKEN1234567-123"` | token to access VPSA |
+| plugin.controllerReplicas | int | `1` | controllerReplicas is number of replicas of Controller Deployment (responsible for provisioning and attaching volumes) |
 | plugin.provisioner | string | `"csi.zadara.com"` | provisioner is the name of CSI plugin, for use in StorageClass, e.g. `us-west.csi.zadara.com`, `on-prem.csi.zadara.com` |
 | plugin.iscsiMode | string | `"rootfs"` | iscsiMode (`rootfs` or `client-server`) allows to chose a way for the plugin to reach iscsiadm on host |
-| plugin.healthzPort | int | `9808` | healthzPort is used for liveness probes, needs to be unique for each plugin instance in a cluster |
-| plugin.autoExpandSupport | object | `{"schedule":"*/10 * * * *"}` | autoExpandSupport enables periodical sync of capacity between VPSA Volumes with auto-expand enabled and K8s PVCs. Use `autoExpandSupport: false` to disable |
+| plugin.autoExpandSupport.enable | bool | `true` | enable or disable autoExpandSupport: will create a CronJob for periodical capacity sync between VPSA Volumes and K8s PVCs |
 | plugin.autoExpandSupport.schedule | string | `"*/10 * * * *"` | schedule for periodical capacity sync in cron format |
 | snapshots | object | `{"apiVersion":"auto"}` | snapshots support: requires common one-per-cluster snapshots controller. Install from `helm/snapshots-v1[beta1]` chart in this repo. More info: https://kubernetes.io/blog/2020/12/10/kubernetes-1.20-volume-snapshot-moves-to-ga/ |
 | snapshots.apiVersion | string | `"auto"` | apiVersion for CSI Snapshots: `v1beta1`, `v1` (requires K8s >=1.20) or "auto" (based on installed CRDs and k8s version) |
@@ -171,7 +171,7 @@ $ openssl x509 -in CA.crt -noout -text | grep -e 'X509v3 Basic Constraints' -e '
 To verify, check `csi-zadara-driver` container logs (in any CSI pod), for example:
 
 ```
-$ kubectl logs -n kube-system zadara-csi-csi-zadara-controller-bd4c4858-z8jkd csi-zadara-driver
+$ kubectl logs -n kube-system zadara-csi-controller-bd4c4858-z8jkd csi-zadara-driver
 Jul 11 10:22:18 [INFO] Executing pre-start actions...
 Jul 11 10:22:18 [INFO] Add trusted CA certificates:
 zadara-csi-tls.crt

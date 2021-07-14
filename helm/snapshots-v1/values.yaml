@@ -1,4 +1,4 @@
-
+---
 # namespace where snapshot Controller will run
 namespace: kube-system
 
