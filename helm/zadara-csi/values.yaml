@@ -10,7 +10,7 @@ image:
     # Also available at `registry.connect.redhat.com/zadara/csi`
     repository: zadara/csi-driver
     # -- image tag. Modifying tags is not recommended and may cause compatibility issues.
-    tag: 1.3.5
+    tag: 1.3.6
   provisioner:
     repository: k8s.gcr.io/sig-storage/csi-provisioner
     tag: v2.2.2
@@ -56,6 +56,9 @@ plugin:
   provisioner: csi.zadara.com
   # -- iscsiMode (`rootfs` or `client-server`) allows to chose a way for the plugin to reach iscsiadm on host
   iscsiMode: "rootfs"
+  # -- healthzPort is used for Node liveness probe, needs to be unique for each plugin instance in a cluster
+  # (Node pod requires `hostNetwork` for iSCSI support, thus using ports on the Node).
+  healthzPort: 9808
   autoExpandSupport:
     # -- enable or disable autoExpandSupport: will create a CronJob for periodical capacity sync between VPSA Volumes and K8s PVCs
     enable: true

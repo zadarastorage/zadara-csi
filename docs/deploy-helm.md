@@ -1,7 +1,28 @@
 
 ## Deploying zadara-csi plugin using Helm charts
 
-Currently, Helm charts are only available locally, in `helm/` subdirectory of this repository.
+Add Helm repository:
+```
+$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release/helm
+$ helm repo update
+```
+
+```
+$ helm search repo
+NAME                                    CHART VERSION   APP VERSION     DESCRIPTION
+zadara-csi-helm/one-pod-one-pool        1.3.6                           Example deployment using Zadara-CSI NAS & Block...
+zadara-csi-helm/snapshots-v1            1.3.6+zadara.1  1.3.6           Common infrastructure for v1 CSI Snapshots. Inc...
+zadara-csi-helm/snapshots-v1beta1       1.3.6+zadara.1  1.3.6           Common infrastructure for v1beta1 CSI Snapshots...
+zadara-csi-helm/zadara-csi              1.3.6           1.3.6           Container Storage Interface (CSI) driver for Za...
+```
+
+Alternatively, Helm charts are available locally, in `helm/` subdirectory of this repository
+(replace `zadara-csi-helm/` with `./helm/` in Helm commands).
+Or you can add a repo for a specific version (if available):
+```
+$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/master/helm
+$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v1.3.6/helm
+```
 
 All examples assume the repository root as current working directory:
 ```
@@ -55,7 +76,7 @@ Helm Chart status:
 ```
 $ helm list
 NAME             NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.2.0        1.3.5
+zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.2.1        1.3.6
 
 $ helm status zadara-csi
 NAME: zadara-csi
@@ -109,9 +130,9 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | namespace | string | `"kube-system"` | namespace where all CSI pods will run |
-| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"1.3.5"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
+| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"1.3.6"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
 | image.csiDriver.repository | string | `"zadara/csi-driver"` | repository to pull image from, Dockerhub by default. Also available at `registry.connect.redhat.com/zadara/csi` |
-| image.csiDriver.tag | string | `"1.3.5"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
+| image.csiDriver.tag | string | `"1.3.6"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
 | image.provisioner.repository | string | `"k8s.gcr.io/sig-storage/csi-provisioner"` |  |
 | image.provisioner.tag | string | `"v2.2.2"` |  |
 | image.attacher.repository | string | `"k8s.gcr.io/sig-storage/csi-attacher"` |  |
@@ -134,6 +155,7 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 | plugin.controllerReplicas | int | `1` | controllerReplicas is number of replicas of Controller Deployment (responsible for provisioning and attaching volumes) |
 | plugin.provisioner | string | `"csi.zadara.com"` | provisioner is the name of CSI plugin, for use in StorageClass, e.g. `us-west.csi.zadara.com`, `on-prem.csi.zadara.com` |
 | plugin.iscsiMode | string | `"rootfs"` | iscsiMode (`rootfs` or `client-server`) allows to chose a way for the plugin to reach iscsiadm on host |
+| plugin.healthzPort | int | `9808` | healthzPort is used for Node liveness probe, needs to be unique for each plugin instance in a cluster (Node pod requires `hostNetwork` for iSCSI support, thus using ports on the Node). |
 | plugin.autoExpandSupport.enable | bool | `true` | enable or disable autoExpandSupport: will create a CronJob for periodical capacity sync between VPSA Volumes and K8s PVCs |
 | plugin.autoExpandSupport.schedule | string | `"*/10 * * * *"` | schedule for periodical capacity sync in cron format |
 | snapshots | object | `{"apiVersion":"auto"}` | snapshots support: requires common one-per-cluster snapshots controller. Install from `helm/snapshots-v1[beta1]` chart in this repo. More info: https://kubernetes.io/blog/2020/12/10/kubernetes-1.20-volume-snapshot-moves-to-ga/ |
@@ -156,14 +178,14 @@ CSI Driver can be configured to use HTTPS with custom certificate (e.g. self-sig
 
 You can either reference a Secret, or provide a certificate directly in `values.yaml` (a Secret will be created automatically).
 
-Before proceeding, please make sure that the certificate has `X509v3 Basic Constraints: CA: TRUE`.
-To decode a certificate you can run:
+Before proceeding, please make sure that `X509v3 Basic Constraints: CA: TRUE` is present for at least one certificate in the chain.
+To decode a certificate chain you can run:
 ```
-openssl x509 -in <CERTIFICATE> -noout -text
+openssl crl2pkcs7 -nocrl -certfile <CERTIFICATE> | openssl pkcs7 -print_certs -text -noout
 ```
 For example:
 ```
-$ openssl x509 -in CA.crt -noout -text | grep -e 'X509v3 Basic Constraints' -e 'CA:'
+$ openssl crl2pkcs7 -nocrl -certfile CA.crt | openssl pkcs7 -print_certs -text -noout | grep -e 'X509v3 Basic Constraints' -e 'CA:'
             X509v3 Basic Constraints:
                 CA:TRUE
 ```

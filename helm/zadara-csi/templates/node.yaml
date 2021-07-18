@@ -20,6 +20,7 @@ spec:
     spec:
       priorityClassName: system-node-critical
       serviceAccountName: {{ .Release.Name }}-node-sa
+      hostNetwork: true
       containers:
         #######################################################################
         - name: csi-node-driver-registrar
@@ -45,7 +46,7 @@ spec:
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
           args:
             - "--csi-address=/csi/csi.sock"
-            - "--health-port=9808"
+            - "--health-port={{ .Values.plugin.healthzPort }}"
             - "--probe-timeout=3s"
             - "--v=5"
           volumeMounts:
@@ -80,7 +81,7 @@ spec:
             failureThreshold: 5
           ports:
             - name: healthz
-              containerPort: 9808
+              containerPort: {{ .Values.plugin.healthzPort }}
               protocol: TCP
           securityContext:
             privileged: true

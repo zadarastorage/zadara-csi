@@ -128,7 +128,7 @@ imagePullSecrets:
 Install the chart:
 
 ```
-$ helm install csi-snapshots-v1 -f ./my_values.yaml ./helm/snapshots-v1
+$ helm install csi-snapshots-v1 -f ./my_values.yaml zadara-csi-helm/snapshots-v1
 ```
 
 

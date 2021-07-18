@@ -14,7 +14,7 @@ and Zadara VPSA Storage Array & VPSA All-Flash, for a dynamic provisioning of pe
 
 - [Prerequisites](#prerequisites)
     - [Nodes requirements](#nodes-requirements)
-        - [Supported Linux distributions:](#supported-linux-distributions)
+        - [Supported Linux distributions](#supported-linux-distributions)
         - [iSCSI initiator tools](#iscsi-initiator-tools)
         - [Node iSCSI Connectivity](#node-iscsi-connectivity)
             - [Running iscsiadm directly on host (default)](#running-iscsiadm-directly-on-host-default)
@@ -38,10 +38,10 @@ and Zadara VPSA Storage Array & VPSA All-Flash, for a dynamic provisioning of pe
 
 ### Nodes requirements
 
-#### Supported Linux distributions:
+#### Supported Linux distributions
 - Ubuntu 18.04 and later
-- RHEL 7.X
-- CentOS 7.X
+- RHEL 7, 8
+- CentOS 7, 8
 - Amazon Linux
 
 #### iSCSI initiator tools
@@ -158,7 +158,7 @@ and [Snapshot Controller](https://kubernetes-csi.github.io/docs/snapshot-control
 
     Example for `v1`:
     ```
-    $ helm install csi-snapshots-v1 ./helm/snapshots-v1
+    $ helm install csi-snapshots-v1 zadara-csi-helm/snapshots-v1
 
     NAME: csi-snapshots-v1
     LAST DEPLOYED: Mon Jul  5 16:45:23 2021
@@ -208,6 +208,8 @@ Server records and volumes attachments are managed dynamically by the CSI provid
 In case a manual configuration cleanup is required, disconnect the active iSCSI sessions to the VPSA before spinning up a new instance of the provider.
 
 ### Troubleshooting
+
+[Troubleshooting guide](troubleshooting.md)
 
 The most common problems:
 - Invalid VPSA credentials (url, token).
