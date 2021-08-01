@@ -1,3 +1,37 @@
+## v1.3.6
+
+Support for new CSI Snapshots API and Helm Chart repository.
+
+### Enhancements
+- Support `snapshot.storage.k8s.io/v1` [API](https://kubernetes.io/blog/2020/12/10/kubernetes-1.20-volume-snapshot-moves-to-ga/)
+  - `v1beta1` is also supported for K8s <1.20 users
+  - provide helm charts for common Snapshot Controller
+- Support HTTPS insecure mode
+- Allow [custom CA certificate](https://github.com/zadarastorage/zadara-csi/blob/release/docs/deploy-helm.md#adding-trusted-certificates) to be used for VPSA connectivity
+- Publish helm charts repository
+- Support [custom docker registry configuration](https://github.com/zadarastorage/zadara-csi/blob/release/docs/local-registry.md), including `pullImageSecrets`
+- Make number of `zadara-csi-controller` replicas configurable
+
+### Documentation
+- Add [troubleshooting tips](https://github.com/zadarastorage/zadara-csi/blob/release/docs/troubleshooting.md)
+- Improve and streamline [usage examples](https://github.com/zadarastorage/zadara-csi/blob/release/docs/examples.md), including storage+workload `one-pod-one-pool` example.
+  - Add examples for [expanding PVC](https://github.com/zadarastorage/zadara-csi/blob/release/docs/examples.md#resize-persistent-volume-claim)
+  - Clarify [configuring volume options](https://github.com/zadarastorage/zadara-csi/blob/release/docs/examples.md#configuring-volume-options)
+- Update [installation instructions](https://github.com/zadarastorage/zadara-csi#snapshot-controller) for common `snapshot.storage.k8s.io/v1` API components
+- More detailed [reference](https://github.com/zadarastorage/zadara-csi/blob/release/docs/deploy-helm.md#values-explained) for `values.yaml`
+- Add more how-to-verify instructions
+
+### Changes
+- Update deprecated `v1beta1` K8s APIs
+- Update sidecar container versions. [Full list](https://github.com/zadarastorage/zadara-csi/blob/release/helm/zadara-csi/values.yaml#L5)
+- Remove Helm 2 support
+
+### Bug Fixes
+- Fix VPSA connectivity issues in IPv6 environment
+- Fix  disabling `autoExpandSupport`
+- Show capacity for VolumeSnapshots
+- Remove repetitions from generated names
+
 ## v1.2.6
 
 Zadara CSI Driver now [certified for RedHat OpenShift](https://catalog.redhat.com/software/containers/zadara/csi/5f0ef39369aea31642b7b0af)
