@@ -1,3 +1,18 @@
+## v1.3.7
+
+Faster failover for stateful pods.
+
+### Enhancements
+- Additional `stonith` component to evacuate StatefulSet Pods from unreachable Nodes, for faster failover.
+- Re-add support for `v1alpha1` VolumeSnapshots API (deprecated, use at your own risk)
+
+### Documentation
+
+### Changes
+
+### Bug Fixes
+- Fix iSCSI sessions teardown in IPv6 environment
+
 ## v1.3.6
 
 Support for new CSI Snapshots API and Helm Chart repository.

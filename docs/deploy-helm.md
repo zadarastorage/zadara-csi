@@ -145,7 +145,7 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 | image.nodeDriverRegistrar.tag | string | `"v2.2.0"` |  |
 | image.snapshotter.repository | string | `"k8s.gcr.io/sig-storage/csi-snapshotter"` |  |
 | image.snapshotter.tagV1 | string | `"v4.1.1"` | `tagV1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`) |
-| image.snapshotter.tagV1Beta1 | string | `"v3.0.3"` | `tagV1Beta1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`) |
+| image.snapshotter.tagV1Beta1 | string | `"v3.0.3"` | `tagV1Beta1` will be used with `snapshots.apiVersion` `v1beta1` (or when `auto` resolves to `v1beta1`) |
 | image.snapshotter.tagV1Alpha1 | string | `"v1.2.2"` | DEPRECATED: `tagV1Alpha1` will be used with `snapshots.apiVersion` `v1alpha1`. |
 | imagePullSecrets | list | `[]` | imagePullSecrets: credentials for private registry. A list of names of Secrets in the same namespace. Create `imagePullSecrets`: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | imagePullPolicy | string | `"IfNotPresent"` | imagePullPolicy *for all images* used by this chart |

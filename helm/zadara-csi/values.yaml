@@ -31,7 +31,7 @@ image:
     repository: k8s.gcr.io/sig-storage/csi-snapshotter
     # -- `tagV1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`)
     tagV1: v4.1.1
-    # -- `tagV1Beta1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`)
+    # -- `tagV1Beta1` will be used with `snapshots.apiVersion` `v1beta1` (or when `auto` resolves to `v1beta1`)
     tagV1Beta1: v3.0.3
     # -- DEPRECATED: `tagV1Alpha1` will be used with `snapshots.apiVersion` `v1alpha1`.
     tagV1Alpha1: v1.2.2
