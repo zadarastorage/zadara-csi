@@ -10,10 +10,10 @@ $ helm repo update
 ```
 $ helm search repo
 NAME                                    CHART VERSION   APP VERSION     DESCRIPTION
-zadara-csi-helm/one-pod-one-pool        1.3.6                           Example deployment using Zadara-CSI NAS & Block...
-zadara-csi-helm/snapshots-v1            1.3.6+zadara.1  1.3.6           Common infrastructure for v1 CSI Snapshots. Inc...
-zadara-csi-helm/snapshots-v1beta1       1.3.6+zadara.1  1.3.6           Common infrastructure for v1beta1 CSI Snapshots...
-zadara-csi-helm/zadara-csi              1.3.6           1.3.6           Container Storage Interface (CSI) driver for Za...
+zadara-csi-helm/one-pod-one-pool        0.1.0                           Example deployment using Zadara-CSI NAS & Block...
+zadara-csi-helm/snapshots-v1            4.1.1+zadara.1  4.1.1           Common infrastructure for v1 CSI Snapshots. Inc...
+zadara-csi-helm/snapshots-v1beta1       3.3.0+zadara.1  3.3.0           Common infrastructure for v1beta1 CSI Snapshots...
+zadara-csi-helm/zadara-csi              2.3.0           1.3.7           Container Storage Interface (CSI) driver for Za...
 ```
 
 Alternatively, Helm charts are available locally, in `helm/` subdirectory of this repository
@@ -21,7 +21,7 @@ Alternatively, Helm charts are available locally, in `helm/` subdirectory of thi
 Or you can add a repo for a specific version (if available):
 ```
 $ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/master/helm
-$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v1.3.6/helm
+$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v1.3.7/helm
 ```
 
 All examples assume the repository root as current working directory:
@@ -76,7 +76,7 @@ Helm Chart status:
 ```
 $ helm list
 NAME             NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.2.1        1.3.6
+zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.3.0        1.3.7
 
 $ helm status zadara-csi
 NAME: zadara-csi
@@ -130,11 +130,11 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | namespace | string | `"kube-system"` | namespace where all CSI pods will run |
-| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"1.3.6"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
+| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"1.3.7"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
 | image.csiDriver.repository | string | `"zadara/csi-driver"` | repository to pull image from, Dockerhub by default. Also available at `registry.connect.redhat.com/zadara/csi` |
-| image.csiDriver.tag | string | `"1.3.6"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
+| image.csiDriver.tag | string | `"1.3.7"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
 | image.provisioner.repository | string | `"k8s.gcr.io/sig-storage/csi-provisioner"` |  |
-| image.provisioner.tag | string | `"v2.2.2"` |  |
+| image.provisioner.tag | string | `"v2.2.2"` | last tag that supports restoring DEPRECATED v1alpha1 snapshots is v1.4.0 |
 | image.attacher.repository | string | `"k8s.gcr.io/sig-storage/csi-attacher"` |  |
 | image.attacher.tag | string | `"v3.2.1"` |  |
 | image.resizer.repository | string | `"k8s.gcr.io/sig-storage/csi-resizer"` |  |
@@ -146,6 +146,7 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 | image.snapshotter.repository | string | `"k8s.gcr.io/sig-storage/csi-snapshotter"` |  |
 | image.snapshotter.tagV1 | string | `"v4.1.1"` | `tagV1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`) |
 | image.snapshotter.tagV1Beta1 | string | `"v3.0.3"` | `tagV1Beta1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`) |
+| image.snapshotter.tagV1Alpha1 | string | `"v1.2.2"` | DEPRECATED: `tagV1Alpha1` will be used with `snapshots.apiVersion` `v1alpha1`. |
 | imagePullSecrets | list | `[]` | imagePullSecrets: credentials for private registry. A list of names of Secrets in the same namespace. Create `imagePullSecrets`: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | imagePullPolicy | string | `"IfNotPresent"` | imagePullPolicy *for all images* used by this chart |
 | vpsa.url | string | `"example.zadaravpsa.com"` | url or IP of VPSA provisioning Volumes, without "http(s)://" prefix |
@@ -158,8 +159,12 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 | plugin.healthzPort | int | `9808` | healthzPort is used for Node liveness probe, needs to be unique for each plugin instance in a cluster (Node pod requires `hostNetwork` for iSCSI support, thus using ports on the Node). |
 | plugin.autoExpandSupport.enable | bool | `true` | enable or disable autoExpandSupport: will create a CronJob for periodical capacity sync between VPSA Volumes and K8s PVCs |
 | plugin.autoExpandSupport.schedule | string | `"*/10 * * * *"` | schedule for periodical capacity sync in cron format |
+| plugin.stonith.enable | bool | `true` | enable or disable STONITH for fast failover for stateful Pods. Limited to Pods using Persistent Volume Claims provisioned by this CSI driver. |
+| plugin.stonith.probePeriod | string | `"2s"` | When Node is not ready, STONITH will probe it with this interval. Format: [time.Duration](https://pkg.go.dev/time#ParseDuration) e.g. 10s, 1m, 500ms |
+| plugin.stonith.probeTimeout | string | `"15s"` | STONITH will start evacuating pods if Node is still not ready after this timeout.  Format: [time.Duration](https://pkg.go.dev/time#ParseDuration) e.g. 10s, 1m, 500ms |
+| plugin.stonith.selfEvacuateTimeoutSeconds | int | `15` | selfEvacuateTimeoutSeconds determines `tolerations` timeouts for STONITH's own Pod. |
 | snapshots | object | `{"apiVersion":"auto"}` | snapshots support: requires common one-per-cluster snapshots controller. Install from `helm/snapshots-v1[beta1]` chart in this repo. More info: https://kubernetes.io/blog/2020/12/10/kubernetes-1.20-volume-snapshot-moves-to-ga/ |
-| snapshots.apiVersion | string | `"auto"` | apiVersion for CSI Snapshots: `v1beta1`, `v1` (requires K8s >=1.20) or "auto" (based on installed CRDs and k8s version) |
+| snapshots.apiVersion | string | `"auto"` | apiVersion for CSI Snapshots: `v1beta1`, `v1` (requires K8s >=1.20) or "auto" (based on installed CRDs and k8s version) Deprecated option: `v1alpha1`, requires `RemoveSelfLink=false` feature gate. |
 | labels | object | `{"stage":"production"}` | labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary 'key: "value"' pairs |
 | customTrustedCertificates | object | `{}` | additional customTrustedCertificates to install in CSI pods. Use either `existingSecret` or `plainText`. |
 

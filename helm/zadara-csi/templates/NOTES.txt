@@ -18,13 +18,13 @@ vpsa:
 EOF
 {{- end -}}
 
-{{- if and (ne .Values.snapshots.apiVersion "v1beta1") (ne .Values.snapshots.apiVersion "v1") (ne .Values.snapshots.apiVersion "auto") -}}
+{{- if and (ne .Values.snapshots.apiVersion "v1alpha1") (ne .Values.snapshots.apiVersion "v1beta1") (ne .Values.snapshots.apiVersion "v1") (ne .Values.snapshots.apiVersion "auto") -}}
 {{ $installSuccessful = false }}
 ##############################################################################
 ####   ERROR: Invalid snapshots.apiVersion                                ####
 ##############################################################################
 Invalid value of snapshots.apiVersion: {{ .Values.snapshots.apiVersion }}
-Allowed values are "v1beta1", "v1" or "auto".
+Allowed values are "v1alpha1", "v1beta1", "v1" or "auto".
 {{- end -}}
 
 {{ $snapshotsGroupVersion := printf "snapshot.storage.k8s.io/%s" (include "snapshots.version" .) }}

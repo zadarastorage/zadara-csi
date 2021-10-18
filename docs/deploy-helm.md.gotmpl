@@ -10,10 +10,10 @@ $ helm repo update
 ```
 $ helm search repo
 NAME                                    CHART VERSION   APP VERSION     DESCRIPTION
-zadara-csi-helm/one-pod-one-pool        1.3.6                           Example deployment using Zadara-CSI NAS & Block...
-zadara-csi-helm/snapshots-v1            1.3.6+zadara.1  1.3.6           Common infrastructure for v1 CSI Snapshots. Inc...
-zadara-csi-helm/snapshots-v1beta1       1.3.6+zadara.1  1.3.6           Common infrastructure for v1beta1 CSI Snapshots...
-zadara-csi-helm/zadara-csi              1.3.6           1.3.6           Container Storage Interface (CSI) driver for Za...
+zadara-csi-helm/one-pod-one-pool        0.1.0                           Example deployment using Zadara-CSI NAS & Block...
+zadara-csi-helm/snapshots-v1            4.1.1+zadara.1  4.1.1           Common infrastructure for v1 CSI Snapshots. Inc...
+zadara-csi-helm/snapshots-v1beta1       3.3.0+zadara.1  3.3.0           Common infrastructure for v1beta1 CSI Snapshots...
+zadara-csi-helm/zadara-csi              2.3.0           1.3.7           Container Storage Interface (CSI) driver for Za...
 ```
 
 Alternatively, Helm charts are available locally, in `helm/` subdirectory of this repository
@@ -21,7 +21,7 @@ Alternatively, Helm charts are available locally, in `helm/` subdirectory of thi
 Or you can add a repo for a specific version (if available):
 ```
 $ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/master/helm
-$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v1.3.6/helm
+$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v1.3.7/helm
 ```
 
 All examples assume the repository root as current working directory:
@@ -76,7 +76,7 @@ Helm Chart status:
 ```
 $ helm list
 NAME             NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.2.1        1.3.6
+zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.3.0        1.3.7
 
 $ helm status zadara-csi
 NAME: zadara-csi

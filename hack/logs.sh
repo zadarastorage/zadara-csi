@@ -16,7 +16,7 @@ fi
 
 function print_usage_and_exit {
     echo "Display logs of a Zadara-CSI Pod"
-    echo "Usage: $0 <node|controller> [-l] [-f] [-n k8s-node] [-r helm-release-name]"
+    echo "Usage: $0 <node|controller|expander|stonith> [-l] [-f] [-n k8s-node] [-r helm-release-name]"
     echo "    -l:                   Pipe to 'less' (can be combined with -f)"
     echo "    -f:                   Use 'follow' option"
     echo "    -n k8s-node:          Node name as appears in 'kubectl get nodes', or IP"
@@ -41,6 +41,9 @@ WHAT=$1
 shift
 case $WHAT in
 "node" | "controller")
+	CONTAINER_ARG="-c csi-zadara-driver"
+    ;;
+"expander" | "stonith")
     ;;
 *)
     print_usage_and_exit
@@ -86,7 +89,7 @@ if [ ! "$NS_POD" ]; then
 fi
 
 if [ "$LESS" ]; then
-  $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD -c csi-zadara-driver $TAIL_ARG | less -R $FOLLOW_LESS
+  $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD $CONTAINER_ARG $TAIL_ARG | less -R $FOLLOW_LESS
 else
-  $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD -c csi-zadara-driver $TAIL_ARG
+  $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD $CONTAINER_ARG $TAIL_ARG
 fi

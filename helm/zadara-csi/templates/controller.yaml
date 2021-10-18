@@ -26,6 +26,18 @@ spec:
         - name: csi-provisioner
           image: "{{ .Values.image.provisioner.repository }}:{{ .Values.image.provisioner.tag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          {{- $snapshotsVersion := include "snapshots.version" . }}
+          {{- if eq $snapshotsVersion "v1alpha1" }}
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--enable-leader-election"
+            - "--leader-election-type=leases"
+            - "--timeout=180s"
+            - "--v=5"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          {{- else }}
           args:
             - "--csi-address=$(ADDRESS)"
             - "--leader-election"
@@ -48,6 +60,7 @@ spec:
             - containerPort: 8080
               name: http-endpoint
               protocol: TCP
+          {{- end }}
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
@@ -86,8 +99,13 @@ spec:
             - name: ADDRESS
               value: /csi/csi.sock
           {{- $snapshotsVersion := include "snapshots.version" . }}
+          {{- if or (eq $snapshotsVersion "v1alpha1") (eq $snapshotsVersion "v1beta1") }}
+          {{- if eq $snapshotsVersion "v1alpha1" }}
+          image: "{{ .Values.image.snapshotter.repository }}:{{ .Values.image.snapshotter.tagV1Alpha1 }}"
+          {{- end }}
           {{- if eq $snapshotsVersion "v1beta1" }}
           image: "{{ .Values.image.snapshotter.repository }}:{{ .Values.image.snapshotter.tagV1Beta1 }}"
+          {{- end }}
           args:
           - "--csi-address=$(ADDRESS)"
           - "--leader-election"
