@@ -12,7 +12,7 @@ The chart can be found in [helm/one-pod-one-pool](../helm/one-pod-one-pool) in t
     ```
     $ helm list
     NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-    zadara-csi-driver       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.3.0        1.3.7
+    zadara-csi-driver       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.3.1        1.3.8
     ```
 
 2. Get `provisioner` name of plugin

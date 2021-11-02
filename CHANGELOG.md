@@ -1,3 +1,14 @@
+## v1.3.8
+
+### Enhancements
+
+### Documentation
+
+### Changes
+
+### Bug Fixes
+- Fix arguments parsing in `stonith` container
+
 ## v1.3.7
 
 Faster failover for stateful pods.
