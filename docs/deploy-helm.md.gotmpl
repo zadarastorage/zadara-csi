@@ -13,7 +13,7 @@ NAME                                    CHART VERSION   APP VERSION     DESCRIPT
 zadara-csi-helm/one-pod-one-pool        0.1.0                           Example deployment using Zadara-CSI NAS & Block...
 zadara-csi-helm/snapshots-v1            4.1.1+zadara.1  4.1.1           Common infrastructure for v1 CSI Snapshots. Inc...
 zadara-csi-helm/snapshots-v1beta1       3.3.0+zadara.1  3.3.0           Common infrastructure for v1beta1 CSI Snapshots...
-zadara-csi-helm/zadara-csi              2.3.1           1.3.8           Container Storage Interface (CSI) driver for Za...
+zadara-csi-helm/zadara-csi              2.3.2           1.3.8           Container Storage Interface (CSI) driver for Za...
 ```
 
 Alternatively, Helm charts are available locally, in `helm/` subdirectory of this repository
@@ -76,7 +76,7 @@ Helm Chart status:
 ```
 $ helm list
 NAME             NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.3.1        1.3.8
+zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.3.2        1.3.8
 
 $ helm status zadara-csi
 NAME: zadara-csi

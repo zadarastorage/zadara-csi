@@ -58,10 +58,24 @@ spec:
           volumeMounts:
             - name: config-dir
               mountPath: /etc/csi
+            {{- if .Values.customTrustedCertificates }}
+            - name: cert-dir
+              mountPath: /etc/pki/ca-trust/source/anchors
+            {{- end }}
       volumes:
         - name: config-dir
           configMap:
             name: {{ .Release.Name }}-config-map
+        {{- if .Values.customTrustedCertificates }}
+        - name: cert-dir
+          secret:
+        {{- if .Values.customTrustedCertificates.plainText }}
+            secretName: {{ .Release.Name }}-custom-tls-cert
+        {{- end }}
+        {{- if .Values.customTrustedCertificates.existingSecret }}
+            secretName: {{ .Values.customTrustedCertificates.existingSecret }}
+        {{- end }}
+        {{- end }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- range .Values.imagePullSecrets }}
