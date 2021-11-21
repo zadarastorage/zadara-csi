@@ -13,7 +13,7 @@ NAME                                    CHART VERSION   APP VERSION     DESCRIPT
 zadara-csi-helm/one-pod-one-pool        0.1.0                           Example deployment using Zadara-CSI NAS & Block...
 zadara-csi-helm/snapshots-v1            4.1.1+zadara.1  4.1.1           Common infrastructure for v1 CSI Snapshots. Inc...
 zadara-csi-helm/snapshots-v1beta1       3.3.0+zadara.1  3.3.0           Common infrastructure for v1beta1 CSI Snapshots...
-zadara-csi-helm/zadara-csi              2.3.2           1.3.8           Container Storage Interface (CSI) driver for Za...
+zadara-csi-helm/zadara-csi              2.3.2           1.3.9           Container Storage Interface (CSI) driver for Za...
 ```
 
 Alternatively, Helm charts are available locally, in `helm/` subdirectory of this repository
@@ -21,7 +21,7 @@ Alternatively, Helm charts are available locally, in `helm/` subdirectory of thi
 Or you can add a repo for a specific version (if available):
 ```
 $ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/master/helm
-$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v1.3.8/helm
+$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v1.3.9/helm
 ```
 
 All examples assume the repository root as current working directory:
@@ -76,7 +76,7 @@ Helm Chart status:
 ```
 $ helm list
 NAME             NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION
-zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.3.2        1.3.8
+zadara-csi       default         1               2021-07-04 11:29:08.023368123 +0300 IDT deployed        zadara-csi-2.3.2        1.3.9
 
 $ helm status zadara-csi
 NAME: zadara-csi
@@ -130,9 +130,9 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | namespace | string | `"kube-system"` | namespace where all CSI pods will run |
-| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"1.3.8"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
+| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"1.3.9"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
 | image.csiDriver.repository | string | `"zadara/csi-driver"` | repository to pull image from, Dockerhub by default. Also available at `registry.connect.redhat.com/zadara/csi` |
-| image.csiDriver.tag | string | `"1.3.8"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
+| image.csiDriver.tag | string | `"1.3.9"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
 | image.provisioner.repository | string | `"k8s.gcr.io/sig-storage/csi-provisioner"` |  |
 | image.provisioner.tag | string | `"v2.2.2"` | last tag that supports restoring DEPRECATED v1alpha1 snapshots is v1.4.0 |
 | image.attacher.repository | string | `"k8s.gcr.io/sig-storage/csi-attacher"` |  |

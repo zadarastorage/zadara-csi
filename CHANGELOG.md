@@ -1,3 +1,15 @@
+## v1.3.9
+
+### Enhancements
+- Delete VolumeAttachments when `stonith` evacuates Pods.
+  This decreases failover time of Pods using RWO volumes.
+
+### Documentation
+
+### Changes
+
+### Bug Fixes
+
 ## v1.3.8
 
 ### Enhancements

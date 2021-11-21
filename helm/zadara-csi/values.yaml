@@ -10,7 +10,7 @@ image:
     # Also available at `registry.connect.redhat.com/zadara/csi`
     repository: zadara/csi-driver
     # -- image tag. Modifying tags is not recommended and may cause compatibility issues.
-    tag: 1.3.8
+    tag: 1.3.9
   provisioner:
     repository: k8s.gcr.io/sig-storage/csi-provisioner
     # -- last tag that supports restoring DEPRECATED v1alpha1 snapshots is v1.4.0

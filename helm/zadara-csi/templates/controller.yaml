@@ -33,7 +33,7 @@ spec:
             - "--enable-leader-election"
             - "--leader-election-type=leases"
             - "--timeout=180s"
-            - "--v=5"
+            - "--v=4"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -44,7 +44,7 @@ spec:
             - "--timeout=180s"
             - "--http-endpoint=:8080"
             - "--extra-create-metadata"
-            - "--v=5"
+            - "--v=4"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -71,9 +71,9 @@ spec:
           args:
             - "--csi-address=$(ADDRESS)"
             - "--leader-election"
-            - "--timeout=180s"
+            - "--timeout=10s"
             - "--http-endpoint=:8081"
-            - "--v=5"
+            - "--v=4"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -110,7 +110,7 @@ spec:
           - "--csi-address=$(ADDRESS)"
           - "--leader-election"
           - "--timeout=180s"
-          - "--v=5"
+          - "--v=4"
           {{- else }}
           image: "{{ .Values.image.snapshotter.repository }}:{{ .Values.image.snapshotter.tagV1 }}"
           args:
@@ -118,7 +118,7 @@ spec:
             - "--leader-election"
             - "--timeout=180s"
             - "--http-endpoint=:8082"
-            - "--v=5"
+            - "--v=4"
           livenessProbe:
             failureThreshold: 1
             httpGet:
@@ -144,7 +144,7 @@ spec:
             - "--leader-election"
             - "--timeout=15s"
             - "--http-endpoint=:8083"
-            - "--v=5"
+            - "--v=4"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -171,7 +171,7 @@ spec:
             - "--csi-address=/csi/csi.sock"
             - "--health-port={{ .Values.plugin.healthzPort }}"
             - "--probe-timeout=3s"
-            - "--v=5"
+            - "--v=4"
           volumeMounts:
             - mountPath: /csi
               name: socket-dir
