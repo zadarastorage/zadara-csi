@@ -1,3 +1,15 @@
+## v1.3.10
+
+### Enhancements
+
+### Documentation
+
+### Changes
+
+### Bug Fixes
+- Fix a case when `stonith` does not delete VolumeAttachments because Pods
+  were already evacuated.
+
 ## v1.3.9
 
 ### Enhancements
