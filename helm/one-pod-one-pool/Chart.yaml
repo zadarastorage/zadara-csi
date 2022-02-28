@@ -1,5 +1,0 @@
----
-apiVersion: v2
-name: one-pod-one-pool
-version: 0.1.0
-description: "Example deployment using Zadara-CSI NAS & Block volumes, with one-pool VPSA"
