@@ -1,0 +1,175 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.7.0
+  creationTimestamp: null
+  name: volumes.storage.zadara.com
+spec:
+  group: storage.zadara.com
+  names:
+    kind: Volume
+    listKind: VolumeList
+    plural: volumes
+    singular: volume
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - description: Status of the VSC Volume
+      jsonPath: .status.state
+      name: Status
+      type: string
+    - description: Volume type (NAS or Block)
+      jsonPath: .spec.volumeType
+      name: Type
+      type: string
+    - description: Total capacity of the Volume
+      jsonPath: .spec.size
+      name: Capacity
+      type: string
+    - description: Name of VPSA
+      jsonPath: .status.VPSAID
+      name: VPSA
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: Volume is the Schema for the volumes API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: VolumeSpec defines the desired state of Volume
+            properties:
+              VSCStorageClassName:
+                description: Name of the VSCStorageClass Custom Resource (i.e, a group
+                  of VPSAs), which handles Volume provisioning.
+                type: string
+              description:
+                description: Human-readable description. Mapped to a Comment on VPSA
+                type: string
+              displayName:
+                description: Human-readable name. Mapped to display name of VPSA Volume.
+                type: string
+              flags:
+                description: Additional flags used when creating a new Volume. VolumeFlags
+                  may override those defined in StorageClass.
+                properties:
+                  compress:
+                    description: Enable data compression (all-flash VPSA required)
+                    type: boolean
+                  dedupe:
+                    description: Enable data deduplication (all-flash VPSA required)
+                    type: boolean
+                  encrypt:
+                    description: Enable data encryption
+                    type: boolean
+                  extra:
+                    additionalProperties:
+                      type: string
+                    description: Additional Volume flags. See "Create Volume" in https://vpsa-api.zadarastorage.com/#volumes
+                    type: object
+                required:
+                - compress
+                - dedupe
+                - encrypt
+                type: object
+              size:
+                anyOf:
+                - type: integer
+                - type: string
+                description: Provisioned capacity of a Volume.
+                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                x-kubernetes-int-or-string: true
+              volumeType:
+                enum:
+                - NAS
+                - Block
+                type: string
+            required:
+            - VSCStorageClassName
+            - displayName
+            - size
+            - volumeType
+            type: object
+          status:
+            description: VolumeStatus defines the observed state of Volume
+            properties:
+              Block:
+                description: Block-specific properties
+                properties:
+                  lun:
+                    description: Block device LUN
+                    type: integer
+                  target:
+                    description: iSCSI target for iSCSI login
+                    type: string
+                required:
+                - target
+                type: object
+              CGID:
+                description: Internal Consistency Group ID on the VPSA, e.g, cg-00000001
+                type: string
+              ID:
+                description: Internal Volume ID on the VPSA, e.g, volume-00000001
+                type: string
+              NAS:
+                description: NAS-specific properties
+                properties:
+                  NFSExportPath:
+                    description: NFS export path for `mount` commands
+                    type: string
+                  autoExpandEnabled:
+                    description: Automatic expansion when Volume is low on free capacity
+                    type: boolean
+                required:
+                - NFSExportPath
+                - autoExpandEnabled
+                type: object
+              VPSAID:
+                description: Name of the VPSA Custom Resource
+                type: string
+              poolID:
+                description: Internal Pool ID on the VPSA, e.g, pool-00000001
+                type: string
+              state:
+                description: 'Status of the Snapshot `Creating`:     Volume exists
+                  in DB. `Provisioning`: Creating a *new empty* Volume on VPSA. VPSAVolumeID
+                  is set. `Cloning`:      Creating a *cloned* Volume on VPSA. VPSAVolumeID
+                  may be empty, CGID is set. `Ready`:        Volume is ready to use
+                  `Deleting`:     Delete on VPSA is in progress. `Failed`:       Volume
+                  exists on VPSA, but in bad state'
+                type: string
+            required:
+            - CGID
+            - ID
+            - VPSAID
+            - poolID
+            - state
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

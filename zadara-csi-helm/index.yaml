@@ -1,0 +1,65 @@
+apiVersion: v1
+entries:
+  example-workload:
+  - apiVersion: v2
+    created: "2022-02-28T13:53:22.530184181+02:00"
+    description: Example workload using Zadara-CSI NAS & Block volumes
+    digest: 956af2a080964598c638bbf465b6f3ec97c39d45e7e5cc5bcfd3303ac6c71771
+    name: example-workload
+    urls:
+    - example-workload-1.0.0.tgz
+    version: 1.0.0
+  snapshots-v1:
+  - apiVersion: v2
+    appVersion: 4.1.1
+    created: "2022-02-28T13:53:22.532779353+02:00"
+    description: Common infrastructure for v1 CSI Snapshots. Includes snapshots CRDs,
+      cluster-global Snapshot Controller, and RBAC for it.
+    digest: 88b53f2affedffab2e53d7e8383a01ee4bbafc43fcc46ef64457fbc3be0a254a
+    kubeVersion: '>= 1.20.0-0'
+    name: snapshots-v1
+    type: application
+    urls:
+    - snapshots-v1-4.1.1+zadara.1.tgz
+    version: 4.1.1+zadara.1
+  snapshots-v1beta1:
+  - apiVersion: v2
+    appVersion: 3.3.0
+    created: "2022-02-28T13:53:22.535049769+02:00"
+    description: Common infrastructure for v1beta1 CSI Snapshots. Includes snapshots
+      CRDs, cluster-global Snapshot Controller, and RBAC for it.
+    digest: 413716de89045f6c30f0ae1fc2ae1708ff322d6ea4daaa918afdab718203abb1
+    kubeVersion: '>= 1.17.0-0'
+    name: snapshots-v1beta1
+    type: application
+    urls:
+    - snapshots-v1beta1-3.3.0+zadara.1.tgz
+    version: 3.3.0+zadara.1
+  zadara-csi:
+  - apiVersion: v2
+    appVersion: 2.0.0
+    created: "2022-02-28T13:53:22.539419231+02:00"
+    description: Container Storage Interface (CSI) driver for Zadara VPSA
+    digest: a1a315ef947e45dc304ae97e06413b5662ba975ce431844963be7c2f8fdc28f0
+    home: https://github.com/zadarastorage/zadara-csi
+    keywords:
+    - CSI
+    - Storage
+    - Zadara
+    - VPSA
+    - NAS
+    - Block
+    - Persistent Volume
+    - Cloud Storage
+    - STaaS
+    - PVC
+    kubeVersion: '>= 1.20.0-0'
+    maintainers:
+    - email: k8s+csi@zadara.com
+      name: Zadara Kubernetes team
+      url: https://support.zadarastorage.com/
+    name: zadara-csi
+    urls:
+    - zadara-csi-3.0.0.tgz
+    version: 3.0.0
+generated: "2022-02-28T13:53:22.525529079+02:00"

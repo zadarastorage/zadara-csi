@@ -1,0 +1,73 @@
+---
+
+statefulSet:
+  # -- Number of replicas in StatefulSet
+  replicas: 2
+
+pod:
+  # -- Image for the container to run
+  image: busybox:latest
+  # -- Container entry point. Used as is - you can add or change values as you want
+  # @default -- *omitted: `dd` on one or both mounted volumes*
+  args:
+    - "sh"
+    - "-c"
+    - |-
+      while true; do
+        if [ -d "$MNT_DIR_NAME" ]; then
+          echo $(date) "Write to NAS Volume: $MNT_DIR_NAME"
+          dd if=/dev/urandom of=$MNT_DIR_NAME/test_file bs=1M count=1000
+        fi
+        if [ -b "$BLOCKDEV_NAME" ]; then
+          echo $(date) "Write to block Volume: $BLOCKDEV_NAME"
+          dd if=/dev/urandom of=$BLOCKDEV_NAME bs=1M count=1000 oflag=direct
+        fi
+      sleep 5
+      done
+  # -- Environment variables for the container. Used as is - you can add or change values as you want
+  # @default -- *omitted*
+  env:
+    - name: MNT_DIR_NAME
+      value: "/mnt/csi"
+    - name: BLOCKDEV_NAME
+      value: "/dev/sdx"
+  tolerationSeconds:
+    # -- threshold for "node.kubernetes.io/not-ready" toleration.
+    # This corresponds to the NodeCondition `Ready` being "False".
+    nodeNotReady: 30
+    # -- threshold for "node.kubernetes.io/unreachable" toleration.
+    # This corresponds to the NodeCondition `Ready` being "Unknown".
+    nodeUnreachable: 30
+
+storageClass:
+  # -- Name of VSCStorageClass to use for Volume provisioning.
+  # If empty - default VSCStorageClass will be used.
+  VSCStorageClassName: ""
+  # -- reclaimPolicy: Retain or Delete https://kubernetes.io/docs/concepts/storage/storage-classes/#reclaim-policy
+  reclaimPolicy: Delete
+
+NASVolumes:
+  # -- Create NAS PVC for each replica.
+  # Other parameters are same as in PVC spec:
+  # https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+  enabled: true
+  accessMode: ReadWriteMany
+  readOnly: false
+  capacity: 50Gi
+  mountPath: "/mnt/csi"
+
+blockVolumes:
+  # -- Create Block PVC for each replica.
+  # Other parameters are same as in PVC spec:
+  # https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims
+  enabled: true
+  accessMode: ReadWriteOnce
+  readOnly: false
+  capacity: 50Gi
+  devicePath: "/dev/sdx"
+
+cleanup:
+  # -- Run Helm pre-delete hook and delete StatefulSet PVCs (k8s does not delete them automatically).
+  enabled: true
+  # -- Image for cleanup hook. Requires `kubectl` installed.
+  image: bitnami/kubectl:latest

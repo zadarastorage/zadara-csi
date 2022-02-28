@@ -1,0 +1,72 @@
+# OPTIONAL: use v1beta1 with older k8s versions
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: csi-migrator-job
+spec:
+  template:
+    spec:
+      activeDeadlineSeconds: 120
+      restartPolicy: OnFailure
+      serviceAccountName: csi-migrator-sa
+      containers:
+        - name: csi-migrator
+          # OPTIONAL: use custom registry
+          image: "docker-registry.zadara-qa.com/zadara/csi-migrator-1to2:2.0.0-pre2"
+          args:
+            - "migrator"
+            - "-f"
+            - "/config/values/values.yaml"
+            - "--crd-path"
+            - "/config/crd/bases"
+            # OPTIONAL: Dry run mode: --dry-run {all, crd, none}.
+            # - all: do not persist any changes
+            # - crd: only install CRD, dry-run the rest
+            # - none: persist all changes
+            - "--dry-run"
+            - "none"
+          volumeMounts:
+            - mountPath: /config/values/values.yaml
+              name: values-configmap
+              # REQUIRED: same as name of the key in configMap (if created from file - same as the file name)
+              subPath: "values.yaml"
+      volumes:
+        - name: values-configmap
+          configMap:
+            # REQUIRED: name of a configMap containing values.yaml of CSI v1.x
+            name: "csi-v1-values"
+            optional: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: csi-migrator-role
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "persistentvolumes" ]
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "apiextensions.k8s.io" ]
+    resources: [ "customresourcedefinitions" ]
+    verbs: [ "create" ]
+  - apiGroups: [ "storage.zadara.com" ]
+    resources: [ "*" ]
+    verbs: [ "*" ]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: csi-migrator-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: csi-migrator-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: csi-migrator-role
+subjects:
+  - kind: ServiceAccount
+    name: csi-migrator-sa
+    # REQUIRED: current namespace
+    namespace: default

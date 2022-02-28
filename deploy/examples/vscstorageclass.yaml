@@ -1,0 +1,10 @@
+apiVersion: storage.zadara.com/v1
+kind: VSCStorageClass
+metadata:
+  name: vscstorageclass-sample
+spec:
+  displayName: "Sample VSC Storage Class"
+  description: "Demonstrates VSCStorageClass schema"
+  ## isDefault will set this VSCStorageClass as default, similar to default StorageClass in Kubernetes.
+  ## Default VSCStorageClass is used for all PVCs that do not set `VSCStorageClassName` in their StorageClass.
+  isDefault: true

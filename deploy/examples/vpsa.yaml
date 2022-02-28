@@ -1,0 +1,14 @@
+apiVersion: storage.zadara.com/v1
+kind: VPSA
+metadata:
+  name: vpsa-sample
+spec:
+  displayName: "Example VPSA"
+  description: "Demonstrates VPSA resource schema"
+  ## hostname is a DNS name or an IP of your VPSA
+  hostname: "example.zadaravpsa.com"
+  ## token is an API access token of the VPSA.
+  ## Plain-text tokens are encrypted upon VPSA Custom resource creation.
+  token: "SUPER-SECRET-TOKEN-12345"
+  ## VSCStorageClassName adds this VPSA as a member of the specified VSCStorageClass
+  VSCStorageClassName: "vscstorageclass-sample"

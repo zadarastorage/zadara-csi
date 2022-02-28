@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nas-io-test-0-clone
+spec:
+  storageClassName: io-test-sc
+  dataSource:
+    name: nas-io-test-0
+    kind: PersistentVolumeClaim
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi

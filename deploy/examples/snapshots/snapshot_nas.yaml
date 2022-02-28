@@ -1,0 +1,15 @@
+---
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: nas-io-test-0-snapshot
+spec:
+  volumeSnapshotClassName: zadara-csi-snapshot-class
+  ## source: exactly one of:
+  ## - persistentVolumeClaimName (for new snapshots)
+  ## - volumeSnapshotContentName (for importing existing snapshots into k8s)
+  source:
+    ## persistentVolumeClaimName refers to the PVC from which a snapshot should be created
+    persistentVolumeClaimName: nas-io-test-0
+    ## volumeSnapshotContentName specifies the name of a pre-existing VolumeSnapshotContent object representing an existing volume snapshot
+    # volumeSnapshotContentName: ""

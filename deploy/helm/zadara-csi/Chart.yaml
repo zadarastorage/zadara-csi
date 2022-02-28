@@ -1,0 +1,13 @@
+---
+apiVersion: v2
+name: zadara-csi
+version: 3.0.0
+appVersion: 2.0.0
+kubeVersion: ">= 1.20.0-0"
+description: "Container Storage Interface (CSI) driver for Zadara VPSA"
+keywords: ["CSI", "Storage", "Zadara", "VPSA", "NAS", "Block", "Persistent Volume", "Cloud Storage", "STaaS", "PVC"]
+home: https://github.com/zadarastorage/zadara-csi
+maintainers:
+  - name: Zadara Kubernetes team
+    email: k8s+csi@zadara.com
+    url: https://support.zadarastorage.com/

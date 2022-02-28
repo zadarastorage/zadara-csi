@@ -16,11 +16,9 @@ fi
 
 function print_usage_and_exit {
     echo "Open an interactive shell in Zadara-CSI Pod"
-    echo "Usage: $0 <node|controller> [-n k8s-node] [-r helm-release-name]"
+    echo "Usage: $0 <node|controller|stonith> [-n <K8S_NODE>]"
     echo "    -n k8s-node:          Node name as appears in 'kubectl get nodes', or IP"
     echo "                          If not specified - show logs for the 1st node/controller pod in list"
-    echo "    -r helm-release-name: Helm release name as appears in 'helm list'"
-    echo "                          Required if you have multiple instances of CSI plugin"
     exit 1
 }
 
@@ -32,17 +30,18 @@ WHAT=$1
 shift
 case $WHAT in
 "node" | "controller")
+	  CONTAINER_ARG="-c csi-zadara-driver"
+    ;;
+"stonith")
     ;;
 *)
     print_usage_and_exit
     ;;
 esac
 
-while getopts ":n:r:" opt; do
+while getopts ":n:" opt; do
   case ${opt} in
     n ) NODE="${OPTARG}"
-      ;;
-    r ) RELEASE="${OPTARG}"-
       ;;
     * ) print_usage_and_exit
       ;;
@@ -50,9 +49,6 @@ while getopts ":n:r:" opt; do
 done
 
 SELECTOR="-l publisher=zadara -l app.kubernetes.io/component=$WHAT"
-if [ "$RELEASE" ]; then
-	SELECTOR="$SELECTOR -l release=$RELEASE"
-fi
 
 if [ ! "$NODE" ]; then
   NS_POD=$($KUBECTL get pods --all-namespaces $SELECTOR 2>&1 | tail -n +2 | grep -v "Evicted" | head -n1 | awk '{print $1, $2}')
@@ -65,4 +61,5 @@ if [ ! "$NS_POD" ]; then
   exit 1
 fi
 
-$KUBECTL exec -it -n $NS_POD -c csi-zadara-driver -- /bin/bash
+echo $KUBECTL exec -it -n $NS_POD $CONTAINER_ARG -- /bin/bash
+$KUBECTL exec -it -n $NS_POD $CONTAINER_ARG -- /bin/bash

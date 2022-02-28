@@ -1,0 +1,5 @@
+---
+apiVersion: v2
+name: example-workload
+version: 1.0.0
+description: "Example workload using Zadara-CSI NAS & Block volumes"

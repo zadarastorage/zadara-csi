@@ -1,0 +1,12 @@
+---
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: zadara-csi-snapshot-class
+## reclaimPolicy tells the cluster what to do with the VolumeSnapshotContent and VPSA Snapshot,
+##  when VolumeSnapshot is deleted. Allowed values: "Delete" or "Retain".
+deletionPolicy: Delete
+## driver refers to CSI driver name as appears in 'kubectl get csidrivers'
+driver: csi.zadara.com
+## parameters are driver-specific settings. Currently, no parameters are supported for VolumeSnapshotClass.
+parameters: {}

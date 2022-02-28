@@ -1,25 +1,21 @@
+# Troubleshooting tips
 
-# Common problems resolution
+In addition to this guide, it can be helpful to get familiar with the following guides:
+
+- [Driver Components](components.md)
+- [How it works](how_it_works.md)
+- [Hack scripts](hack_scripts.md) (_these will make things a lot easier, we promise_)
 
 ## Helm Chart errors
 
-For most common errors, you will be shown an error message after installing the chart.
-For example:
+For most common errors, you will be shown an error message after installing the chart. For example:
+
 ```
 ##############################################################################
-####   ERROR: Missing required values                                     ####
+####   ERROR: Missing required resources                                  ####
 ##############################################################################
-It appears that VPSA credentials are not set.
-Zadara-CSI Plugin will not be able to reach your VPSA.
-To fix:
-- Set VPSA credentials. You can use the following example:
-cat << EOF > my_values.yaml
----
-vpsa:
-  url: "example.zadaravpsa.com"
-  https: true
-  token: "FAKETOKEN1234567-123"
-EOF
+Secret "my-custom-cerificate" not found in namespace "kube-system"
+Please, check customTrustedCertificates.existingSecret in your values.yaml
 ```
 
 ```
@@ -38,40 +34,95 @@ We strongly advise not to use storage.k8s.io/v1beta1 with K8s 1.20+.
 ```
 
 Other common problems are:
+
 - Using Helm 2: upgrade to Helm 3.
-- Bad indentation in `my_values.yaml`. Check that lines are indented with *2 spaces* (not tabs).
-  It may be easier to start by pulling a default `values.yaml` from the chart:
+- Bad indentation in `my_values.yaml`. Check that lines are indented with *2 spaces* (not tabs). It may be easier to
+  start by pulling a default `values.yaml` from the chart:
   ```
   helm show values zadara-csi-helm/zadara-csi > my_values.yaml
   ```
   And then replacing defaults in `my_values.yaml`.
 
-## All CSI pods are failing
+## VPSA in `Unreachable` state
+
+```
+$ kubectl get vpsa
+NAME          STATUS        DISPLAY NAME   CAPACITY MODE   VSC                      AGE
+vpsa-sample   Unreachable   Example VPSA   normal          vscstorageclass-sample   25h
+```
+
+Possible reasons:
+- Invalid Hostname
+- Network issues
+- Invalid credentials
+- TLS Certificate issues
+
+Typically, you can see the reason in Events for VPSA Custom Resource, for example (see `Events` at the bottom):
+```
+$ kubectl describe vpsa vpsa-sample
+Name:         vpsa-sample
+Namespace:
+Labels:       <none>
+Annotations:  <none>
+API Version:  storage.zadara.com/v1
+Kind:         VPSA
+Metadata:
+  Creation Timestamp:  2022-02-23T11:50:05Z
+  Finalizers:
+    storage.zadara.com/vsc-delete-protection
+  Generation:  2
+  Resource Version:  35276860
+  UID:               2fda23b6-27e7-4d0f-b511-57a60839cbbf
+Spec:
+  VSC Storage Class Name:  vscstorageclass-sample
+  Description:             Demonstrates VPSA resource schema
+  Display Name:            Example VPSA
+  Hostname:                example.zadaravpsa.com
+  Token:                   AES:2v2woQx2cHNhLXNhbXBsZfsBzaDORtEv4oAFGBDRPjTPWORJlYqDTw==
+Status:
+  Capacity:
+    Available:  0
+    Total:      0
+  Counters:
+    Pools:      0
+    Snapshots:  0
+    Volumes:    0
+  State:        Unreachable
+  Version:
+Events:
+  Type     Reason       Age                From        Message
+  ----     ------       ----               ----        -------
+  Warning  Unreachable  4s (x10 over 10s)  zadara-csi  internal error: REST API client error: Get "http://example.zadaravpsa.com:80/api/pools.json?timeout=180": dial tcp: lookup example.zadaravpsa.com on 10.96.0.10:53: no such host
+```
 
 ### Reason: Invalid credentials
 
-Example logs:
+Example:
 ```
-$ kubectl logs -n kube-system zadara-csi-node-2xxrk csi-zadara-driver
-  Jul  5 12:18:14.198122 [csi] [INFO]                   zcsi.(*Plugin).connectToVPSA[ 132] Connecting to VPSA "vsa-00000012-zadara-qa12.zadaravpsa.com"
-  Jul  5 12:18:14.200861 [csi] [INFO]       csicommon.(*nonBlockingGRPCServer).serve[ 107] Listening for connections on address: &net.UnixAddr{Name:"//csi/csi.sock", Net:"unix"}
-  Jul  5 12:18:14.329167 [general] [ERRO]                       zrestapi.parseHeaderImpl[ 471] received an erroneous JSON response: {"status":5,"message":"Invalid credentials."}
-  Jul  5 12:18:14.329742 [general] [WARN]                       zrestapi.parseHeaderImpl[ 487] received an erroneous JSON response: {"status":5,"message":"Invalid credentials."}
-  Jul  5 12:18:14.329931 [csi] [ERRO]                             zcsi.(*Plugin).Run[ 105] Failed to connect to VPSA: failed to check whether Node k8s-base-master is configured as VPSA Server: N/A (5): Invalid credentials.
-  Jul  5 12:18:25.964241 [csi] [ERRO]                              csicommon.logGRPC[ 126] GRPC error: rpc error: code = FailedPrecondition desc = Failed to connect to VPSA: failed to check whether Node k8s-base-master is configured as VPSA Server: N/A (5): Invalid credentials.
+$ kubectl describe vpsa vpsa-sample
+Name:         vpsa-sample
+...
+Events:
+  Type     Reason       Age                     From        Message
+  ----     ------       ----                    ----        -------
+  Warning  Unreachable  8s (x3 over 11s)        zadara-csi  internal error: N/A (5): Invalid credentials.
 ```
 
-Resolution: fix the credentials and reinstall the Helm Chart.
+Resolution: fix the credentials and `kubectl apply` the VPSA again.
 
 ### Reason: No connectivity to the VPSA
 
-Example logs:
+Example:
+
 ```
-$ kubectl logs -n kube-system zadara-csi-controller-68f4585cb4-r9stg csi-zadara-driver
-  Jul 18 09:16:53.068878 [csi] [ERRO]                 zcsi.(*Plugin).healthCheckVPSA[ 117] Failed to check VPSA health: REST API client error: Get "https://abcd.zadaravpsa.com:443/api/pools.json?timeout=180": dial tcp: lookup abcd.zadaravpsa.com on 10.96.0.10:53: no such host
-  Jul 18 09:16:53.068998 [csi] [ERRO]                              csicommon.logGRPC[ 126] GRPC error: rpc error: code = FailedPrecondition desc = Failed to check VPSA health: REST API client error: Get "https://abcd.zadaravpsa.com:443/api/pools.json?timeout=180": dial tcp: lookup abcd.zadaravpsa.com on 10.96.0.10:53: no such host
-  Jul 18 09:16:54.622126 [csi] [ERRO]                 zcsi.(*Plugin).healthCheckVPSA[ 117] Failed to check VPSA health: REST API client error: Get "https://abcd.zadaravpsa.com:443/api/pools.json?timeout=180": dial tcp: lookup abcd.zadaravpsa.com on 10.96.0.10:53: no such host
-  Jul 18 09:16:54.622565 [csi] [ERRO]                              csicommon.logGRPC[ 126] GRPC error: rpc error: code = FailedPrecondition desc = Failed to check VPSA health: REST API client error: Get "https://abcd.zadaravpsa.com:443/api/pools.json?timeout=180": dial tcp: lookup abcd.zadaravpsa.com on 10.96.0.10:53: no such host
+$ kubectl describe vpsa vpsa-sample
+Name:         vpsa-sample
+...
+
+Events:
+  Type     Reason       Age               From        Message
+  ----     ------       ----              ----        -------
+  Warning  Unreachable  1s (x5 over 13s)  zadara-csi  internal error: REST API client error: Get "http://10.10.10.10:80/api/pools.json?timeout=180": dial tcp 10.10.10.10:80: connect: no route to host
 ```
 
 Use `ping` or `curl` to test connection to the VPSA from K8s Nodes.
@@ -92,11 +143,14 @@ $ curl --insecure https://vsa-00000016-zadara-qa.zadaravpsa.com
 
     ...
 ```
-You may need `--insecure` flag, when using custom certificate (e.g if the certificate is installed in Pods, but not on host).
+
+You may need `--insecure` flag, when using custom certificate (e.g, if the certificate is installed in Pods, but not on
+host).
 
 ### Reason: Certificate issues
 
 Example logs:
+
 ```
 $ kubectl logs -n kube-system zadara-csi-controller-bd4c4858-stvwk csi-zadara-driver
   Jul 11 08:56:09.015771 [csi] [ERRO]                 zcsi.(*Plugin).healthCheckVPSA[ 117] Failed to check VPSA health: REST API client error: Get "https://vsa-00000016-zadara-qa12.zadaravpsa.com:443/api/pools.json?timeout=180": x509: certificate signed by unknown authority (possibly because of "x509: invalid signature: parent certificate cannot sign this kind of certificate" while trying to verify candidate authority certificate "zadaravpsa.com")
@@ -107,13 +161,16 @@ $ kubectl logs -n kube-system zadara-csi-controller-bd4c4858-stvwk csi-zadara-dr
 #### Troubleshooting custom trusted certificate
 
 Check that certificate is present in `csi-zadara-driver` (you can choose any CSI Pod to `exec` this):
+
 ```
 $ kubectl exec -n kube-system zadara-csi-controller-bd4c4858-stvwk -c csi-zadara-driver -- ls /etc/pki/ca-trust/source/anchors/
 zadara-csi-tls.crt
 ```
+
 Certificate file (or files) is expected to be present in `/etc/pki/ca-trust/source/anchors/`
 
 Check that the certificate is recognized correctly (best with `head`, it's a very long list):
+
 ```
 $ kubectl exec -n kube-system zadara-csi-controller-bd4c4858-stvwk -c csi-zadara-driver -- bash -c 'trust list | head -n 12'
 pkcs11:id=%D8%53%1E%C7%82%D1%BC%25%FB%CC%25%DC%1A%F7%70%5F%FB%3A%66%3F;type=cert
@@ -131,81 +188,56 @@ pkcs11:id=%D2%87%B4%E3%DF%37%27%93%55%F6%56%EA%81%E5%36%CC%8C%1E%3F%BD;type=cert
 
 Your certificate should appear at the top, and should have `category: authority`.
 
-## CSI Controller pod is failing
+## Block volumes stuck in `iSCSILoginPending` state
 
-### Reason: VPSA health check failed
-
-`csi-zadara-driver` container in CSI *Controller* pod is responsible to check VPSA health periodically,
-triggered by K8s liveness probe.
-
-It uses VPSA REST API to check that:
-- VPSA has at least one storage pool (required prerequisite)
-- all storage pools are in `Normal' state
-
-Example logs:
 ```
-  Jul 18 09:21:33.786818 [csi] [ERRO]                 zcsi.(*Plugin).healthCheckVPSA[ 120] VPSA not ready for Volume provisioning: no pools found
-  Jul 18 09:21:33.786951 [csi] [ERRO]                              csicommon.logGRPC[ 126] GRPC error: rpc error: code = FailedPrecondition desc = VPSA not ready for Volume provisioning: no pools found
-  Jul 18 09:21:34.852034 [csi] [ERRO]                 zcsi.(*Plugin).healthCheckVPSA[ 120] VPSA not ready for Volume provisioning: no pools found
-  Jul 18 09:21:34.852156 [csi] [ERRO]                              csicommon.logGRPC[ 126] GRPC error: rpc error: code = FailedPrecondition desc = VPSA not ready for Volume provisioning: no pools found
-
-  Jul 18 09:22:23.222382 [csi] [ERRO]                 zcsi.(*Plugin).healthCheckVPSA[ 124] VPSA not ready for Volume provisioning: pool pool-00010002 (P2) in "creating" state
-  Jul 18 09:22:23.222512 [csi] [ERRO]                              csicommon.logGRPC[ 126] GRPC error: rpc error: code = FailedPrecondition desc = VPSA not ready for Volume provisioning: pool pool-00010002 (P2) in "creating" state
+$ kubectl get volumeattachment.storage.zadara.com -o wide
+NAME                                                       STATUS              ISCSI          VOLUME                                     VSCNODE           AGE
+pvc-5939c124-4133-4af7-a783-ec71779a5a40.k8s-base-master   ISCSILoginPending   Disconnected   pvc-5939c124-4133-4af7-a783-ec71779a5a40   k8s-base-master   3s
 ```
 
+Block volumes require iSCSI connection from the Node to VPSA.
+iSCSI sessions are established _after_ Zadara-CSI Controller _attaches_ the Volume to the Node,
+and _before_ Zadara-CSI Node _mounts_ the Volume at the Node.
 
-## CSI Node pods are failing
+First, check `vscnode` custom resource (one for each k8s Node):
 
-CSI Node component runs as a DaemonSet, i.e. one Pod on each Node.
+```
+$ kubectl get vscnode
+NAME          IP             IQN                                       AGE
+k8s-master    10.10.100.61   iqn.2005-03.org.open-iscsi:e9c4f0d828cf   26h
+k8s-worker1   10.10.100.62   iqn.2005-03.org.open-iscsi:dda6bf751196   26h
+k8s-worker2   10.10.100.63   iqn.2005-03.org.open-iscsi:8f772c57be9e   26h
+```
 
-* If all Node pods are failing: check Node pods logs.
-  Typically, this is caused by iSCSI configuration issues or network problems.
+If IQN is missing, it usually means that iSCSI packages are  missing or misconfigured on that Node.
 
-
-* Some specific pods are failing: check the problematic Node (iSCSI packages, connectivity).
-You can use `-o wide` option to see on which Node the Pod is running:
-    ```
-    $ kubectl get pods -n kube-system -l provisioner=csi.zadara.com -l app.kubernetes.io/component=node -o wide
-    NAME                    READY   STATUS    RESTARTS   AGE   IP             NODE              NOMINATED NODE   READINESS GATES
-    zadara-csi-node-6lvnx   3/3     Running   4          18m   10.10.100.34   k8s-base-master   <none>           <none>
-    ```
-
-Resolution guidelines are the same as in the [following section](#servers-are-not-created-on-vpsa)
-
-## Servers are not created on VPSA
-
-- No Servers at all: iSCSI packages missing or misconfigured
-
-- Less Servers than expected:
-  - iSCSI packages missing or misconfigured on some Nodes
-  - some Nodes have duplicate IQN
-
-iSCSI-related commands can be executed either on a Node (requires root permissions), or in `zadara-csi-driver` container of CSI Node Pod (without `sudo`).
-You can use `hack/shell.sh node` for this.
-
-It's recommended to *uninstall CSI driver before applying iSCSI changes*.
+⚠ *Reinstall CSI driver after iSCSI configuration changes*.
 
 ### Reason: iSCSI packages missing
 
-Check whether `iscsiadm` is present at `PATH`:
+Check whether `iscsiadm` is present at `PATH`. Do this on each K8s Node:
+
 ```
 $ which iscsiadm
 /usr/bin/iscsiadm
 ```
 
-To install iSCSI tools follow [the instructions](README.md#iscsi-initiator-tools)
+To install iSCSI tools follow [the instructions](prerequisites.md#iscsi-initiator-tools)
 
 ### Reason: duplicate IQN
 
 This can occur if you install iSCSI packages and then *clone VM image* for each K8s Node.
 
-To check IQN (iSCSI Qualified Name):
+To check IQN (iSCSI Qualified Name) locally:
+
 ```
 $ sudo cat /etc/iscsi/initiatorname.iscsi
 InitiatorName=iqn.1993-08.org.debian:01:458917df7e2f
 ```
 
 To change IQN:
+
 ```
 # Generate new name
 sudo iscsi-iname > /etc/iscsi/initiatorname.iscsi
@@ -214,10 +246,10 @@ sudo iscsi-iname > /etc/iscsi/initiatorname.iscsi
 systemctl restart iscsid
 ```
 
-
 ### Reason: iSCSI misconfigured
 
-To test iSCSI connection:
+To check iSCSI connection locally:
+
 ```
 $ sudo iscsiadm -m session
 tcp: [1] 10.10.12.2:3260,1 iqn.2011-04.com.zadarastorage:vsa-00000016:1 (non-flash)
@@ -231,9 +263,11 @@ iser iser,<empty>,<empty>,<empty>,<empty>
 zadara_10.10.12.2 tcp,<empty>,<empty>,<empty>,<empty>
 ```
 
-A session should exist, with target name referring to your VPSA: `iqn.2011-04.com.zadarastorage:vsa-00000016:1` with IP `10.10.12.2` in this example.
+A session should exist, with target name referring to your VPSA: `iqn.2011-04.com.zadarastorage:vsa-00000016:1` with
+IP `10.10.12.2` in this example.
 
-To cleanup iSCSI configuration (command arguments follow the above example):
+To clean up iSCSI configuration (command arguments follow the above example):
+
 ```
 $ sudo iscsiadm -m session --logout
 Logging out of session [sid: 1, target: iqn.2011-04.com.zadarastorage:vsa-00000016:1, portal: 10.10.12.2,3260]
@@ -246,29 +280,35 @@ zadara_10.10.12.2 unbound and deleted.
 
 ## Application Pods or PVCs are in Pending state
 
+TODO: check VolumeAttachments
+
 The most common reason for `Pending` state is failure in Persistent Volume Claims provisioning.
 
-First, make sure that all CSI Pods are up and running.
-If they are not, follow instructions in previous sections.
+First, make sure that all CSI Pods are up and running. If they are not, follow instructions in previous sections.
 
 Check Pods status:
+
 ```
-$ kubectl get pods -n kube-system -l provisioner=csi.zadara.com
+$ kubectl get pods -n kube-system -l app=zadara-csi
 NAME                                              READY   STATUS      RESTARTS   AGE
 zadara-csi-autoexpand-sync-27099910-vgtkc         0/1     Completed   0          9m25s
 zadara-csi-controller-bd4c4858-stvwk              6/6     Running     23         25m
 zadara-csi-node-6lvnx                             3/3     Running     4          25m
 ```
 
-### Reason: Storage pool ID is missing
+### Reason: StorageClass does not specify VSCStorageClass, and no default VSCStorageClass is defined
 
-If your VPSA has multiple Storage Pools, it is required to specify `poolid` in StorageClass `parameters`
+Check whether a default VSCStorageClass is present (`DEFAULT` is true):
 
+```shell
+$ kubectl get vscsc
+NAME                     STATUS   DEFAULT   MEMBERS   CAPACITY MODE   AGE
+vscstorageclass-sample   Ready    true      1         normal          20h
 ```
-  Jul 18 09:58:12.762766 [csi] [WARN]         zcsi.(*ControllerServer).resolvePoolId[ 373] Storage Pool Id is missing and VPSA has multiple storage pools: ['pool-00010001', 'pool-00010002'] - driver cannot decide which to use. Please provide Pool Id.
-```
 
-See [Storage Class example](README.md#storage-class) in docs.
+If no VSCStorageClass is set as default, you must explicitly set `parameters.VSCStorageClassName` in StorageClass.
+
+See [Storage Class example](configuring_storage.md#storage-class) in docs.
 
 ### Reason: PVC does not specify `storageClass`, and no default StorageClass is defined
 
@@ -293,6 +333,7 @@ Events:
 ```
 
 Here, we have one StorageClass, and it is not defined as default:
+
 ```
 $ kubectl get sc
 NAME          PROVISIONER      RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
@@ -300,66 +341,41 @@ io-test-nas   csi.zadara.com   Delete          Immediate           true         
 ```
 
 Replace `NEW_DEFAULT_SC` with StorageClass name, such as `io-test-nas`:
+
 ```
 $ kubectl patch sc NEW_DEFAULT_SC -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 ```
 
 Now it appears as default:
+
 ```
 $ kubectl get sc
 NAME                    PROVISIONER      RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
 io-test-nas (default)   csi.zadara.com   Delete          Immediate           true                   15m
 ```
 
-
 # Troubleshooting tips and tools
+
+## Troubleshooting tools
+
+Check out our [Hack scripts](hack_scripts.md) aimed to facilitate diagnostics and debugging.
 
 ## General tips
 
-Investigate the problem top-down, from the application level objects (Deployment, StatefulSet) to Pods,
-to PVCs and other lower-level resources.
+Investigate the problem top-down, from the application level objects (Deployment, StatefulSet) to Pods, to PVCs and
+other lower-level resources.
 
-When you find a resource that is causing trouble, drill down: from `kubectl get` (`-o wide` or  `-o yaml` can also help),
-to `kubectl describe` and `kubectl logs` (for pods).
+When you find a resource that is causing trouble, drill down: from `kubectl get` (`-o wide` or  `-o yaml` can also help)
+, to `kubectl describe` and `kubectl logs` (for pods).
 
 Zadara-CSI driver logs can often provide a directions for resolving the problem.
+
 ```
 kubectl logs -n kube-system zadara-csi-controller-55df6f8ff6-dtkwt csi-zadara-driver
 kubectl logs -n kube-system zadara-csi-node-65tsb                  csi-zadara-driver
 ```
+
 Note container name: `csi-zadara-driver`, there are multiple containers in CSI pods.
-
-## Tools
-In this repo you can find [helper scripts](https://github.com/zadarastorage/zadara-csi/tree/release/hack)
-for troubleshooting:
-
-```
-$ ./hack/logs.sh -h
-Display logs of a Zadara-CSI Pod
-Usage: ./hack/logs.sh <node|controller> [-l] [-f] [-n k8s-node] [-r helm-release-name]
-    -l:                   Pipe to 'less' (can be combined with -f)
-    -f:                   Use 'follow' option
-    -n k8s-node:          Node name as appears in 'kubectl get nodes', or IP
-                          If not specified - show logs for the 1st node/controller pod in list
-    -r helm-release-name: Helm release name as appears in 'helm list'
-                          Required if you have multiple instances of CSI plugin
-Examples:
-  ./hack/logs.sh controller -f
-  ./hack/logs.sh controller -r warped-seahorse
-  ./hack/logs.sh node -n 192.168.0.12 -r warped-seahorse
-  ./hack/logs.sh node -n worker0 -lf
-```
-
-
-```
-$ ./hack/shell.sh -h
-Open an interactive shell in Zadara-CSI Pod
-Usage: ./hack/shell.sh <node|controller> [-n k8s-node] [-r helm-release-name]
-    -n k8s-node:          Node name as appears in 'kubectl get nodes', or IP
-                          If not specified - show logs for the 1st node/controller pod in list
-    -r helm-release-name: Helm release name as appears in 'helm list'
-                          Required if you have multiple instances of CSI plugin
-```
 
 ## Contact developers
 

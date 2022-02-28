@@ -1,9 +1,6 @@
 #!/bin/bash
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-cd $SCRIPT_DIR/..
-
-# For non-standard distributions, like microk8s. Use enviroment variable, or default.
+# For non-standard distributions, like microk8s. Use environment variable, or default.
 if [ ! $KUBECTL ]; then
   KUBECTL='kubectl'
 fi
@@ -16,19 +13,17 @@ fi
 
 function print_usage_and_exit {
     echo "Display logs of a Zadara-CSI Pod"
-    echo "Usage: $0 <node|controller|expander|stonith> [-l] [-f] [-n k8s-node] [-r helm-release-name]"
+    echo "Usage: $0 <node|controller|stonith> [-l] [-f] [-t <N>] [-n <K8S_NODE>]"
     echo "    -l:                   Pipe to 'less' (can be combined with -f)"
     echo "    -f:                   Use 'follow' option"
-    echo "    -n k8s-node:          Node name as appears in 'kubectl get nodes', or IP"
+    echo "    -n <K8S_NODE>:        Node name as appears in 'kubectl get nodes', or IP"
     echo "                          If not specified - show logs for the 1st node/controller pod in list"
-    echo "    -r helm-release-name: Helm release name as appears in 'helm list'"
-    echo "                          Required if you have multiple instances of CSI plugin"
-    echo "    -t N:                 Tail last N lines"
+    echo "    -t <N>:               Tail last N lines"
     echo "Examples:"
     echo "  $0 controller -f"
-    echo "  $0 controller -r warped-seahorse"
+    echo "  $0 controller -t 100 -lf"
     echo "  $0 node -t 100"
-    echo "  $0 node -n 192.168.0.12 -r warped-seahorse"
+    echo "  $0 node -n 192.168.0.12"
     echo "  $0 node -n worker0 -lf"
     exit 1
 }
@@ -43,14 +38,14 @@ case $WHAT in
 "node" | "controller")
 	CONTAINER_ARG="-c csi-zadara-driver"
     ;;
-"expander" | "stonith")
+"stonith")
     ;;
 *)
     print_usage_and_exit
     ;;
 esac
 
-while getopts ":n:r:t:lf" opt; do
+while getopts ":n:t:lf" opt; do
   case ${opt} in
     l ) LESS=true
       ;;
@@ -58,8 +53,6 @@ while getopts ":n:r:t:lf" opt; do
         FOLLOW_LESS="+F"
       ;;
     n ) NODE="${OPTARG}"
-      ;;
-    r ) RELEASE="${OPTARG}"-
       ;;
     t ) TAIL="${OPTARG}"
       ;;
@@ -69,9 +62,6 @@ while getopts ":n:r:t:lf" opt; do
 done
 
 SELECTOR="-l publisher=zadara -l app.kubernetes.io/component=$WHAT"
-if [ "$RELEASE" ]; then
-	SELECTOR="$SELECTOR -l release=$RELEASE"
-fi
 
 if [ "$TAIL" ]; then
 	TAIL_ARG="--tail $TAIL"
@@ -91,5 +81,6 @@ fi
 if [ "$LESS" ]; then
   $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD $CONTAINER_ARG $TAIL_ARG | less -R $FOLLOW_LESS
 else
+  echo $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD $CONTAINER_ARG $TAIL_ARG
   $KUBECTL logs $FOLLOW_KUBECTL -n $NS_POD $CONTAINER_ARG $TAIL_ARG
 fi

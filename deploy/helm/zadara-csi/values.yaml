@@ -1,0 +1,107 @@
+---
+image:
+  # -- csiDriver is the main CSI container, provided by Zadara.
+  # `repository` and `tag` are used similarly for all images below.
+  csiDriver:
+    # -- repository to pull image from, Dockerhub by default.
+    repository: zadara/csi-driver
+    # -- image tag. Modifying tags is not recommended and may cause compatibility issues.
+    tag: 2.0.0
+  provisioner:
+    repository: k8s.gcr.io/sig-storage/csi-provisioner
+    tag: v2.2.2
+  attacher:
+    repository: k8s.gcr.io/sig-storage/csi-attacher
+    tag: v3.2.1
+  resizer:
+    repository: k8s.gcr.io/sig-storage/csi-resizer
+    tag: v1.2.0
+  livenessProbe:
+    repository: k8s.gcr.io/sig-storage/livenessprobe
+    tag: v2.3.0
+  nodeDriverRegistrar:
+    repository: k8s.gcr.io/sig-storage/csi-node-driver-registrar
+    tag: v2.2.0
+  snapshotter:
+    repository: k8s.gcr.io/sig-storage/csi-snapshotter
+    # -- `tagV1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`)
+    tagV1: v4.1.1
+    # -- `tagV1Beta1` will be used with `snapshots.apiVersion` `v1beta1` (or when `auto` resolves to `v1beta1`)
+    tagV1Beta1: v3.0.3
+
+# -- imagePullSecrets: credentials for private registry. A list of names of Secrets in the same namespace.
+# Create `imagePullSecrets`: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# -- imagePullPolicy *for all images* used by this chart
+imagePullPolicy: IfNotPresent
+
+vpsa:
+  # -- useTLS defines whether to use TLS (HTTPS) to access VPSA
+  useTLS: true
+  # -- verifyTLS defines whether to verify TLS certificate when using HTTPS
+  verifyTLS: true
+  # -- monitorInterval defines interval for periodic health and capacity check of VPSA and VSC Storage Class.
+  # Format: time.Duration (e.g 10s, 1m30s)
+  # Interval value is a trade-off between responsiveness and performance.
+  monitorInterval: 50s
+  # -- requestTimeout should be long enough to accommodate the majority of VPSA requests (create or delete Volume, Snapshot, etc).
+  # Format: time.Duration (e.g 10s, 1m30s)
+  requestTimeout: 3m0s
+
+plugin:
+  # -- allocator configures VSC Volume allocation algorithm (i.e, which VPSA will be chosen for Volume provisioning)
+  # Allowed values: linear, mostAvailableCapacity, even
+  allocator: "mostAvailableCapacity"
+  # -- controllerReplicas is number of replicas of Controller Deployment (responsible for provisioning and attaching volumes)
+  controllerReplicas: 1
+  # -- provisioner is the name of CSI plugin, for use in StorageClass. We do not recommend changing this.
+  provisioner: csi.zadara.com
+  # -- healthzPort is used for Node liveness probe, needs to be unique for each plugin instance in a cluster
+  # (Node pod requires `hostNetwork` for iSCSI support, thus using ports on the Node).
+  healthzPort: 9808
+  # -- logLevelOverride sets log level globally. More fine-grained settings are available in ConfigMap (can be updated at runtime).
+  # Allowed values: panic, fatal, error, warning, info, debug
+  logLevelOverride: "info"
+  # -- logFormat can be "text" or "json"
+  logFormat: "text"
+
+  stonith:
+    # -- enable or disable STONITH for fast failover for stateful Pods.
+    # Limited to Pods using Persistent Volume Claims provisioned by this CSI driver.
+    enable: true
+    # -- number of replicas of STONITH Deployment
+    replicas: 1
+    # -- When Node is not ready, STONITH will probe it with this interval.
+    # Format: [time.Duration](https://pkg.go.dev/time#ParseDuration) e.g. 10s, 1m, 500ms
+    probePeriod: "2s"
+    # -- STONITH will start evacuating pods if Node is still not ready after this timeout.
+    #  Format: [time.Duration](https://pkg.go.dev/time#ParseDuration) e.g. 10s, 1m, 500ms
+    probeTimeout: "15s"
+    # -- selfEvacuateTimeoutSeconds determines `tolerations` timeouts for STONITH's own Pod.
+    selfEvacuateTimeoutSeconds: 15
+
+# -- snapshots support: requires common one-per-cluster snapshots controller.
+# Install from `helm/snapshots-v1[beta1]` chart in this repo.
+# More info: https://kubernetes.io/blog/2020/12/10/kubernetes-1.20-volume-snapshot-moves-to-ga/
+snapshots:
+  # -- apiVersion for CSI Snapshots: `v1beta1`, `v1` (requires K8s >=1.20) or "auto" (based on installed CRDs and k8s version)
+  apiVersion: auto
+
+# -- namespace where all CSI pods will run.
+# We intentionally do not use value of `helm install --namespace=...`,
+# it is recommended to deploy CSI drivers in `kube-system` namespace.
+namespace: "kube-system"
+
+# -- labels to attach to all Zadara-CSI objects, can be extended with any number of arbitrary 'key: "value"' pairs
+labels:
+  stage: "production"
+
+# -- additional customTrustedCertificates to install in CSI pods. Use either `existingSecret` or `plainText`.
+customTrustedCertificates: {}
+#    # -- existingSecret: name of an existing secret from the same namespace, each key containing a pem-encoded certificate
+#    existingSecret: my-root-ca
+#    # -- plainText: create a new secret with the following contents
+#    plainText: |-
+#      -----BEGIN CERTIFICATE-----
+#      ...
+#      -----END CERTIFICATE-----

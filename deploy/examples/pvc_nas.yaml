@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zadara-csi-nas
+spec:
+  ## storageClassName refers to a Name of StorageClass.
+  ## If not set - default StorageClass will be used.
+  ## https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/
+  storageClassName: zadara-csi-vsc
+  ## accessModes: ReadWriteOnce ReadOnlyMany or ReadWriteMany
+  accessModes:
+    - ReadWriteOnce
+  ## volumeMode: Filesystem or Block
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Gi
