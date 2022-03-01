@@ -1,0 +1,95 @@
+{{ $installSuccessful := true }}
+
+{{- if and (ne .Values.snapshots.apiVersion "v1beta1") (ne .Values.snapshots.apiVersion "v1") (ne .Values.snapshots.apiVersion "auto") -}}
+{{ $installSuccessful = false }}
+##############################################################################
+####   ERROR: Invalid snapshots.apiVersion                                ####
+##############################################################################
+Invalid value of snapshots.apiVersion: {{ .Values.snapshots.apiVersion }}
+Allowed values are "v1beta1", "v1" or "auto".
+{{- end -}}
+
+{{ $snapshotsGroupVersion := printf "snapshot.storage.k8s.io/%s" (include "snapshots.version" .) }}
+{{ $snapshotsCRDsPresent := true }}
+{{- if not (.Capabilities.APIVersions.Has $snapshotsGroupVersion) }}
+{{ $snapshotsCRDsPresent = false }}
+##############################################################################
+####   WARNING: Missing storage.k8s.io CRDs                               ####
+##############################################################################
+Chart is configured with snapshots.apiVersion: {{ .Values.snapshots.apiVersion }}{{ if eq .Values.snapshots.apiVersion "auto" }} [{{ include "snapshots.autoVersion" . }}]{{ end }},
+but "{{ $snapshotsGroupVersion }}" CRDs are not installed.
+Volume provisioning functionality is not affected, but you will not be able to create Snapshots.
+
+To install: https://github.com/zadarastorage/zadara-csi/tree/release/helm
+Recommended versions:
+    K8s >=1.20: snapshot.storage.k8s.io/v1
+    K8s  <1.20: snapshot.storage.k8s.io/v1beta1
+We strongly advise not to use storage.k8s.io/v1beta1 with K8s 1.20+.
+{{ end -}}
+
+{{- if .Values.customTrustedCertificates -}}
+{{- if .Values.customTrustedCertificates.existingSecret -}}
+{{- if not (lookup "v1" "Secret" .Values.namespace .Values.customTrustedCertificates.existingSecret) -}}
+{{ $installSuccessful = false }}
+##############################################################################
+####   ERROR: Missing required resources                                  ####
+##############################################################################
+Secret "{{ .Values.customTrustedCertificates.existingSecret }}" not found in namespace "{{ .Values.namespace }}"
+Please, check customTrustedCertificates.existingSecret in your values.yaml
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- if $installSuccessful -}}
+##############################################################################
+####   Successfully installed Zadara-CSI                                  ####
+##############################################################################
+Thank you for installing {{ .Chart.Name }}!
+{{- if $snapshotsCRDsPresent }}
+Snapshots API version: {{ $snapshotsGroupVersion }}
+{{- end }}
+
+## Verify installation:
+kubectl get pods -n {{ .Values.namespace }} -l app="{{ include "helm.name" . }}"
+
+## Check out our example-workload Helm Chart, for quick distributed I/O test!
+helm install io-test zadara-csi-helm/example-workload
+
+##############################################################################
+####   Getting Started: add VPSAs                                         ####
+##############################################################################
+
+## Create VSCStorageClass
+cat << EOF > vsc_sc.yaml
+apiVersion: storage.zadara.com/v1
+kind: VSCStorageClass
+metadata:
+  name: vscstorageclass-sample
+spec:
+  displayName: "Example VSC Storage Class"
+  isDefault: true
+EOF
+kubectl create -f vsc_sc.yaml
+
+## Add the first VPSA (do not forget to set credentials)
+cat << EOF > vpsa.yaml
+apiVersion: storage.zadara.com/v1
+kind: VPSA
+metadata:
+  name: vpsa-sample
+spec:
+  displayName: "Example VPSA"
+  hostname: "example.zadaravpsa.com"
+  token: "SUPER-SECRET-TOKEN-12345"
+  VSCStorageClassName: "vscstorageclass-sample"
+EOF
+kubectl create -f vpsa.yaml
+
+{{ else }}
+##############################################################################
+- Uninstall current release:
+  helm uninstall {{ .Release.Name }}
+- Fix values.yaml
+- Install the chart again:
+  helm install {{ .Release.Name }} -f my_values.yaml {{ .Chart.Name }}
+{{- end -}}

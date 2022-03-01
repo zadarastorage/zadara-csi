@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-node-sa
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: node
+    {{- include "helm.labels" . | nindent 4 }}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-node-driver-registrar-role
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: node
+    {{- include "helm.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-node-driver-registrar-binding
+  labels:
+    app.kubernetes.io/component: node
+    {{- include "helm.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-node-sa
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}-node-driver-registrar-role
+  apiGroup: rbac.authorization.k8s.io

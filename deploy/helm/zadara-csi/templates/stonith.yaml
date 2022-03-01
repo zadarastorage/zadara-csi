@@ -1,0 +1,89 @@
+{{ if .Values.plugin.stonith.enable }}
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Release.Name }}-stonith
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: stonith
+    {{- include "helm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.plugin.stonith.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: stonith
+      {{- include "helm.selector.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: stonith
+        {{- include "helm.labels" . | nindent 8 }}
+    spec:
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: {{ .Values.plugin.stonith.selfEvacuateTimeoutSeconds | int }}
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: {{ .Values.plugin.stonith.selfEvacuateTimeoutSeconds | int }}
+      priorityClassName: system-cluster-critical
+      serviceAccountName: {{ .Release.Name }}-stonith-sa
+      containers:
+        #######################################################################
+        - name: csi-zadara-stonith
+          image: "{{ .Values.image.csiDriver.repository }}:{{ .Values.image.csiDriver.tag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          args:
+            - "stonith"
+            - "--config=/etc/csi/config.yaml"
+            - "--health-probe-bind-address=:8085"
+            - "--leader-elect=true"
+          env:
+            - name: VSC_VPSA_REQUEST_TIMEOUT
+              value: "{{ .Values.vpsa.requestTimeout }}"
+            - name: CSI_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: CSI_DRIVER_NAME
+              value: "{{ .Values.plugin.provisioner }}"
+            - name: GLOBAL_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: GLOBAL_ENCRYPTION_KEY
+                  name: "{{ .Release.Name }}-encryption-secret"
+            - name: TLS_ENABLED
+              value: "{{ .Values.vpsa.useTLS }}"
+            - name: TLS_SKIP_VERIFICATION
+              value: "{{ not .Values.vpsa.verifyTLS }}"
+          volumeMounts:
+            - name: config-dir
+              mountPath: /etc/csi
+            {{- if .Values.customTrustedCertificates }}
+            - name: cert-dir
+              mountPath: /etc/pki/ca-trust/source/anchors
+            {{- end }}
+      volumes:
+        - name: config-dir
+          configMap:
+            name: {{ .Release.Name }}-config-map
+        {{- if .Values.customTrustedCertificates }}
+        - name: cert-dir
+          secret:
+        {{- if .Values.customTrustedCertificates.plainText }}
+            secretName: {{ .Release.Name }}-custom-tls-cert
+        {{- end }}
+        {{- if .Values.customTrustedCertificates.existingSecret }}
+            secretName: {{ .Values.customTrustedCertificates.existingSecret }}
+        {{- end }}
+        {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+{{- end }}

@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ .Release.Name }}-config-map
+  labels:
+    {{- include "helm.labels" . | nindent 4 }}
+data:
+  config.yaml: |-
+    # logFormat can be "text" or "json".
+    logFormat: {{ .Values.plugin.logFormat }}
+    # useLogColors enables colored output in logs. Does not auto-detect pipes, redirection, or other non-interactive outputs.
+    {{- if eq .Values.plugin.logFormat "text" }}
+    useLogColors: true
+    {{- else }}
+    useLogColors: false
+    {{- end }}
+    # logLengthLimit will trim long log messages and reduce logs size (0 disables the limit).
+    logLengthLimit: 512
+    # loglevel defines verbosity level for logs. Allowed values: panic, fatal, error, warning, info, debug.
+    logLevel:
+      allocator: {{ .Values.plugin.logLevelOverride }}
+      conversion: {{ .Values.plugin.logLevelOverride }}
+      csi: {{ .Values.plugin.logLevelOverride }}
+      csicommon: {{ .Values.plugin.logLevelOverride }}
+      ctrl: {{ .Values.plugin.logLevelOverride }}
+      events: {{ .Values.plugin.logLevelOverride }}
+      spi: {{ .Values.plugin.logLevelOverride }}
+      vpsaapi: {{ .Values.plugin.logLevelOverride }}
+      vsc: {{ .Values.plugin.logLevelOverride }}
+    # logLevelOverride sets log level for all tags.
+    logLevelOverride: {{ .Values.plugin.logLevelOverride }}

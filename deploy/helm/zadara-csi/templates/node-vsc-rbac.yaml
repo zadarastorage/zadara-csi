@@ -1,0 +1,29 @@
+---
+# VSC custom resources
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-vsc-node
+  labels:
+    app.kubernetes.io/component: node
+    {{- include "helm.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ["storage.zadara.com"]
+    resources: ["*"]
+    verbs: ["create", "delete", "get", "list", "patch", "update", "watch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-vsc-node-role
+  labels:
+    app.kubernetes.io/component: node
+    {{- include "helm.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-node-sa
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}-vsc-node
+  apiGroup: rbac.authorization.k8s.io

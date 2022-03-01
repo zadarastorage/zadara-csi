@@ -1,0 +1,41 @@
+###############################################################################
+{{- $installSuccessful := true -}}
+{{/*************************************************************************/}}
+{{- if not (.Capabilities.APIVersions.Has "storage.zadara.com/v1/VSCStorageClass") }}
+
+WARNING: 'storage.zadara.com' CRDs are not installed in the cluster.
+Please, install zadara-csi driver (includes storage.zadara.com/v1 CRDs).
+
+{{- end -}}
+{{/*************************************************************************/}}
+{{- if .Values.storageClass.VSCStorageClassName }}
+{{- if not (lookup "storage.zadara.com/v1" "VSCStorageClass" .Release.Namespace .Values.storageClass.VSCStorageClassName) }}
+{{ $installSuccessful = false }}
+
+ERROR: VSCStorageClass does not exist: {{ .Values.storageClass.VSCStorageClassName }}
+
+Please, create VSCStorageClass, with at least VPSA, and set '.Values.storageClass.VSCStorageClassName' in values.yaml
+
+{{- end -}}
+{{- end -}}
+{{/*************************************************************************/}}
+{{- if $installSuccessful }}
+
+Successfully installed {{ .Chart.Name }} chart as "{{ .Release.Name }}" in namespace {{ .Release.Namespace }}
+
+Check pods status:
+~$ kubectl get pods -l app.kubernetes.io/instance={{ .Release.Name }} --watch
+
+Check pod logs
+~$ kubectl logs {{ .Release.Name }}-0 --follow
+{{ if .Values.blockVolumes.enabled }}
+** NOTE: block Volumes require iSCSI packages installed on all worker Nodes. **
+{{- end -}}
+{{/*************************************************************************/}}
+{{- else -}}
+
+Failed to install  {{ .Chart.Name }} chart. Uninstall, fix errors and install again.
+
+~$ helm uninstall {{ .Release.Name }} --namespace {{ .Release.Namespace }}
+
+{{- end -}}

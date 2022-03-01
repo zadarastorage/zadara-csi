@@ -1,0 +1,86 @@
+{{ if .Values.plugin.stonith.enable }}
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}-stonith-sa
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: stonith
+    {{- include "helm.labels" . | nindent 4 }}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-stonith-role
+  labels:
+    app.kubernetes.io/component: stonith
+    {{- include "helm.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "pods" ]
+    verbs: [ "get", "list", "watch", "delete" ]
+  - apiGroups: [ "" ]
+    resources: [ "persistentvolumes" ]
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "" ]
+    resources: [ "persistentvolumeclaims" ]
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "" ]
+    resources: [ "events" ]
+    verbs: [ "list", "watch", "create", "update", "patch" ]
+  - apiGroups: [ "" ]
+    resources: [ "nodes" ]
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "storage.k8s.io" ]
+    resources: [ "volumeattachments" ]
+    verbs: [ "get", "list", "delete" ]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-stonith-binding
+  labels:
+    app.kubernetes.io/component: stonith
+    {{- include "helm.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-stonith-sa
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}-stonith-role
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-stonith-leader-election-binding
+  namespace: {{ .Values.namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-stonith-sa
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: Role
+  name: {{ .Release.Name }}-leader-election-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-stonith-vsc-binding
+  labels:
+    app.kubernetes.io/component: stonith
+    {{- include "helm.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Release.Name }}-stonith-sa
+    namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}-vsc
+  apiGroup: rbac.authorization.k8s.io
+
+{{- end }}

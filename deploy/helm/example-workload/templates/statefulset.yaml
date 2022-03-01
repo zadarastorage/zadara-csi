@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.statefulSet.replicas }}
+  serviceName: {{ .Release.Name }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  #############################################
+  ## Pod template
+  #############################################
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        app.kubernetes.io/instance:  {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+          image: {{ .Values.pod.image }}
+          {{- if .Values.pod.args }}
+          args:
+            {{- range .Values.pod.args }}
+            - {{ . | quote }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.pod.env }}
+          env:
+            {{- range .Values.pod.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.NASVolumes.enabled }}
+          volumeMounts:
+            - name: nas
+              mountPath: {{ .Values.NASVolumes.mountPath }}
+          {{- end }}
+          {{- if .Values.blockVolumes.enabled }}
+          volumeDevices:
+            - name: block
+              devicePath: {{ .Values.blockVolumes.devicePath }}
+          securityContext:
+            capabilities:
+              add: ["SYS_ADMIN"]
+          {{- end }}
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: {{ .Values.pod.tolerationSeconds.nodeUnreachable | int }}
+        - key: "node.kubernetes.io/not-ready"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: {{ .Values.pod.tolerationSeconds.nodeNotReady | int }}
+  #############################################
+  ## PersistentVolumeClaims
+  #############################################
+  volumeClaimTemplates:
+    {{- if .Values.NASVolumes.enabled }}
+    - metadata:
+        # actual PVC name is: nas-{{ .Release.Name }}-N
+        # where N is pod index in StatefulSet
+        name: nas
+        labels:
+          app: {{ .Release.Name }}
+      spec:
+        accessModes:
+          - {{ .Values.NASVolumes.accessMode }}
+        volumeMode: Filesystem
+        resources:
+          requests:
+            storage: {{ .Values.NASVolumes.capacity }}
+        storageClassName: {{ .Release.Name }}-sc
+    {{ end -}}
+    {{- if .Values.blockVolumes.enabled }}
+    - metadata:
+        # actual PVC name is: block-{{ .Release.Name }}-N
+        # where N is pod index in StatefulSet
+        name: block
+        labels:
+          app: {{ .Release.Name }}
+      spec:
+        accessModes:
+          - {{ .Values.blockVolumes.accessMode }}
+        volumeMode: Block
+        resources:
+          requests:
+            storage: {{ .Values.blockVolumes.capacity }}
+        storageClassName: {{ .Release.Name }}-sc
+    {{ end }}
+---
+#############################################
+## Service (mandatory for StatefulSets)
+#############################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  ports:
+  - port: 80
+    name: http
+  clusterIP: None
+  selector:
+    app: {{ .Release.Name }}

@@ -1,0 +1,10 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Release.Name }}-sc
+provisioner: "csi.zadara.com"
+reclaimPolicy: {{ .Values.storageClass.reclaimPolicy }}
+allowVolumeExpansion: true
+parameters:
+  VSCStorageClass: {{ .Values.storageClass.VSCStorageClassName | quote }}
