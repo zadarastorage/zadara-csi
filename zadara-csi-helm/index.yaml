@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   example-workload:
   - apiVersion: v2
-    created: "2022-02-28T13:53:22.530184181+02:00"
+    created: "2022-03-01T11:55:04.29421962+02:00"
     description: Example workload using Zadara-CSI NAS & Block volumes
-    digest: 956af2a080964598c638bbf465b6f3ec97c39d45e7e5cc5bcfd3303ac6c71771
+    digest: 3dbb56482919e97e74f65ee8afd1da99c03c96d4e636b5c13d40b84b677262e9
     name: example-workload
     urls:
     - example-workload-1.0.0.tgz
@@ -12,10 +12,10 @@ entries:
   snapshots-v1:
   - apiVersion: v2
     appVersion: 4.1.1
-    created: "2022-02-28T13:53:22.532779353+02:00"
+    created: "2022-03-01T11:55:04.296635685+02:00"
     description: Common infrastructure for v1 CSI Snapshots. Includes snapshots CRDs,
       cluster-global Snapshot Controller, and RBAC for it.
-    digest: 88b53f2affedffab2e53d7e8383a01ee4bbafc43fcc46ef64457fbc3be0a254a
+    digest: d08746edce3956fe209b76656d307d78211ee7f74b811e21a5fdfa817cd6fa57
     kubeVersion: '>= 1.20.0-0'
     name: snapshots-v1
     type: application
@@ -25,10 +25,10 @@ entries:
   snapshots-v1beta1:
   - apiVersion: v2
     appVersion: 3.3.0
-    created: "2022-02-28T13:53:22.535049769+02:00"
+    created: "2022-03-01T11:55:04.298976937+02:00"
     description: Common infrastructure for v1beta1 CSI Snapshots. Includes snapshots
       CRDs, cluster-global Snapshot Controller, and RBAC for it.
-    digest: 413716de89045f6c30f0ae1fc2ae1708ff322d6ea4daaa918afdab718203abb1
+    digest: 08cd61c3fce6734f0d48d6937a6e71dc2de37d5ff97f6102b157e2b4dd4d45fe
     kubeVersion: '>= 1.17.0-0'
     name: snapshots-v1beta1
     type: application
@@ -38,9 +38,9 @@ entries:
   zadara-csi:
   - apiVersion: v2
     appVersion: 2.0.0
-    created: "2022-02-28T13:53:22.539419231+02:00"
+    created: "2022-03-01T11:55:04.30276098+02:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
-    digest: a1a315ef947e45dc304ae97e06413b5662ba975ce431844963be7c2f8fdc28f0
+    digest: 854a86101050d20b0caf3d47e09436ddc79af246de2e2554f9c20c147e37bd59
     home: https://github.com/zadarastorage/zadara-csi
     keywords:
     - CSI
@@ -62,4 +62,4 @@ entries:
     urls:
     - zadara-csi-3.0.0.tgz
     version: 3.0.0
-generated: "2022-02-28T13:53:22.525529079+02:00"
+generated: "2022-03-01T11:55:04.291381289+02:00"

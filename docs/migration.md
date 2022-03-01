@@ -48,7 +48,7 @@ $ kubectl create configmap csi-v1-values --from-file ./values.yaml
 configmap/csi-v1-values created
 ```
 
-Edit [migration_job.yaml](./deploy/migration/migration_job.yaml), follow the comments.
+Edit [migration_job.yaml](../deploy/migration/migration_job.yaml), follow the comments.
 
 Job definition:
 ```yaml
@@ -164,7 +164,7 @@ New PVCs and Pods will wait in `Pending` state, until a new CSI driver is deploy
 ### Run migrator
 
 ```shell
-$ kubectl apply -f deploy/migration/migration_job.yaml
+$ kubectl apply -f ./deploy/migration/migration_job.yaml
 job.batch/csi-migrator-job created
 clusterrole.rbac.authorization.k8s.io/csi-migrator-role created
 serviceaccount/csi-migrator-sa created
@@ -290,7 +290,7 @@ Upon success, all `STATUS` columns will report `Ready` state.
 
 Delete migrator `Job` and its RBAC.
 ```
-$ kubectl delete -f deploy/migration/migration_job.yaml
+$ kubectl delete -f ./deploy/migration/migration_job.yaml
 ```
 
 ### Abort migration

@@ -5,7 +5,7 @@ You may add a Helm Chart repository from GitHub, or clone this repo and use a lo
 ## Using Helm repository
 
 ```
-$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release/helm
+$ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release/zadara-csi-helm
 "zadara-csi-helm" has been added to your repositories
 ```
 
@@ -27,11 +27,11 @@ You can also add a repo for a specific version:
 
 - `master` branch
     ```
-    $ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/master/helm
+    $ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/master/zadara-csi-helm
     ```
 - `release-v1.3.10` tag
     ````
-    $ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v1.3.10/helm
+    $ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v1.3.10/zadara-csi-helm
     ```
 
 ---
@@ -46,6 +46,6 @@ $ git clone https://github.com/zadarastorage/zadara-csi.git
 $ cd zadara-csi
 ```
 
-Replace `zadara-csi-helm/` with `./helm/` in Helm commands
+Replace `zadara-csi-helm/` with `./deploy/helm/` in Helm commands
 
 In addition to Helm charts, GitHub repository also provides example YAMLs and helper scripts for troubleshooting.

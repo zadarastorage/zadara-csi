@@ -11,7 +11,7 @@ and Zadara VPSA Storage Array & VPSA All-Flash, for a dynamic provisioning of pe
 ## 2.0 Release
 
 Zadara CSI Driver 2.0 introduces a major change in management of underlying VPSAs and nested resources. Now a single CSI
-driver supports multiple VPSAs. Check out the [Changelog](../CHANGELOG.md) for more details.
+driver supports multiple VPSAs. Check out the [Changelog](../changelogs/CHANGELOG-v2.md) for more details.
 
 All user guides are updated with examples for the new functionality.
 

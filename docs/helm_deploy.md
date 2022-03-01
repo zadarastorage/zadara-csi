@@ -9,12 +9,13 @@
 
 You can deploy CSI driver right away, without any mandatory configuration in Chart's `values.yaml`.
 
+From Helm repo:
 ```
-# From helm repo:
 $ helm install zadara-csi zadara-csi-helm/zadara-csi
-
-# From local clone:
-$ helm install zadara-csi ./helm/zadara-csi
+```
+Or, from a local clone:
+```
+$ helm install zadara-csi ./deploy/helm/zadara-csi
 ```
 
 🛈 We recommend using `zadara-csi` as release name, to be consistent with other examples in this documentation.
@@ -27,7 +28,7 @@ Many configuration options are available in `values.yaml` of `zadara-csi` Helm C
 - [Using custom image registry](custom_image_registry.md)
 - [Adding custom trusted certificates](custom_certificates.md)
 
-Create `my_values.yaml`, following [values.yaml](../helm/zadara-csi/values.yaml) example.
+Create `my_values.yaml`, following [values.yaml](../deploy/helm/zadara-csi/values.yaml) example.
 
 You can write `my_values.yaml` with only necessary changes, e.g:
 
@@ -40,7 +41,7 @@ plugin:
 An equivalent to the above example, using `--set` command-line argument:
 
 ```
-$ helm install zadara-csi ./helm/zadara-csi --set plugin.allocator="even" --set plugin.logFormat="json"
+$ helm install zadara-csi zadara-csi-helm/zadara-csi --set plugin.allocator="even" --set plugin.logFormat="json"
 ```
 
 <details>
@@ -61,7 +62,7 @@ $ helm install zadara-csi -f my_values.yaml zadara-csi-helm/zadara-csi
 Using `--set` command-line argument:
 
 ```
-$ helm install zadara-csi ./helm/zadara-csi --set plugin.allocator="even" --set logFormat="json"
+$ helm install zadara-csi zadara-csi-helm/zadara-csi --set plugin.allocator="even" --set logFormat="json"
 ```
 
 ------
@@ -75,19 +76,19 @@ $ helm install zadara-csi ./helm/zadara-csi --set plugin.allocator="even" --set 
 To copy default values from the local Chart:
 
 ```
-$ cp ./helm/zadara-csi/values.yaml ./my_values.yaml
+$ cp ./deploy/helm/zadara-csi/values.yaml ./my_values.yaml
 ```
 
 Install:
 
 ```
-$ helm install zadara-csi -f my_values.yaml ./helm/zadara-csi
+$ helm install zadara-csi -f my_values.yaml ./deploy/helm/zadara-csi
 ```
 
 Using `--set` command-line argument:
 
 ```
-$ helm install zadara-csi ./helm/zadara-csi --set plugin.allocator="even" --set logFormat="json"
+$ helm install zadara-csi ./deploy/helm/zadara-csi --set plugin.allocator="even" --set logFormat="json"
 ```
 
 ---

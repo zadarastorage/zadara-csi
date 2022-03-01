@@ -10,7 +10,7 @@ cd zadara-csi
 ### Install zadara-csi Chart
 
 ```
-helm upgrade --install zadara-csi ./helm/zadara-csi
+helm upgrade --install zadara-csi ./deploy/helm/zadara-csi
 ```
 
 ### Create VSCStorageClass
