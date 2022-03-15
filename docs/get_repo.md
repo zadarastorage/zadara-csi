@@ -30,7 +30,7 @@ You can also add a repo for a specific version:
     $ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/master/zadara-csi-helm
     ```
 - `release-v1.3.10` tag
-    ````
+    ```
     $ helm repo add zadara-csi-helm https://raw.githubusercontent.com/zadarastorage/zadara-csi/release-v1.3.10/zadara-csi-helm
     ```
 
@@ -46,6 +46,23 @@ $ git clone https://github.com/zadarastorage/zadara-csi.git
 $ cd zadara-csi
 ```
 
+To use a specific version:
+
+<details>
+<summary>Click for examples</summary>
+
+- `master` branch
+    ```
+    $ git checkout master
+    ```
+- `release-v1.3.10` tag
+    ```
+    $ git checkout release-v1.3.10
+    ```
+
+---
+</details>
+
 Replace `zadara-csi-helm/` with `./deploy/helm/` in Helm commands
 
-In addition to Helm charts, GitHub repository also provides example YAMLs and helper scripts for troubleshooting.
+🛈 In addition to Helm charts, GitHub repository also provides _example YAMLs_ and _helper scripts_ for troubleshooting.
