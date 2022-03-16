@@ -17,7 +17,7 @@ data:
     useLogColors: false
     {{- end }}
     # logLengthLimit will trim long log messages and reduce logs size (0 disables the limit).
-    logLengthLimit: 512
+    logLengthLimit: 1024
     # loglevel defines verbosity level for logs. Allowed values: panic, fatal, error, warning, info, debug.
     logLevel:
       allocator: {{ .Values.plugin.logLevelOverride }}
