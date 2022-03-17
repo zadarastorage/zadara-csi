@@ -50,8 +50,8 @@ vpsa:
 
 plugin:
   # -- allocator configures VSC Volume allocation algorithm (i.e, which VPSA will be chosen for Volume provisioning)
-  # Allowed values: linear, mostAvailableCapacity, even
-  allocator: "mostAvailableCapacity"
+  # Allowed values: weighted, mostAvailableCapacity, even, linear
+  allocator: "weighted"
   # -- controllerReplicas is number of replicas of Controller Deployment (responsible for provisioning and attaching volumes)
   controllerReplicas: 1
   # -- provisioner is the name of CSI plugin, for use in StorageClass. We do not recommend changing this.

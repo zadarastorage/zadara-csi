@@ -123,7 +123,7 @@ You can verify resulting YAML files without installing, by adding `--dry-run --d
 | vpsa.verifyTLS | bool | `true` | verifyTLS defines whether to verify TLS certificate when using HTTPS |
 | vpsa.monitorInterval | string | `"50s"` | monitorInterval defines interval for periodic health and capacity check of VPSA and VSC Storage Class. Format: time.Duration (e.g 10s, 1m30s) Interval value is a trade-off between responsiveness and performance. |
 | vpsa.requestTimeout | string | `"3m0s"` | requestTimeout should be long enough to accommodate the majority of VPSA requests (create or delete Volume, Snapshot, etc). Format: time.Duration (e.g 10s, 1m30s) |
-| plugin.allocator | string | `"mostAvailableCapacity"` | allocator configures VSC Volume allocation algorithm (i.e, which VPSA will be chosen for Volume provisioning) Allowed values: linear, mostAvailableCapacity, even |
+| plugin.allocator | string | `"weighted"` | allocator configures VSC Volume allocation algorithm (i.e, which VPSA will be chosen for Volume provisioning) Allowed values: weighted, mostAvailableCapacity, even, linear |
 | plugin.controllerReplicas | int | `1` | controllerReplicas is number of replicas of Controller Deployment (responsible for provisioning and attaching volumes) |
 | plugin.provisioner | string | `"csi.zadara.com"` | provisioner is the name of CSI plugin, for use in StorageClass. We do not recommend changing this. |
 | plugin.healthzPort | int | `9808` | healthzPort is used for Node liveness probe, needs to be unique for each plugin instance in a cluster (Node pod requires `hostNetwork` for iSCSI support, thus using ports on the Node). |

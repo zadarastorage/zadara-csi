@@ -9,15 +9,22 @@ In `values.yaml`:
 
 ```yaml
 plugin:
-  allocator: "mostAvailableCapacity"
+  allocator: "weighted"
 ```
 
 ### Available Volume allocators
 
-- `mostAvailableCapacity` (default): prefer VPSA with the most Available Capacity in Storage Pool.
+- `weighted` (default): use the least utilized VPSA, based on the following:
+    `totalWeight = wNumVolumes + wAllocatedCapacity + wProvisionedCapacity`, where
+  - `wNumVolumes = numberOfVolumes / 1000`
+  - `wAllocatedCapacity = AllocatedCapacity / TotalCapacity`.
+    Allocated capacity is a metric of capacity utilization at Storage Pool level,
+    including space used by data, metadata, snapshots, and allocated but unused space (e.g, due to fragmentation).
+  - `wProvisionedCapacity = ProvisionedCapacity / TotalCapacity`. Provisioned capacity is a sum of size of all VPSA Volumes.
+- `mostAvailableCapacity`: prefer VPSA with the most *Available Capacity* in Storage Pool.
+- `even` even distribution i.e, prefer VPSA with minimum *number of Volumes* (regardless of total Volumes size).
 - `linear` use a VPSA until exhausted, then proceed to the next one, in the same order that VPSAs have been added to a
   VSC Storage Class.
-- `even` even distribution i.e, prefer VPSA with minimum *number of Volumes* (regardless of total Volumes size).
 
 All algorithms will only consider VPSAs that:
 
