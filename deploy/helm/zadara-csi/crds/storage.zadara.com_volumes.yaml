@@ -112,15 +112,6 @@ spec:
             properties:
               Block:
                 description: Block-specific properties
-                properties:
-                  lun:
-                    description: Block device LUN
-                    type: integer
-                  target:
-                    description: iSCSI target for iSCSI login
-                    type: string
-                required:
-                - target
                 type: object
               CGID:
                 description: Internal Consistency Group ID on the VPSA, e.g, cg-00000001

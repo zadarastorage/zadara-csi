@@ -79,10 +79,24 @@ spec:
           status:
             description: VolumeAttachmentStatus defines the observed state of VolumeAttachment
             properties:
-              ISCSIStatus:
-                description: 'iSCSI connection status: for block Volumes it can be
-                  "Active" or "Disconnected".'
-                type: string
+              Block:
+                properties:
+                  ISCSIStatus:
+                    description: 'iSCSI connection status: for block Volumes it can
+                      be "Active" or "Disconnected".'
+                    type: string
+                  lun:
+                    description: Block device LUN
+                    type: integer
+                  target:
+                    description: iSCSI target for iSCSI login
+                    type: string
+                required:
+                - lun
+                - target
+                type: object
+              NAS:
+                type: object
               VPSAServerID:
                 description: Internal Server ID on the VPSA, e.g, srv-00000001. Note,
                   that Servers are shared between VolumeAttachments on the same Node.
