@@ -193,6 +193,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-vpsa-access-token
                   key: access-token
+            - name: FORCE_PUBLIC_IP
+              value: "{{ .Values.vpsa.publicIP }}"
             - name: ISCSIADM_MODE
               value: "{{ .Values.plugin.iscsiMode }}"
           livenessProbe:

@@ -49,6 +49,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-vpsa-access-token
                   key: access-token
+            - name: FORCE_PUBLIC_IP
+              value: "{{ .Values.vpsa.publicIP }}"
             - name: VPSA_HOSTNAME
               value: "{{ .Values.vpsa.url }}"
             - name: NODE_NAME

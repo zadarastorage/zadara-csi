@@ -5,4 +5,4 @@ metadata:
   name: zadara-csi-snapclass
 deletionPolicy: Delete
 driver: csi.zadara.com
-# parameters:
+# parameters: {}

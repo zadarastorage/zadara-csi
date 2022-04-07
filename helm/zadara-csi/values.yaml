@@ -45,6 +45,8 @@ imagePullPolicy: IfNotPresent
 vpsa:
   # -- url or IP of VPSA provisioning Volumes, without "http(s)://" prefix
   url: "example.zadaravpsa.com"
+  # -- VPSA public IP. Setting this will force CSI driver to connect to VPSA via public IP.
+  publicIP: ""
   # -- useTLS defines whether to use TLS (HTTPS) to access VPSA
   useTLS: true
   # -- verifyTLS defines whether to verify TLS certificate when using HTTPS

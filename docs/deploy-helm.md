@@ -150,6 +150,7 @@ Uninstalling CSI driver does not affect VPSA Volumes or K8s PVCs, Storage Classe
 | imagePullSecrets | list | `[]` | imagePullSecrets: credentials for private registry. A list of names of Secrets in the same namespace. Create `imagePullSecrets`: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | imagePullPolicy | string | `"IfNotPresent"` | imagePullPolicy *for all images* used by this chart |
 | vpsa.url | string | `"example.zadaravpsa.com"` | url or IP of VPSA provisioning Volumes, without "http(s)://" prefix |
+| vpsa.publicIP | string | `""` | VPSA public IP. Setting this will force CSI driver to connect to VPSA via public IP. |
 | vpsa.useTLS | bool | `true` | useTLS defines whether to use TLS (HTTPS) to access VPSA |
 | vpsa.verifyTLS | bool | `true` | verifyTLS defines whether to verify TLS certificate when using HTTPS |
 | vpsa.token | string | `"FAKETOKEN1234567-123"` | token to access VPSA |
