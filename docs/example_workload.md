@@ -43,8 +43,8 @@ vscstorageclass.storage.zadara.com/vscstorageclass-sample patched
 
 To use non-default VSCStorageClass, do either:
 
-- set `storageClass.VSCStorageClassName` in `values.yaml`
-- use `helm install` with `--set storageClass.VSCStorageClassName=YOUR_VSCSTORAGECLASS_NAME_HERE` argument.
+- set `storageClass.parameters.VSCStorageClassName` in `values.yaml`
+- use `helm install` with `--set storageClass.parameters.VSCStorageClassName=YOUR_VSCSTORAGECLASS_NAME_HERE` argument.
 
 ---
 </details>
@@ -81,7 +81,7 @@ $ helm install io-test zadara-csi-helm/example-workload
 
 - Set VSC StorageClass name (for example, `zadara-vpsa`) in command line:
   ```shell
-  $ helm install io-test zadara-csi-helm/example-workload --set storageClass.VSCStorageClassName=zadara-vpsa
+  $ helm install io-test zadara-csi-helm/example-workload --set storageClass.parameters.VSCStorageClassName=zadara-vpsa
   ```
 
 - Choose number of replicas (of course, you can also scale it after installing):
@@ -125,8 +125,11 @@ It is possible to configure the Chart to run any other container and any command
 | pod.env | list | *omitted* | Environment variables for the container. Used as is - you can add or change values as you want |
 | pod.tolerationSeconds.nodeNotReady | int | `30` | threshold for "node.kubernetes.io/not-ready" toleration. This corresponds to the NodeCondition `Ready` being "False". |
 | pod.tolerationSeconds.nodeUnreachable | int | `30` | threshold for "node.kubernetes.io/unreachable" toleration. This corresponds to the NodeCondition `Ready` being "Unknown". |
-| storageClass.VSCStorageClassName | string | `""` | Name of VSCStorageClass to use for Volume provisioning. If empty - default VSCStorageClass will be used. |
+| storageClass | object | *omitted* | storageClass values are mapped to the corresponding StorageClass fields |
+| storageClass.parameters | object | `{"VSCStorageClassName":""}` | vendor-specific parameters |
+| storageClass.parameters.VSCStorageClassName | string | `""` | Name of VSCStorageClass to use for Volume provisioning.  If empty - default VSCStorageClass will be used. |
 | storageClass.reclaimPolicy | string | `"Delete"` | reclaimPolicy: Retain or Delete https://kubernetes.io/docs/concepts/storage/storage-classes/#reclaim-policy |
+| storageClass.provisioner | string | `"csi.zadara.com"` | Name of the CSI driver. |
 | NASVolumes.enabled | bool | `true` | Create NAS PVC for each replica. Other parameters are same as in PVC spec: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims |
 | NASVolumes.accessMode | string | `"ReadWriteMany"` |  |
 | NASVolumes.readOnly | bool | `false` |  |

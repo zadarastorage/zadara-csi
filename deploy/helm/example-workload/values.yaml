@@ -39,12 +39,21 @@ pod:
     # This corresponds to the NodeCondition `Ready` being "Unknown".
     nodeUnreachable: 30
 
+# -- storageClass values are mapped to the corresponding StorageClass fields
+# @default -- *omitted*
 storageClass:
-  # -- Name of VSCStorageClass to use for Volume provisioning.
-  # If empty - default VSCStorageClass will be used.
-  VSCStorageClassName: ""
+  # -- vendor-specific parameters
+  parameters:
+    # -- Name of VSCStorageClass to use for Volume provisioning.
+    #  If empty - default VSCStorageClass will be used.
+    VSCStorageClassName: ""
+    # -- additional options for creating Volumes, in JSON format.
+    #  See `POST /api/volumes` documentation in http://vpsa-api.zadarastorage.com/#volumes for the full list
+    # volumeOptions: '{"nfsrootsquash": "YES", "nfsallsquash": "YES"}'
   # -- reclaimPolicy: Retain or Delete https://kubernetes.io/docs/concepts/storage/storage-classes/#reclaim-policy
   reclaimPolicy: Delete
+  # -- Name of the CSI driver.
+  provisioner: "csi.zadara.com"
 
 NASVolumes:
   # -- Create NAS PVC for each replica.

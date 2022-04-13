@@ -3,7 +3,7 @@
 In this repo you can find [helper scripts](https://github.com/zadarastorage/zadara-csi/tree/release/hack)
 for troubleshooting:
 
-🛈 It is [kubernetes/kubernetes](https://github.com/kubernetes/kubernetes/tree/master/hack) convention to use `./hack` as a direcotry for all development, CI/CD and debugging scripts.
+🛈 It is [kubernetes/kubernetes](https://github.com/kubernetes/kubernetes/tree/master/hack) convention to use `./hack` as a directory for all development, CI/CD and debugging scripts.
 
 ## K8Dig - generic diagnostics script
 
@@ -297,4 +297,23 @@ Open an interactive shell in Zadara-CSI Pod
 Usage: ./hack/shell.sh <node|controller|stonith> [-n <K8S_NODE>]
     -n k8s-node:          Node name as appears in 'kubectl get nodes', or IP
                           If not specified - show logs for the 1st node/controller pod in list
+```
+
+## K8Snap (Kubernetes Snapshot)
+
+ZSnap-like tool for Zadara apps in Kubernetes.
+
+Useful if you would like to report an issue.
+
+```
+$ ./hack/k8snap.py -h
+usage: k8snap.py [-h] [--prefix PREFIX] [--no-tar]
+
+ZSnap-like tool [beta] for k8s applications. Requires kubectl with access to
+the cluster. Resulting files are placed in the current directory.
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --prefix PREFIX  prefix for the k8snap directory
+  --no-tar         do not create a tarball
 ```
