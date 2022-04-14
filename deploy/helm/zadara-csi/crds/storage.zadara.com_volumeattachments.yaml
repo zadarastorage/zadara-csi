@@ -24,7 +24,7 @@ spec:
       name: Status
       type: string
     - description: Status of iSCSI connectivity
-      jsonPath: .status.ISCSIStatus
+      jsonPath: .status.Block.ISCSIStatus
       name: ISCSI
       type: string
     - description: Name of storage.zadara.com/Volume

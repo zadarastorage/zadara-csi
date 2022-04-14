@@ -271,7 +271,6 @@ spec:
 ## status cannot be edited by user, shown here as a reference.
 status:
   state: "Ready"
-  ISCSIStatus: "N/A (NAS)"
   VPSAServerID: "srv-00000001"
 
 ```

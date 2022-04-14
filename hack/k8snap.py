@@ -110,6 +110,8 @@ def get_resources_batch(resources, wide=True, namespace=""):
 
 def k_get(resources, match_names=".*", namespace=None, directory=os.getcwd()):
 	lines_by_resource = get_resources_batch(resources, wide=True, namespace=namespace)
+	if not lines_by_resource:
+		return
 	for resource, lines in lines_by_resource.items():
 		if not re.match(match_names, resource):
 			continue
