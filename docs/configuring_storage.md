@@ -12,15 +12,17 @@ metadata:
 provisioner: csi.zadara.com
 reclaimPolicy: Delete
 allowVolumeExpansion: true
+mountOptions: []
 parameters:
   VSCStorageClassName: "all-flash"
-  volumeOptions: '{"nfsanonuid":"65500", "nfsanongid":"65500"}'
+  volumeOptions: ''
 ```
 
 | parameter                        | description                                                                                                                                                                      | required                                           | examples                                         |
 |----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------|--------------------------------------------------|
 | `parameters.VSCStorageClassName` | Name of `VSCStorageClass` to provision volumes from                                                                                                                              | No (if not set, default `VSCStorageClass` is used) | `zadara-all-flash`                               |
 | `parameters.volumeOptions`       | Additional options for creating Volumes, in JSON format. See `POST /api/volumes` documentation in http://vpsa-api.zadarastorage.com/#volumes for the complete list <sup>1</sup>. | No                                                 | `'{"nfsanonuid":"65500", "nfsanongid":"65500"}'` |
+| `mountOptions`                   | Mount options for NAS Volumes, see [all NFS options](https://linux.die.net/man/5/nfs). Ignored for block volumes.                                                                | No                                                 | `["nfsvers=4.1", "hard"]`                        |
 
 1. Volume options notes:
    - options that are always added:

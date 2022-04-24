@@ -54,6 +54,8 @@ storageClass:
   reclaimPolicy: Delete
   # -- Name of the CSI driver.
   provisioner: "csi.zadara.com"
+  # -- Mount options. Only applicable for NAS, ignored for block volumes.
+  mountOptions: []
 
 NASVolumes:
   # -- Create NAS PVC for each replica.

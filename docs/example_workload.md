@@ -130,6 +130,7 @@ It is possible to configure the Chart to run any other container and any command
 | storageClass.parameters.VSCStorageClassName | string | `""` | Name of VSCStorageClass to use for Volume provisioning.  If empty - default VSCStorageClass will be used. |
 | storageClass.reclaimPolicy | string | `"Delete"` | reclaimPolicy: Retain or Delete https://kubernetes.io/docs/concepts/storage/storage-classes/#reclaim-policy |
 | storageClass.provisioner | string | `"csi.zadara.com"` | Name of the CSI driver. |
+| storageClass.mountOptions | list | `[]` | Mount options. Only applicable for NAS, ignored for block volumes. |
 | NASVolumes.enabled | bool | `true` | Create NAS PVC for each replica. Other parameters are same as in PVC spec: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims |
 | NASVolumes.accessMode | string | `"ReadWriteMany"` |  |
 | NASVolumes.readOnly | bool | `false` |  |

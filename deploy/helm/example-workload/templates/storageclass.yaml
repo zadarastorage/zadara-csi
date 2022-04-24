@@ -6,6 +6,10 @@ metadata:
 provisioner: {{ .Values.storageClass.provisioner }}
 reclaimPolicy: {{ .Values.storageClass.reclaimPolicy }}
 allowVolumeExpansion: true
+mountOptions:
+  {{- range .Values.storageClass.mountOptions }}
+  - {{ . | quote }}
+  {{- end }}
 parameters:
   {{- range $key, $val := .Values.storageClass.parameters }}
   {{ $key }}: {{ $val | quote }}

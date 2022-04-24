@@ -14,7 +14,8 @@
 - Option for JSON logs (e.g, for ELK and other log collectors)
 - Support for scaling Controller and Stonith deployments, with leader election
 - Restructured documentation
-- Updated usage examples with convenient `example-workload` Chart for I/O test
+- Updated usage examples with convenient `example-workload` Chart (previously `one-pod-one-pool`) for I/O test
+- Support for mount options for NAS volumes
 
 ### Fixes
 
