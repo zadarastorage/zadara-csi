@@ -8,14 +8,29 @@ Please, install zadara-csi driver (includes storage.zadara.com/v1 CRDs).
 
 {{- end -}}
 {{/*************************************************************************/}}
-{{- if .Values.storageClass.VSCStorageClassName }}
-{{- if not (lookup "storage.zadara.com/v1" "VSCStorageClass" .Release.Namespace .Values.storageClass.VSCStorageClassName) }}
+{{- if .Values.storageClass.create }}
+{{- if .Values.storageClass.parameters.VSCStorageClassName }}
+{{- if not (lookup "storage.zadara.com/v1" "VSCStorageClass" .Release.Namespace .Values.storageClass.parameters.VSCStorageClassName) }}
 {{ $installSuccessful = false }}
 
-ERROR: VSCStorageClass does not exist: {{ .Values.storageClass.VSCStorageClassName }}
+ERROR: VSCStorageClass does not exist: {{ .Values.storageClass.parameters.VSCStorageClassName }}
 
 Please, create VSCStorageClass, with at least VPSA, and set '.Values.storageClass.VSCStorageClassName' in values.yaml
 
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{/*************************************************************************/}}
+{{- if not .Values.storageClass.create }}
+{{- if .Values.storageClass.existingStorageClassName }}
+{{- if not (lookup "storage.k8s.io/v1" "StorageClass" .Release.Namespace .Values.storageClass.existingStorageClassName) }}
+{{ $installSuccessful = false }}
+
+ERROR: StorageClass does not exist: {{ .Values.storageClass.existingStorageClassName }}
+
+Please, fix StorageClass name or set '.Values.storageClass.create' to create a new StorageClass.
+
+{{- end -}}
 {{- end -}}
 {{- end -}}
 {{/*************************************************************************/}}

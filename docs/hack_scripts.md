@@ -306,14 +306,24 @@ ZSnap-like tool for Zadara apps in Kubernetes.
 Useful if you would like to report an issue.
 
 ```
-$ ./hack/k8snap.py -h
-usage: k8snap.py [-h] [--prefix PREFIX] [--no-tar]
+$ ./hack/k8snap.sh -h
+./hack/k8snap.sh [-h|--help] [-q|--quiet] [--prefix PREFIX] [--logs-from PATTERN] [--no-tar] [NAMESPACE...]
 
 ZSnap-like tool [beta] for k8s applications. Requires kubectl with access to
 the cluster. Resulting files are placed in the current directory.
 
-optional arguments:
-  -h, --help       show this help message and exit
-  --prefix PREFIX  prefix for the k8snap directory
-  --no-tar         do not create a tarball
+Examples:
+  ./hack/k8snap.sh -q
+  ./hack/k8snap.sh --prefix 'before-upgrade' kube-system default
+  ./hack/k8snap.sh --logs-from 'my-app|zadara' --no-tar
+
+Optional arguments:
+  -h, --help           Show this help message and exit
+  -q, --quiet          Show less output. Do not print kubectl commands and errors
+  --prefix    PREFIX   Prefix for the k8snap directory
+  --logs-from PATTERN  Pattern to match pods to grab logs from.
+                       Uses 'grep -E' syntax. Default: 'zadara'
+  --no-tar             Do not create a tarball
+  NAMESPACE...         Namespaces to include (positional args).
+                       If not specified: 'kube-system' and the current namespace.
 ```

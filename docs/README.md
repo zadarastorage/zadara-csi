@@ -34,6 +34,14 @@ as [Kubernetes Custom Resources](https://kubernetes.io/docs/concepts/extend-kube
 Configuration of CSI driver is done via _VSCStorageClass_ and _VPSA_ Custom
 Resources ([full reference](custom_resources_generated.md)).
 
+## Commonly used abbreviations
+
+- `VSC`: Volume Service Controller: a new component, built-in in the CSI Driver deployment. It aggregates multiple VPSAs and takes Volume scheduling decisions.
+- `PVC`: [Persistent Volume Claim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#introduction)
+- `PV`: [Persistent Volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#introduction)
+- `SC`: [Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/)
+- `CRD`: [Custom Resource Definition](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions)
+
 ---
 
 # Plugin deployment

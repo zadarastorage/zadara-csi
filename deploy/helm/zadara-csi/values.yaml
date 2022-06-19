@@ -6,7 +6,7 @@ image:
     # -- repository to pull image from, Dockerhub by default.
     repository: zadara/csi-driver
     # -- image tag. Modifying tags is not recommended and may cause compatibility issues.
-    tag: 2.0.0
+    tag: 2.0.1
   provisioner:
     repository: k8s.gcr.io/sig-storage/csi-provisioner
     tag: v2.2.2

@@ -42,6 +42,12 @@ pod:
 # -- storageClass values are mapped to the corresponding StorageClass fields
 # @default -- *omitted*
 storageClass:
+  # -- If `create` is true, create a new StorageClass,
+  # otherwise - use the existing one as specified by existingStorageClassName.
+  create: true
+  # -- Name of the StorageClass to use. If `storageClass.create` is true, this field is ignored.
+  # Empty string means default StorageClass.
+  existingStorageClassName: ""
   # -- vendor-specific parameters
   parameters:
     # -- Name of VSCStorageClass to use for Volume provisioning.

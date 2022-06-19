@@ -29,3 +29,23 @@
 - support for propagating volume expansion _from_ VPSA _to_ K8s (i.e, the opposite of updating PVC size in K8s, which expands a VPSA volume)
 - `run-on-host` iSCSI mode
 - support for multiple instances of CSI driver
+
+## v2.0.1
+
+Most of the changes are focused on improving migration from CSI v1 to v2.
+No significant changes in the driver itself.
+
+### Enhancements
+
+- CSI v2 will attempt to clean up unused iSCSI sessions that might remain from CSI v1.
+- `k8snap` helper script is [now available in bash](../hack/k8snap.sh), for environments that do not have Python installed.
+- Support existing StorageClass in [example-workload Chart](../docs/example_workload.md).
+- Migration tool now supports multiple CSI v1 instances.
+
+### Documentation
+
+- Improved [documentation for CSI v1 to v2 migration](../docs/migration.md).
+
+### Changes
+
+### Bug Fixes

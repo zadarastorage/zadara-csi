@@ -126,6 +126,8 @@ It is possible to configure the Chart to run any other container and any command
 | pod.tolerationSeconds.nodeNotReady | int | `30` | threshold for "node.kubernetes.io/not-ready" toleration. This corresponds to the NodeCondition `Ready` being "False". |
 | pod.tolerationSeconds.nodeUnreachable | int | `30` | threshold for "node.kubernetes.io/unreachable" toleration. This corresponds to the NodeCondition `Ready` being "Unknown". |
 | storageClass | object | *omitted* | storageClass values are mapped to the corresponding StorageClass fields |
+| storageClass.create | bool | `true` | If `create` is true, create a new StorageClass, otherwise - use the existing one as specified by existingStorageClassName. |
+| storageClass.existingStorageClassName | string | `""` | Name of the StorageClass to use. If `storageClass.create` is true, this field is ignored. Empty string means default StorageClass. |
 | storageClass.parameters | object | `{"VSCStorageClassName":""}` | vendor-specific parameters |
 | storageClass.parameters.VSCStorageClassName | string | `""` | Name of VSCStorageClass to use for Volume provisioning.  If empty - default VSCStorageClass will be used. |
 | storageClass.reclaimPolicy | string | `"Delete"` | reclaimPolicy: Retain or Delete https://kubernetes.io/docs/concepts/storage/storage-classes/#reclaim-policy |

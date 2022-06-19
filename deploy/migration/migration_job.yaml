@@ -1,41 +1,75 @@
-# OPTIONAL: use v1beta1 with older k8s versions
+## OPTIONAL: use batch/v1beta1 with older k8s versions (<1.21)
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: csi-migrator-job
 spec:
   template:
+    metadata:
+      labels:
+        app: csi-migrator
     spec:
+      ## OPTIONAL: use a specific node (useful for yaml-backup hostPath volume)
+      #nodeSelector:
+      #  kubernetes.io/hostname: node-12345
       activeDeadlineSeconds: 120
       restartPolicy: OnFailure
       serviceAccountName: csi-migrator-sa
       containers:
         - name: csi-migrator
-          # OPTIONAL: use custom registry
-          image: "zadara/csi-migrator-1to2:2.0.0"
+          ## OPTIONAL: use custom registry
+          image: "zadara/csi-migrator-1to2:2.0.1"
           args:
             - "migrator"
-            - "-f"
-            - "/config/values/values.yaml"
+            ## OPTIONAL: Name for the new CSI driver to create.
+            ## Can be a name of one of the existing CSI drivers or a new name.
+            ## We recommend using default "csi.zadara.com".
+            - "--new-csi-driver-name"
+            - "csi.zadara.com"
+            ## OPTIONAL: Name for the new VSCStorageClass Custom Resource.
+            - "--vsc-storage-class-name"
+            - "zadara-vpsa"
+            - "--values-dir-path"
+            - "/config/values"
             - "--crd-path"
             - "/config/crd/bases"
-            # OPTIONAL: Dry run mode: --dry-run {all, crd, none}.
-            # - all: do not persist any changes
-            # - crd: only install CRD, dry-run the rest
-            # - none: persist all changes
+            - "--backup-dir-path"
+            - "/backup"
+            ## OPTIONAL: Dry run mode: --dry-run {no-changes, crd-only, non-disruptive, none}.
+            ##  - no-changes: do not persist any changes
+            ##  - crd-only: only install CRD, dry-run for the rest
+            ##  - non-disruptive: allow creating new objects but no modification of existing ones
+            ##  - none: no dry-run, persist all changes
             - "--dry-run"
             - "none"
+            - "--log-level"
+            - "debug"
           volumeMounts:
-            - mountPath: /config/values/values.yaml
+            - mountPath: /config/values
               name: values-configmap
-              # REQUIRED: same as name of the key in configMap (if created from file - same as the file name)
-              subPath: "values.yaml"
+            - mountPath: /backup
+              name: yaml-backup
+          ## OPTIONAL: user IDs will affect ownership of created files in yaml-backup directory.
+          ## Typically, this should be the same as the user running the job.
+          ## Run `id --user` and id --group` to get the user and group IDs of the current user.
+          #securityContext:
+          #  runAsUser: 1000
+          #  runAsGroup: 1000
       volumes:
         - name: values-configmap
           configMap:
-            # REQUIRED: name of a configMap containing values.yaml of CSI v1.x
+            ## OPTIONAL: name of a configMap containing values.yaml of CSI v1.x
+            ## Only required if you used a different name for the configmap in the previous step.
             name: "csi-v1-values"
             optional: false
+        ## OPTIONAL: mount a hostPath directory for backing up yaml files before applying any changes.
+        ## Replace `emptyDir` with `hostPath` to enable.
+        ## See also `securityContext`, and `nodeSelector` above for more details.
+        - name: yaml-backup
+          emptyDir: {}
+          #hostPath:
+          #  path: /tmp/csi/backups
+          #  type: DirectoryOrCreate
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -44,6 +78,12 @@ metadata:
 rules:
   - apiGroups: [ "" ]
     resources: [ "persistentvolumes" ]
+    verbs: [ "get", "list", "watch", "create", "update", "patch", "delete" ]
+  - apiGroups: [ "storage.k8s.io" ]
+    resources: [ "storageclasses", "volumeattachments" ]
+    verbs: [ "get", "list", "watch", "create", "update", "patch", "delete" ]
+  - apiGroups: [ "storage.k8s.io" ]
+    resources: [ "csidrivers" ]
     verbs: [ "get", "list", "watch" ]
   - apiGroups: [ "apiextensions.k8s.io" ]
     resources: [ "customresourcedefinitions" ]
@@ -68,5 +108,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: csi-migrator-sa
-    # REQUIRED: current namespace
+    ## REQUIRED: current default namespace,
+    ## or the namespace of the job (if created in a different namespace).
+    ## Run `kubectl config view -o jsonpath='{..namespace}'; echo` to get the current namespace.
     namespace: default

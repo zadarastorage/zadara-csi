@@ -51,7 +51,7 @@ def pod_grep(name_pattern, namespace=None):
 	"""
 	:param name_pattern: full or partial name of a Pod
 	:param namespace: if set - use only given namespace
-	:return: list of Pod in parsed JSON (i.e dict) format
+	:return: list of Pod in parsed JSON (i.e. dict) format
 	"""
 	pods_json = kubectl("get pods {} --output json".format(namespace_arg(namespace)))
 	pods = json.loads(pods_json)

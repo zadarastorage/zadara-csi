@@ -73,7 +73,11 @@ spec:
         resources:
           requests:
             storage: {{ .Values.NASVolumes.capacity }}
+        {{- if .Values.storageClass.create }}
         storageClassName: {{ .Release.Name }}-sc
+        {{- else }}
+        storageClassName: {{ .Values.storageClass.existingStorageClassName }}
+        {{- end }}
     {{ end -}}
     {{- if .Values.blockVolumes.enabled }}
     - metadata:
@@ -89,7 +93,11 @@ spec:
         resources:
           requests:
             storage: {{ .Values.blockVolumes.capacity }}
+        {{- if .Values.storageClass.create }}
         storageClassName: {{ .Release.Name }}-sc
+        {{- else }}
+        storageClassName: {{ .Values.storageClass.existingStorageClassName }}
+        {{- end }}
     {{ end }}
 ---
 #############################################
