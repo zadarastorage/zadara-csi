@@ -4,7 +4,8 @@
 
 - **Multiple VPSA support** in one CSI driver
 - VPSAs are managed using Kubernetes Custom Resources
-- Custom resources report Events (e.g. if VPSA is failed, this will be posted as k8s Event, and also shown in `kubectl describe vpsa`).
+- Custom resources report Events (e.g. if VPSA is failed, this will be posted as k8s Event, and also shown
+  in `kubectl describe vpsa`).
 - Notion of VSC (Volume Service Controller) Storage Class: a pool of VPSAs used to provision volumes.
 
 ### Improvements
@@ -26,7 +27,8 @@
 ### Removals
 
 - support for deprecated `v1alpha1` CSI snapshots API
-- support for propagating volume expansion _from_ VPSA _to_ K8s (i.e, the opposite of updating PVC size in K8s, which expands a VPSA volume)
+- support for propagating volume expansion _from_ VPSA _to_ K8s (i.e, the opposite of updating PVC size in K8s, which
+  expands a VPSA volume)
 - `run-on-host` iSCSI mode
 - support for multiple instances of CSI driver
 
@@ -38,7 +40,8 @@ No significant changes in the driver itself.
 ### Enhancements
 
 - CSI v2 will attempt to clean up unused iSCSI sessions that might remain from CSI v1.
-- `k8snap` helper script is [now available in bash](../hack/k8snap.sh), for environments that do not have Python installed.
+- `k8snap` helper script is [now available in bash](../hack/k8snap.sh), for environments that do not have Python
+  installed.
 - Support existing StorageClass in [example-workload Chart](../docs/example_workload.md).
 - Migration tool now supports multiple CSI v1 instances.
 
@@ -49,3 +52,26 @@ No significant changes in the driver itself.
 ### Changes
 
 ### Bug Fixes
+
+## v2.1.0
+
+### Enhancements
+
+- Add new [ExternalVolume](../docs/custom_resources_generated.md#externalvolume)
+  Custom Resource for importing existing (pre-provisioned) VPSA Volumes into k8s.
+
+### Documentation
+
+- Add instructions for [Using pre-provisioning Volumes](../docs/example_preprovisioning.md)
+
+### Changes
+
+- `kubectl get volumes -o wide` will show VPSA Volume ID.
+  Helm has issues with updating existing CRDs. If the changes are not applied, update CRDs manually:
+  ```
+  $ kubectl apply --recursive -f ./deploy/helm/zadara-csi/crds/
+  ```
+
+### Bug Fixes
+
+- Fixed issue with renaming VPSA Volumes (updating displayName in Volume custom resource)

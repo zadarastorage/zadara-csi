@@ -8,6 +8,7 @@
 - [VPSA](#VPSA)
 - [VSCNode](#VSCNode)
 - [Volume](#Volume)
+- [ExternalVolume](#ExternalVolume)
 - [VolumeAttachment](#VolumeAttachment)
 - [Snapshot](#Snapshot)
 ---
@@ -199,6 +200,72 @@ metadata:
 spec:
   displayName: "Example NAS Volume"
   description: "Demonstrates Volume schema"
+  VSCStorageClassName: "vscstorageclass-sample"
+  size: 100Gi
+  volumeType: "NAS"
+## status cannot be edited by user, shown here as a reference.
+status:
+  state: "Ready"
+  VPSAID: "vpsa-sample"
+  ID: "volume-00000001"
+  CGID: "cg-00000001"
+  poolID: "pool-00010003"
+  ## NAS-specific fields:
+  NAS:
+    NFSExportPath: "10.10.10.10:/export/volume-sample"
+    autoExpandEnabled: false
+  ## Block-specific fields:
+  # Block:
+  #   target: "iqn.2005-03.org.open-iscsi:e9c4f0d828cf"
+
+```
+
+#### Spec
+| Field                      | Type    | Description                                                                                               | Notes                                        |
+|----------------------------|---------|-----------------------------------------------------------------------------------------------------------|----------------------------------------------|
+| `spec`                     | object  | VolumeSpec defines the desired state of Volume                                                            | Required                                     |
+| `spec.VSCStorageClassName` | string  | Name of the VSCStorageClass Custom Resource (i.e, a group of VPSAs), which handles Volume provisioning.   | Required                                     |
+| `spec.description`         | string  | Human-readable description. Mapped to a Comment on VPSA                                                   |                                              |
+| `spec.displayName`         | string  | Human-readable name. Mapped to display name of VPSA Volume.                                               | Required                                     |
+| `spec.size`                |         | Provisioned capacity of a Volume.                                                                         | Required                                     |
+| `spec.volumeType`          | string  |                                                                                                           | Required. Allowed values: `"NAS"`, `"Block"` |
+| `spec.flags`               | object  | Additional flags used when creating a new Volume. VolumeFlags may override those defined in StorageClass. |                                              |
+| `spec.flags.compress`      | boolean | Enable data compression (all-flash VPSA required)                                                         | Required                                     |
+| `spec.flags.dedupe`        | boolean | Enable data deduplication (all-flash VPSA required)                                                       | Required                                     |
+| `spec.flags.encrypt`       | boolean | Enable data encryption                                                                                    | Required                                     |
+| `spec.flags.extra`         | object  | Additional Volume flags. See "Create Volume" in https://vpsa-api.zadarastorage.com/#volumes               |                                              |
+
+#### Status
+| Field                          | Type    | Description                                                                                                                                                                                                                                                                                                                                                                       | Notes    |
+|--------------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `status`                       | object  | VolumeStatus defines the observed state of Volume                                                                                                                                                                                                                                                                                                                                 |          |
+| `status.Block`                 | object  | Block-specific properties                                                                                                                                                                                                                                                                                                                                                         |          |
+| `status.CGID`                  | string  | Internal Consistency Group ID on the VPSA, e.g, cg-00000001                                                                                                                                                                                                                                                                                                                       | Required |
+| `status.ID`                    | string  | Internal Volume ID on the VPSA, e.g, volume-00000001                                                                                                                                                                                                                                                                                                                              | Required |
+| `status.VPSAID`                | string  | Name of the VPSA Custom Resource                                                                                                                                                                                                                                                                                                                                                  | Required |
+| `status.poolID`                | string  | Internal Pool ID on the VPSA, e.g, pool-00000001                                                                                                                                                                                                                                                                                                                                  | Required |
+| `status.state`                 | string  | Status of the Snapshot `Creating`:     Volume exists in DB. `Provisioning`: Creating a *new empty* Volume on VPSA. VPSAVolumeID is set. `Cloning`:      Creating a *cloned* Volume on VPSA. VPSAVolumeID may be empty, CGID is set. `Ready`:        Volume is ready to use `Deleting`:     Delete on VPSA is in progress. `Failed`:       Volume exists on VPSA, but in bad state | Required |
+| `status.NAS`                   | object  | NAS-specific properties                                                                                                                                                                                                                                                                                                                                                           |          |
+| `status.NAS.NFSExportPath`     | string  | NFS export path for `mount` commands                                                                                                                                                                                                                                                                                                                                              | Required |
+| `status.NAS.autoExpandEnabled` | boolean | Automatic expansion when Volume is low on free capacity                                                                                                                                                                                                                                                                                                                           | Required |
+
+
+##  ExternalVolume
+
+ExternalVolume is the Schema for the externalvolumes API. It uses the same schema as Volume, but represents a Volume that is not managed by VSC (Volume Service Controller). Deleting ExternalVolume will not delete the underlying VPSA Volume.
+```shell script
+kubectl get externalvolumes
+```
+
+#### Example YAML
+```yaml
+apiVersion: storage.zadara.com/v1
+kind: ExternalVolume
+metadata:
+  name: externalvolume-sample
+spec:
+  displayName: "Example of external NAS Volume"
+  description: "Follows Volume schema"
   VSCStorageClassName: "vscstorageclass-sample"
   size: 100Gi
   volumeType: "NAS"

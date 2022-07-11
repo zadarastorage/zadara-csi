@@ -70,6 +70,7 @@ Advanced topics:
 - [Example workload for NAS or Block volumes](example_workload.md)
 - [Creating Snapshots and Clones](example_snapshots.md)
 - [Expand Persistent Volume Claim](example_volume_expand.md)
+- [Using pre-provisioning Volumes](example_preprovisioning.md) import existing VPSA Volumes into k8s.
 
 # Architecture and design
 

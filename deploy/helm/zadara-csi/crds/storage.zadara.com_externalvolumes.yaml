@@ -6,25 +6,17 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.7.0
   creationTimestamp: null
-  name: volumes.storage.zadara.com
+  name: externalvolumes.storage.zadara.com
 spec:
   group: storage.zadara.com
   names:
-    kind: Volume
-    listKind: VolumeList
-    plural: volumes
-    singular: volume
+    kind: ExternalVolume
+    listKind: ExternalVolumeList
+    plural: externalvolumes
+    singular: externalvolume
   scope: Cluster
   versions:
   - additionalPrinterColumns:
-    - description: Status of the VSC Volume
-      jsonPath: .spec.displayName
-      name: Display Name
-      type: string
-    - description: Status of the VSC Volume
-      jsonPath: .status.state
-      name: Status
-      type: string
     - description: Volume type (NAS or Block)
       jsonPath: .spec.volumeType
       name: Type
@@ -40,7 +32,6 @@ spec:
     - description: VPSA Volume ID, e.g. volume-00000001
       jsonPath: .status.ID
       name: VPSA Volume ID
-      priority: 1
       type: string
     - jsonPath: .metadata.creationTimestamp
       name: Age
@@ -48,7 +39,10 @@ spec:
     name: v1
     schema:
       openAPIV3Schema:
-        description: Volume is the Schema for the volumes API
+        description: ExternalVolume is the Schema for the externalvolumes API. It
+          uses the same schema as Volume, but represents a Volume that is not managed
+          by VSC (Volume Service Controller). Deleting ExternalVolume will not delete
+          the underlying VPSA Volume.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation

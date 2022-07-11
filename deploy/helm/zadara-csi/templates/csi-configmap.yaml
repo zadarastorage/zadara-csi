@@ -31,3 +31,9 @@ data:
       vsc: {{ .Values.plugin.logLevelOverride }}
     # logLevelOverride sets log level for all tags.
     logLevelOverride: {{ .Values.plugin.logLevelOverride }}
+    # VSC (Volume Service Controller) parameters.
+    VSC:
+      # Refresh interval for updating ExternalVolumes, i.e, importing volumes from VPSA.
+      # Short periods may have a negative impact on performance with large number of volumes.
+      # Format: time.Duration (e.g, "180s", "1m30s", "1h").
+      manageExternalVolumesRefreshPeriod: 5m
