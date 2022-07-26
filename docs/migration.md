@@ -554,6 +554,9 @@ Usage of ./migrator:
 
 ![Storage References](migration-storage-references.svg)
 
+- In CSI 1.x `spec.csi.volumeHandle` refers to VPSA-internal volume ID, e.g. `volume-00000001`.
+- In CSI 2.x `spec.csi.volumeHandle` refers to `metadata.name` of a [Volume](custom_resources_generated.md#volume) Custom Resource.
+
 ### Abort migration
 
 In case of errors, you may want to delete Custom Resources and CRDs to start anew.

@@ -67,9 +67,15 @@ No significant changes in the driver itself.
 ### Changes
 
 - `kubectl get volumes -o wide` will show VPSA Volume ID.
-  Helm has issues with updating existing CRDs. If the changes are not applied, update CRDs manually:
+  Note: Helm does not update CRDs upon `helm upgrade`.
+  If the changes are not applied, update CRDs manually:
   ```
   $ kubectl apply --recursive -f ./deploy/helm/zadara-csi/crds/
+  ```
+  Alternatively, using GitHub instead of local files:
+  ```
+  $ kubectl apply -f https://raw.githubusercontent.com/zadarastorage/zadara-csi/release/deploy/helm/zadara-csi/crds/storage.zadara.com_volumes.yaml
+  $ kubectl apply -f https://raw.githubusercontent.com/zadarastorage/zadara-csi/release/deploy/helm/zadara-csi/crds/storage.zadara.com_externalvolumes.yaml
   ```
 
 ### Bug Fixes
