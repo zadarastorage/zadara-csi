@@ -165,6 +165,8 @@ spec:
               name: values-configmap
             - mountPath: /backup
               name: yaml-backup
+            - name: cert-dir
+              mountPath: /etc/pki/ca-trust/source/anchors
           ## OPTIONAL: user IDs will affect ownership of created files in yaml-backup directory.
           ## Typically, this should be the same as the user running the job.
           ## Run `id --user` and id --group` to get the user and group IDs of the current user.
@@ -186,6 +188,10 @@ spec:
           #hostPath:
           #  path: /tmp/csi/backups
           #  type: DirectoryOrCreate
+        - name: cert-dir
+          secret:
+            secretName: csi-migrator-custom-tls-cert
+            optional: true
 ```
 
 ClusterRole does not require any changes.
@@ -220,6 +226,22 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: csi-migrator-sa
+```
+
+If using custom TLS certificates, you need to create a secret containing CA certificate.
+For multiple certificates, add more entries under `stringData`, following the `csi-migrator-tls.crt` example below.
+
+```yaml
+## OPTIONAL: uncomment, and fill in custom certificate data.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: csi-migrator-custom-tls-cert
+stringData:
+#  csi-migrator-tls.crt: |-
+#    -----BEGIN CERTIFICATE-----
+#    ...
+#    -----END CERTIFICATE-----
 ```
 
 ---
@@ -301,6 +323,7 @@ Migrator installs the following CRDs:
 $ kubectl get crd | grep zadara
 snapshots.storage.zadara.com                         2022-06-15T14:43:41Z
 volumeattachments.storage.zadara.com                 2022-06-15T14:43:41Z
+externalvolumes.storage.zadara.com                   2022-06-15T14:43:41Z
 volumes.storage.zadara.com                           2022-06-15T14:43:41Z
 vpsas.storage.zadara.com                             2022-06-15T14:43:41Z
 vscnodes.storage.zadara.com                          2022-06-15T14:43:41Z
@@ -569,6 +592,7 @@ Deleting CRDs will cascade delete all associated Custom Resources.
 kubectl delete crd snapshots.storage.zadara.com
 kubectl delete crd volumeattachments.storage.zadara.com
 kubectl delete crd volumes.storage.zadara.com
+kubectl delete crd externalvolumes.storage.zadara.com
 kubectl delete crd vpsas.storage.zadara.com
 kubectl delete crd vscnodes.storage.zadara.com
 kubectl delete crd vscstorageclasses.storage.zadara.com

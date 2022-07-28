@@ -49,6 +49,8 @@ spec:
               name: values-configmap
             - mountPath: /backup
               name: yaml-backup
+            - name: cert-dir
+              mountPath: /etc/pki/ca-trust/source/anchors
           ## OPTIONAL: user IDs will affect ownership of created files in yaml-backup directory.
           ## Typically, this should be the same as the user running the job.
           ## Run `id --user` and id --group` to get the user and group IDs of the current user.
@@ -70,6 +72,10 @@ spec:
           #hostPath:
           #  path: /tmp/csi/backups
           #  type: DirectoryOrCreate
+        - name: cert-dir
+          secret:
+            secretName: csi-migrator-custom-tls-cert
+            optional: true
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -112,3 +118,14 @@ subjects:
     ## or the namespace of the job (if created in a different namespace).
     ## Run `kubectl config view -o jsonpath='{..namespace}'; echo` to get the current namespace.
     namespace: default
+---
+## OPTIONAL: uncomment, and fill in custom certificate data.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: csi-migrator-custom-tls-cert
+stringData:
+#  csi-migrator-tls.crt: |-
+#    -----BEGIN CERTIFICATE-----
+#    ...
+#    -----END CERTIFICATE-----

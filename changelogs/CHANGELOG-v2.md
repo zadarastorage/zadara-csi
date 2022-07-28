@@ -80,4 +80,5 @@ No significant changes in the driver itself.
 
 ### Bug Fixes
 
-- Fixed issue with renaming VPSA Volumes (updating displayName in Volume custom resource)
+- Fixed issue with renaming VPSA Volumes (updating displayName in Volume custom resource).
+- Fixed custom trusted certificate issue in [CSI v1 to v2 migration](../docs/migration.md).
