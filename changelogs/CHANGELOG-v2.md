@@ -62,7 +62,7 @@ No significant changes in the driver itself.
 
 ### Documentation
 
-- Add instructions for [Using pre-provisioning Volumes](../docs/example_preprovisioning.md)
+- Add instructions for [Using pre-provisioned Volumes](../docs/example_preprovisioning.md)
 
 ### Changes
 

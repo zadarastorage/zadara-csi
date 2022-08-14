@@ -1,14 +1,21 @@
-# Using pre-provisioning Volumes
+# Using pre-provisioned Volumes
 
 Although the main purpose of CSI is dynamic volume provisioning, it is also possible to use pre-provisioned volumes.
 
 🛈 For cloned (restored) Snapshots and Volumes see [Snapshots and Clones](example_snapshots.md) guide.
 
+⚠ Pre-provisioned volumes require more manual configuration, than dynamically provisioned ones:
+
+- default StorageClass logic is not applied
+- reclaim policy and CSI driver name are not taken from the StorageClass
+- capacity and volumeMode are not set automatically
+
 ## Enabling auto-import of VPSA Volumes
 
 By default, Volumes that already exist on the VPSA are not created in Kubernetes or VSC.
 
-To enable auto-import of VPSA Volumes, add `storage.zadara.com/vsc-manage-external-volumes` annotation to VPSA Custom Resource:
+To enable auto-import of VPSA Volumes, add `storage.zadara.com/vsc-manage-external-volumes`
+annotation to VPSA Custom Resource:
 
 ```yaml
 apiVersion: storage.zadara.com/v1
@@ -77,6 +84,8 @@ parameters:
 
 ### Creating PersistentVolume
 
+The most important field here is `spec.csi.volumeHandle`, referring to the name of an ExternalVolume.
+
 Example YAML:
 
 ```yaml
@@ -84,21 +93,31 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: my-pv
+  annotations:
+    ## pv.kubernetes.io/provisioned-by annotation is used by k8s to delete the Volume when PV is deleted.
+    ## Must match CSIDriver name and `spec.csi.driver` of the PersistentVolume.
+    pv.kubernetes.io/provisioned-by: csi.zadara.com
 spec:
-  volumeMode: Filesystem # or Block
+  ## volumeMode can be "Filesystem" or "Block"
+  volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
+  ## NOTE: capacity is not set automatically (and not checked) for pre-provisioned PersistentVolumes.
+  ## Capacity cannot be decreased after creation.
   capacity:
-    storage: 54Gi
+    storage: 1Gi
+  ## storageClassName is the name of the StorageClass.
+  ## Must match `spec.storageClassName` of the PersistentVolumeClaim.
   storageClassName: io-test-nas
+  ## persistentVolumeReclaimPolicy is the same as reclaimPolicy in StorageClass.
+  ## Default policy is "Reclaim".
+  persistentVolumeReclaimPolicy: Delete
   csi:
+    ## driver must match CSIDriver name and `spec.csi.driver` of the PersistentVolume.
     driver: csi.zadara.com
-    volumeHandle: vpsa-sample-manual-test  # name of an ExternalVolume, or a Volume
+    ## volumeHandle refers to the name of an ExternalVolume, or a Volume Custom Resource.
+    volumeHandle: vpsa-sample-manual-test  # <-- CHANGE THIS
 ```
-- `spec.csi.volumeHandle` refers to the `metadata.name` of _ExternalVolume_, or _Volume_ custom resource.
-- `spec.csi.driver` refers to the name of the CSI driver (`kubectl get csidrivers`).
-- `spec.storageClassName` refers to the `metadata.name` of an existing _StorageClass_.
-  Must match `storageClassName` used in the PVC.
 
 _ExternalVolume_ will be converted into _Volume_ custom resource upon attaching it to a Node
 i.e, before a Pod consuming the PVC starts.
@@ -115,18 +134,20 @@ metadata:
   name: my-pvc
   # namespace: my-namespace
 spec:
-  volumeMode: Filesystem # or Block
+  ## volumeMode can be "Filesystem" or "Block"
+  volumeMode: Filesystem
+  ## volumeName is the name of the PersistentVolume.
   volumeName: my-pv
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 54Gi
+      ## NOTE: storage capacity should be greater than or equal to the size of the PersistentVolume.
+      ## Capacity cannot be decreased after creation.
+      storage: 1Gi
+  ## storageClassName is the name of the StorageClass.
   storageClassName: io-test-nas
 ```
-
-- `spec.volumeName` refers to the name of PersistentVolume.
-- `spec.storageClassName` must match `storageClassName` used in the PV.
 
 ### Creating a workload consuming the PVC
 
@@ -153,9 +174,11 @@ spec:
         - name: deployment-with-pv
           image: busybox
           command:
-            - sleep
-            - "3600"
-          ## For Block volumes, use "volumeDevices" instead of "volumeMounts"
+            - /bin/sh
+            - -c
+            - "while true; do dd if=/dev/urandom of=/pv/test_file bs=1M count=1000; sleep 1; done"
+          ## For Block volumes, use "volumeDevices" instead of "volumeMounts",
+          ## and update `dd` arguments in container `command` accordingly.
           #volumeDevices:
           #  - devicePath: /dev/sdb
           #    name: my-pv
@@ -165,12 +188,15 @@ spec:
       volumes:
         - name: my-volume
           persistentVolumeClaim:
-            claimName: my-pvc # name of the PVC
+            ## claimName refers to the `metadata.name` of the PersistentVolumeClaim we created earlier
+            claimName: my-pvc
 ```
-
-- `claimName` refers to the `metadata.name` of the PersistentVolumeClaim we created earlier.
-- use either `volumeDevices` or `volumeMounts` depending on the type of the volume.
 
 When Pod is scheduled, _ExternalVolume_ will be converted into _Volume_ custom resource.
 From there on, CSI driver will manage the lifecycle of the Volume:
-attach, mount, and delete the VPSA Volume when PV is deleted (according to StorageClass' `reclaimPolicy`).
+attach, mount, and delete the VPSA Volume when PVC is deleted
+(according to `persistentVolumeReclaimPolicy` of the PersistentVolume).
+
+To delete the Volume, PVC should be deleted _before the PV_, otherwise Volume may not be deleted.
+This issue is resolved in k8s 1.23 (alpha feature, requires feature gate),
+see [this guide](https://kubernetes.io/blog/2021/12/15/kubernetes-1-23-prevent-persistentvolume-leaks-when-deleting-out-of-order/).
