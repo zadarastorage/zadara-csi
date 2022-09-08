@@ -129,11 +129,13 @@ function print_usage_and_exit {
   echo "Optional arguments:"
   echo "  -h, --help           Show this help message and exit"
   echo "  -q, --quiet          Show less output. Do not print kubectl commands and errors"
-  echo "  --prefix    PREFIX   Prefix for the k8snap directory"
+  echo "  --prefix PREFIX      Prefix for the k8snap directory."
+  echo "                       Can be used to describe the reason for the snapshot,"
+  echo "                       e.g. 'before-upgrade' or 'pods-failed-to-start'"
   echo "  --logs-from PATTERN  Pattern to match pods to grab logs from."
   echo "                       Uses 'grep -E' syntax. Default: 'zadara'"
   echo "  --no-tar             Do not create a tarball"
-  echo "  NAMESPACE...         Namespaces to include (positional args)."
+  echo "  NAMESPACE...         Namespaces to include (positional args, multiple allowed)"
   echo "                       If not specified: 'kube-system' and the current namespace."
   exit 1
 }
@@ -156,7 +158,8 @@ while true; do
     shift
     ;;
   --prefix)
-    PREFIX="$2"
+    # slash is not allowed in the prefix
+    PREFIX=`echo "$2" | tr '/' '+'`
     shift 2
     ;;
   --logs-from)
@@ -191,7 +194,8 @@ k_logs "$K8SNAP_DIR/logs" "$LOGS_PATTERN"
 
 if [ "$DO_TAR" ]; then
   log "Creating tarball"
-  tar -czf "$K8SNAP_DIR.tar.gz" "$K8SNAP_DIR" && rm -rf "$K8SNAP_DIR"
+  # using `basename` prevents the tarball from containing the full path
+  tar -czf "$K8SNAP_DIR.tar.gz" `basename "$K8SNAP_DIR"` && rm -rf "$K8SNAP_DIR"
   log "Done: $K8SNAP_DIR.tar.gz"
 else
   log "Done:" $K8SNAP_DIR/
