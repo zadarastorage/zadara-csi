@@ -87,4 +87,4 @@ cleanup:
   # -- Run Helm pre-delete hook and delete StatefulSet PVCs (k8s does not delete them automatically).
   enabled: true
   # -- Image for cleanup hook. Requires `kubectl` installed.
-  image: bitnami/kubectl:latest
+  image: bitnami/kubectl:1.23

@@ -144,4 +144,4 @@ It is possible to configure the Chart to run any other container and any command
 | blockVolumes.capacity | string | `"50Gi"` |  |
 | blockVolumes.devicePath | string | `"/dev/sdx"` |  |
 | cleanup.enabled | bool | `true` | Run Helm pre-delete hook and delete StatefulSet PVCs (k8s does not delete them automatically). |
-| cleanup.image | string | `"bitnami/kubectl:latest"` | Image for cleanup hook. Requires `kubectl` installed. |
+| cleanup.image | string | `"bitnami/kubectl:1.23"` | Image for cleanup hook. Requires `kubectl` installed. |
