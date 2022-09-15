@@ -82,3 +82,21 @@ No significant changes in the driver itself.
 
 - Fixed issue with renaming VPSA Volumes (updating displayName in Volume custom resource).
 - Fixed custom trusted certificate issue in [CSI v1 to v2 migration](../docs/migration.md).
+
+## v2.1.1
+
+### Enhancements
+
+### Documentation
+
+- Improve [Using pre-provisioned Volumes](../docs/example_preprovisioning.md) docs.
+
+### Changes
+
+### Bug Fixes
+
+- Fixed issue with `Pending` PVCs when using non-default VSC StorageClass.
+
+- Fix issue with [k8snap helper script](../docs/hack_scripts.md#k8snap-kubernetes-snapshot)
+  triggering security alerts due to certain file paths in the archive.
+- Use fixed version for `bitnami/kubectl` image in [example-workload Chart](../docs/example_workload.md).
