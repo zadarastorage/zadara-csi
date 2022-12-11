@@ -100,3 +100,37 @@ No significant changes in the driver itself.
 - Fix issue with [k8snap helper script](../docs/hack_scripts.md#k8snap-kubernetes-snapshot)
   triggering security alerts due to certain file paths in the archive.
 - Use fixed version for `bitnami/kubectl` image in [example-workload Chart](../docs/example_workload.md).
+
+## v2.2.0
+
+This release focuses on keeping up with the latest dependencies versions, and security updates.
+No functional changes.
+
+### Enhancements
+
+### Documentation
+
+### Changes
+
+- Upgrade CSI sidecars
+- Upgrade container base images
+- Update [snapshots-v1 Chart](../deploy/helm/snapshots-v1)
+
+  This also updates `snapshot.storage.k8s.io` Custom Resource Definitions.
+  The most notable change is adding short names: `vs`, `vsclass`, `vsc`
+  (VolumeSnapshots, VolumeSnapshotClasses and VolumeSnapshotContents).
+
+  Note: Helm does not update CRDs upon `helm upgrade`.
+  If the changes are not applied, update CRDs manually:
+  ```
+  $ kubectl apply --recursive -f ./deploy/helm/snapshots-v1/crds
+  ```
+  Alternatively, using GitHub instead of local files:
+  ```
+  $ kubectl apply -f https://raw.githubusercontent.com/zadarastorage/zadara-csi/release/deploy/helm/snapshots-v1/crds/volumesnapshot.yaml
+  $ kubectl apply -f https://raw.githubusercontent.com/zadarastorage/zadara-csi/release/deploy/helm/snapshots-v1/crds/volumesnapshotclass.yaml
+  $ kubectl apply -f https://raw.githubusercontent.com/zadarastorage/zadara-csi/release/deploy/helm/snapshots-v1/crds/volumesnapshotcontents.yaml
+  ```
+
+### Bug Fixes
+

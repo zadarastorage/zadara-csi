@@ -1,8 +1,8 @@
 ---
 apiVersion: v2
 name: zadara-csi
-version: 3.0.1
-appVersion: 2.1.1
+version: 3.1.0
+appVersion: 2.2.0
 kubeVersion: ">= 1.20.0-0"
 description: "Container Storage Interface (CSI) driver for Zadara VPSA"
 keywords: ["CSI", "Storage", "Zadara", "VPSA", "NAS", "Block", "Persistent Volume", "Cloud Storage", "STaaS", "PVC"]

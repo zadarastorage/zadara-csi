@@ -71,6 +71,7 @@ spec:
           args:
             - "--csi-address=$(ADDRESS)"
             - "--leader-election"
+            - "--default-fstype=nfs"
             - "--timeout=10s"
             - "--http-endpoint=:8081"
             - "--v=4"

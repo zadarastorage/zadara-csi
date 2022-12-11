@@ -9,23 +9,25 @@ image:
     tag: 2.1.0
   provisioner:
     repository: k8s.gcr.io/sig-storage/csi-provisioner
-    tag: v2.2.2
+    # -- latest csi-provisioner requiries k8s 1.20.0 and snapshots.apiVersion: v1
+    #  If facing issues, try v2.2.2
+    tag: v3.3.0
   attacher:
     repository: k8s.gcr.io/sig-storage/csi-attacher
-    tag: v3.2.1
+    tag: v4.0.0
   resizer:
     repository: k8s.gcr.io/sig-storage/csi-resizer
-    tag: v1.2.0
+    tag: v1.6.0
   livenessProbe:
     repository: k8s.gcr.io/sig-storage/livenessprobe
-    tag: v2.3.0
+    tag: v2.8.0
   nodeDriverRegistrar:
     repository: k8s.gcr.io/sig-storage/csi-node-driver-registrar
-    tag: v2.2.0
+    tag: v2.6.2
   snapshotter:
     repository: k8s.gcr.io/sig-storage/csi-snapshotter
     # -- `tagV1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`)
-    tagV1: v4.1.1
+    tagV1: v6.1.0
     # -- `tagV1Beta1` will be used with `snapshots.apiVersion` `v1beta1` (or when `auto` resolves to `v1beta1`)
     tagV1Beta1: v3.0.3
 
