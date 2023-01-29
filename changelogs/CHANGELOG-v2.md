@@ -134,3 +134,27 @@ No functional changes.
 
 ### Bug Fixes
 
+## v2.3.0
+
+### Enhancements
+
+- Delete VSCNode when the Node is deleted.
+
+### Documentation
+
+- Add instructions for running [migration job]((../docs/migration.md)) in a custom namespace,
+  with `kube-system` as the default.
+
+### Changes
+
+- Upgrade sidecar container versions.
+
+### Bug Fixes
+
+- Fix incorrect validation of read-only mount option, leading to `Volume is already mounted with different parameters`
+  errors.
+
+- Fix missing version info in logs.
+
+- Handle Node IP changes, and update VSCNode accordingly. This could happen in a scenarios when a Node is re-created
+  with the same name but different IP address (e.g, in auto-scaling groups).

@@ -53,6 +53,8 @@ csi-bob.zadara.com     true             true             false             <unse
 
 ### Prepare for migration
 
+🛈 All examples use `kube-system` namespace. The namespace can be changed to any other namespace.
+
 #### Extract values from the currently installed CSI 1.x Charts
 
 Get computed values (the defaults merged with user overrides) from installed Zadara-CSI 1.x Helm Chart:
@@ -73,7 +75,7 @@ Create a ConfigMap containing computed values from all `*.yaml` files from previ
 We recommend using `csi-v1-values` name as it is used in the example, to be consistent with the following steps.
 
 ```shell
-$ kubectl create configmap csi-v1-values --from-file ./values-alice.yaml --from-file ./values-bob.yaml
+$ kubectl create --namespace kube-system configmap csi-v1-values --from-file ./values-alice.yaml --from-file ./values-bob.yaml
 configmap/csi-v1-values created
 ```
 
@@ -82,6 +84,9 @@ configmap/csi-v1-values created
 Edit [migration_job.yaml](../deploy/migration/migration_job.yaml), follow the `OPTIONAL` and `REQUIRED` comments.
 
 `ClusterRoleBinding` **requires** a proper `namespace` in reference to the `ServiceAccount`.
+
+🛈 We do not specify `metadata.namespace` for most resources, to make it easier to override
+the namespace by using `kubectl apply --namespace ...` command.
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -95,10 +100,9 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: csi-migrator-sa
-    ## REQUIRED: current default namespace,
-    ## or the namespace of the job (if created in a different namespace).
-    ## Run `kubectl config view -o jsonpath='{..namespace}'; echo` to get the current namespace.
-    namespace: default
+    ## REQUIRED: namespace where the Job will run.
+    ## Use the same namespace in `kubectl apply --namespace ...` command.
+    namespace: kube-system
 ```
 
 In job definition **all configuration is optional**.
@@ -261,8 +265,17 @@ _New_ PVCs and Pods will wait in `Pending` state, until a new CSI driver is depl
 
 ### Run migrator
 
+Run the migrator Job:
 ```shell
-$ kubectl apply -f ./deploy/migration/migration_job.yaml
+kubectl apply --namespace NAMESPACE -f ./deploy/migration/migration_job.yaml
+```
+
+`NAMESPACE` is the namespace where all objects specified in `migration_job.yaml` are deployed.
+`NAMESPACE` must match the one that is specified in `ClusterRoleBinding` in the previous steps.
+
+Example output:
+```shell
+$ kubectl apply --namespace kube-system -f ./deploy/migration/migration_job.yaml
 job.batch/csi-migrator-job created
 clusterrole.rbac.authorization.k8s.io/csi-migrator-role created
 serviceaccount/csi-migrator-sa created
@@ -272,7 +285,7 @@ clusterrolebinding.rbac.authorization.k8s.io/csi-migrator-rolebinding created
 When finished you will see a completed Job and its Pod:
 
 ```
-$ kubectl get jobs,pods
+$ kubectl get --namespace kube-system jobs,pods
 NAME                         COMPLETIONS   DURATION   AGE
 job.batch/csi-migrator-job   1/1           11s        6m11s
 
@@ -281,6 +294,8 @@ pod/csi-migrator-job--1-npvr8   0/1     Completed   0          6m1s
 ```
 
 This is an example of Custom Resources, created after running the migrator.
+
+🛈 All `storage.zadara.com` custom resources are cluster-scoped.
 
 ```
 volumeattachment.storage.zadara.com
@@ -539,13 +554,13 @@ Additionally, on startup CSI `node` component will clean up unused iSCSI connect
 Delete migrator `Job` and its RBAC.
 
 ```shell
-$ kubectl delete -f ./deploy/migration/migration_job.yaml
+$ kubectl delete --namespace kube-system -f ./deploy/migration/migration_job.yaml
 ```
 
 Delete ConfigMap with CSI v1.x values.
 
 ```shell
-$ kubectl delete configmap csi-v1-values
+$ kubectl delete --namespace kube-system configmap csi-v1-values
 ```
 
 ## Additional information

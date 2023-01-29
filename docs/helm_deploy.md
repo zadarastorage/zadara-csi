@@ -101,21 +101,21 @@ You can verify resulting YAML files without installing, by adding `--dry-run --d
 <!--- Auto-generated from values.yaml -->
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"2.1.0"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
+| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"2.3.0"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
 | image.csiDriver.repository | string | `"zadara/csi-driver"` | repository to pull image from, Dockerhub by default. |
-| image.csiDriver.tag | string | `"2.1.0"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
+| image.csiDriver.tag | string | `"2.3.0"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
 | image.provisioner.repository | string | `"k8s.gcr.io/sig-storage/csi-provisioner"` |  |
-| image.provisioner.tag | string | `"v3.3.0"` | latest csi-provisioner requiries k8s 1.20.0 and snapshots.apiVersion: v1  If facing issues, try v2.2.2 |
+| image.provisioner.tag | string | `"v3.4.0"` | latest csi-provisioner requiries k8s 1.20.0 and snapshots.apiVersion: v1  If facing issues, try v2.2.2 |
 | image.attacher.repository | string | `"k8s.gcr.io/sig-storage/csi-attacher"` |  |
-| image.attacher.tag | string | `"v4.0.0"` |  |
+| image.attacher.tag | string | `"v4.1.0"` |  |
 | image.resizer.repository | string | `"k8s.gcr.io/sig-storage/csi-resizer"` |  |
-| image.resizer.tag | string | `"v1.6.0"` |  |
+| image.resizer.tag | string | `"v1.7.0"` |  |
 | image.livenessProbe.repository | string | `"k8s.gcr.io/sig-storage/livenessprobe"` |  |
-| image.livenessProbe.tag | string | `"v2.8.0"` |  |
+| image.livenessProbe.tag | string | `"v2.9.0"` |  |
 | image.nodeDriverRegistrar.repository | string | `"k8s.gcr.io/sig-storage/csi-node-driver-registrar"` |  |
-| image.nodeDriverRegistrar.tag | string | `"v2.6.2"` |  |
+| image.nodeDriverRegistrar.tag | string | `"v2.7.0"` |  |
 | image.snapshotter.repository | string | `"k8s.gcr.io/sig-storage/csi-snapshotter"` |  |
-| image.snapshotter.tagV1 | string | `"v6.1.0"` | `tagV1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`) |
+| image.snapshotter.tagV1 | string | `"v6.2.0"` | `tagV1` will be used with `snapshots.apiVersion` `v1` (or when `auto` resolves to `v1`) |
 | image.snapshotter.tagV1Beta1 | string | `"v3.0.3"` | `tagV1Beta1` will be used with `snapshots.apiVersion` `v1beta1` (or when `auto` resolves to `v1beta1`) |
 | imagePullSecrets | list | `[]` | imagePullSecrets: credentials for private registry. A list of names of Secrets in the same namespace. Create `imagePullSecrets`: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/ |
 | imagePullPolicy | string | `"IfNotPresent"` | imagePullPolicy *for all images* used by this chart |

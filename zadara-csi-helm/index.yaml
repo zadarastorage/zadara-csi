@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   example-workload:
   - apiVersion: v2
-    created: "2022-12-11T15:33:19.066178085+02:00"
+    created: "2023-01-29T14:32:35.378043724+02:00"
     description: Example workload using Zadara-CSI NAS & Block volumes
-    digest: 18c9e8fba7ac2442a613b810c4d233367c32fd8629fff487a7ee78186b12ec25
+    digest: 7bd1922403ec5dff8325e3f7c87954ebe9e58ead0a0affbd91b620861a649344
     name: example-workload
     urls:
     - example-workload-1.0.0.tgz
@@ -12,10 +12,10 @@ entries:
   snapshots-v1:
   - apiVersion: v2
     appVersion: 6.1.0
-    created: "2022-12-11T15:33:19.069362422+02:00"
+    created: "2023-01-29T14:32:35.380980239+02:00"
     description: Common infrastructure for v1 CSI Snapshots. Includes snapshots CRDs,
       cluster-global Snapshot Controller, and RBAC for it.
-    digest: 232d998cf64fe7b412e2271eae4a46617d129b038145284586b507f755115def
+    digest: 66716648fde8b6f99f5285197478298f3d2e80347248a5ac309a06da7501b577
     kubeVersion: '>= 1.20.0-0'
     name: snapshots-v1
     type: application
@@ -24,7 +24,7 @@ entries:
     version: 6.1.0+zadara.1
   - apiVersion: v2
     appVersion: 4.1.1
-    created: "2022-12-11T15:33:19.067540167+02:00"
+    created: "2023-01-29T14:32:35.379743441+02:00"
     description: Common infrastructure for v1 CSI Snapshots. Includes snapshots CRDs,
       cluster-global Snapshot Controller, and RBAC for it.
     digest: 651fb35d263bf8001144468dd1b2ddc6b62ad569fbc6f8d30bbc67fabf8eb947
@@ -37,10 +37,10 @@ entries:
   snapshots-v1beta1:
   - apiVersion: v2
     appVersion: 3.3.0
-    created: "2022-12-11T15:33:19.07105195+02:00"
+    created: "2023-01-29T14:32:35.382198237+02:00"
     description: Common infrastructure for v1beta1 CSI Snapshots. Includes snapshots
       CRDs, cluster-global Snapshot Controller, and RBAC for it.
-    digest: aa83398a8fceceff480300a5d16cf296ff1f3f24f131b3614d31e069f27c9969
+    digest: 490a7c27cf51f22db7cfec3443cb4086e1c00981c9b3c97210624efa48471193
     kubeVersion: '>= 1.17.0-0'
     name: snapshots-v1beta1
     type: application
@@ -49,8 +49,34 @@ entries:
     version: 3.3.0+zadara.1
   zadara-csi:
   - apiVersion: v2
+    appVersion: 2.3.0
+    created: "2023-01-29T14:32:35.399444544+02:00"
+    description: Container Storage Interface (CSI) driver for Zadara VPSA
+    digest: bc1d747e17a0a3f71127f5caf6cbdc1f729d397f2233ee83a4267c7684052a14
+    home: https://github.com/zadarastorage/zadara-csi
+    keywords:
+    - CSI
+    - Storage
+    - Zadara
+    - VPSA
+    - NAS
+    - Block
+    - Persistent Volume
+    - Cloud Storage
+    - STaaS
+    - PVC
+    kubeVersion: '>= 1.20.0-0'
+    maintainers:
+    - email: k8s+csi@zadara.com
+      name: Zadara Kubernetes team
+      url: https://support.zadarastorage.com/
+    name: zadara-csi
+    urls:
+    - zadara-csi-3.2.0.tgz
+    version: 3.2.0
+  - apiVersion: v2
     appVersion: 2.2.0
-    created: "2022-12-11T15:33:19.085719746+02:00"
+    created: "2023-01-29T14:32:35.397440349+02:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
     digest: 3deaf7a09d520762f0a7747cd8456d3e06491c4579beac668ccf3bb601321b92
     home: https://github.com/zadarastorage/zadara-csi
@@ -76,7 +102,7 @@ entries:
     version: 3.1.0
   - apiVersion: v2
     appVersion: 2.1.1
-    created: "2022-12-11T15:33:19.081582883+02:00"
+    created: "2023-01-29T14:32:35.394038881+02:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
     digest: a0c3f18711f34c1ce4f4dcb5f1d6122b68111826d5769ea14586d7da1df5f8e4
     home: https://github.com/zadarastorage/zadara-csi
@@ -102,7 +128,7 @@ entries:
     version: 3.0.1
   - apiVersion: v2
     appVersion: 2.0.0
-    created: "2022-12-11T15:33:19.077858508+02:00"
+    created: "2023-01-29T14:32:35.384996746+02:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
     digest: ba752ca259b247c9a6431886f5c04a06a958b60313185b5c2479f7e2d38da7e1
     home: https://github.com/zadarastorage/zadara-csi
@@ -126,4 +152,4 @@ entries:
     urls:
     - zadara-csi-3.0.0.tgz
     version: 3.0.0
-generated: "2022-12-11T15:33:19.064114665+02:00"
+generated: "2023-01-29T14:32:35.376556398+02:00"
