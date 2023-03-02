@@ -1,10 +1,9 @@
-
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.7.0
+    controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
   name: vpsas.storage.zadara.com
 spec:
@@ -142,13 +141,13 @@ spec:
                 - volumes
                 type: object
               state:
-                description: "Status of the VPSA \t`Configuring`:  Exists in DB, validation
-                  and reconfiguring in progress. \t`Ready`:        Ready for volume
-                  provisioning \t`Incompatible`: Does not fit VSC requirements or
-                  not compatible with VSCStorageClass \t`Unreachable`:  Unreachable
-                  - state unknown (network, credentials or TLS issues). \t`Failed`:
-                  \      Unhealthy (Pools, Drives, Volumes not healthy) \t`Deleting`:
-                  \    VPSA is removed from VSCStorageClass"
+                description: 'Status of the VPSA `Configuring`:  Exists in DB, validation
+                  and reconfiguring in progress. `Ready`:        Ready for volume
+                  provisioning `Incompatible`: Does not fit VSC requirements or not
+                  compatible with VSCStorageClass `Unreachable`:  Unreachable - state
+                  unknown (network, credentials or TLS issues). `Failed`:       Unhealthy
+                  (Pools, Drives, Volumes not healthy) `Deleting`:     VPSA is removed
+                  from VSCStorageClass'
                 enum:
                 - Configuring
                 - Ready
@@ -171,9 +170,3 @@ spec:
     storage: true
     subresources:
       status: {}
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: []
-  storedVersions: []

@@ -1,10 +1,9 @@
-
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.7.0
+    controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
   name: snapshots.storage.zadara.com
 spec:
@@ -94,11 +93,11 @@ spec:
                 pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                 x-kubernetes-int-or-string: true
               state:
-                description: "Status of the Snapshot \t`Creating`:        Snapshot
-                  Exists in DB. \t`TakingSnapshot`:  Snapshot exists on VPSA, waiting
-                  for it to be ready. \t`Ready`:           Snapshot is ready to use.
-                  \t`Deleting`:        Snapshot in being deleted, delete on VPSA is
-                  in progress. \t`Failed`:          Snapshot is in bad state."
+                description: 'Status of the Snapshot `Creating`:        Snapshot Exists
+                  in DB. `TakingSnapshot`:  Snapshot exists on VPSA, waiting for it
+                  to be ready. `Ready`:           Snapshot is ready to use. `Deleting`:        Snapshot
+                  in being deleted, delete on VPSA is in progress. `Failed`:          Snapshot
+                  is in bad state.'
                 type: string
             type: object
         type: object
@@ -106,9 +105,3 @@ spec:
     storage: true
     subresources:
       status: {}
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: []
-  storedVersions: []
