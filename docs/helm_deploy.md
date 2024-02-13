@@ -101,9 +101,9 @@ You can verify resulting YAML files without installing, by adding `--dry-run --d
 <!--- Auto-generated from values.yaml -->
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"2.3.0"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
+| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"2.4.0"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
 | image.csiDriver.repository | string | `"zadara/csi-driver"` | repository to pull image from, Dockerhub by default. |
-| image.csiDriver.tag | string | `"2.3.0"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
+| image.csiDriver.tag | string | `"2.4.0"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
 | image.provisioner.repository | string | `"k8s.gcr.io/sig-storage/csi-provisioner"` |  |
 | image.provisioner.tag | string | `"v3.4.0"` | latest csi-provisioner requiries k8s 1.20.0 and snapshots.apiVersion: v1  If facing issues, try v2.2.2 |
 | image.attacher.repository | string | `"k8s.gcr.io/sig-storage/csi-attacher"` |  |
@@ -129,6 +129,7 @@ You can verify resulting YAML files without installing, by adding `--dry-run --d
 | plugin.healthzPort | int | `9808` | healthzPort is used for Node liveness probe, needs to be unique for each plugin instance in a cluster (Node pod requires `hostNetwork` for iSCSI support, thus using ports on the Node). |
 | plugin.logLevelOverride | string | `"info"` | logLevelOverride sets log level globally. More fine-grained settings are available in ConfigMap (can be updated at runtime). Allowed values: panic, fatal, error, warning, info, debug |
 | plugin.logFormat | string | `"text"` | logFormat can be "text" or "json" |
+| plugin.storageNetwork | string | `""` |  |
 | plugin.stonith.enable | bool | `true` | enable or disable STONITH for fast failover for stateful Pods. Limited to Pods using Persistent Volume Claims provisioned by this CSI driver. |
 | plugin.stonith.replicas | int | `1` | number of replicas of STONITH Deployment |
 | plugin.stonith.probePeriod | string | `"2s"` | When Node is not ready, STONITH will probe it with this interval. Format: [time.Duration](https://pkg.go.dev/time#ParseDuration) e.g. 10s, 1m, 500ms |

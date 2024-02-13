@@ -197,6 +197,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+            - name: CSI_STORAGE_NETWORK
+              value: "{{ .Values.plugin.storageNetwork }}"
             - name: CSI_GRPC_ENDPOINT
               value: "unix:///csi/csi.sock"
             - name: VSC_VOLUME_ALLOCATOR
