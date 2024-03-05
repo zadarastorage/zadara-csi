@@ -66,7 +66,9 @@ plugin:
   logLevelOverride: "info"
   # -- logFormat can be "text" or "json"
   logFormat: "text"
-  # csi storage network
+  # -- For clusters with multiple network interfaces storageNetwork is used to specify a dedicated storage network that should handle NFS/Block traffic.
+  # storageNetwork takes CIDR address as parameter, for example "192.168.50.0/24" or “2001:db8::/64" for IPv6.
+  # (Default: the node’s INTERNAL-IP will be used NFS/Block connectivity)
   storageNetwork: ""
 
   stonith:

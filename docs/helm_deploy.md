@@ -129,7 +129,7 @@ You can verify resulting YAML files without installing, by adding `--dry-run --d
 | plugin.healthzPort | int | `9808` | healthzPort is used for Node liveness probe, needs to be unique for each plugin instance in a cluster (Node pod requires `hostNetwork` for iSCSI support, thus using ports on the Node). |
 | plugin.logLevelOverride | string | `"info"` | logLevelOverride sets log level globally. More fine-grained settings are available in ConfigMap (can be updated at runtime). Allowed values: panic, fatal, error, warning, info, debug |
 | plugin.logFormat | string | `"text"` | logFormat can be "text" or "json" |
-| plugin.storageNetwork | string | `""` |  |
+| plugin.storageNetwork | string | `""` | For clusters with multiple network interfaces storageNetwork is used to specify a dedicated storage network that should handle NFS/Block traffic. storageNetwork takes CIDR address as parameter, for example "192.168.50.0/24" or “2001:db8::/64" for IPv6. (Default: the node’s INTERNAL-IP will be used NFS/Block connectivity) |
 | plugin.stonith.enable | bool | `true` | enable or disable STONITH for fast failover for stateful Pods. Limited to Pods using Persistent Volume Claims provisioned by this CSI driver. |
 | plugin.stonith.replicas | int | `1` | number of replicas of STONITH Deployment |
 | plugin.stonith.probePeriod | string | `"2s"` | When Node is not ready, STONITH will probe it with this interval. Format: [time.Duration](https://pkg.go.dev/time#ParseDuration) e.g. 10s, 1m, 500ms |

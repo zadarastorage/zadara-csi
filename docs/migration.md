@@ -14,6 +14,8 @@
 
 This process does not affect the application or I/O and is completely transparent to the user.
 
+⚠ In case the cluster target for migration is using a dedicated network interface for storage connectivity consider adding storageNetwork definition to the driver helm values, see [deploy helm](./helm_deploy.md) for additional information
+
 ## About this guide
 
 We provide an example for migrating 2 CSI v1.x instances: `csi-alice` and `csi-bob`.

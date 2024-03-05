@@ -158,3 +158,23 @@ No functional changes.
 
 - Handle Node IP changes, and update VSCNode accordingly. This could happen in a scenarios when a Node is re-created
   with the same name but different IP address (e.g, in auto-scaling groups).
+
+## v2.4.0
+
+### Enhancements
+
+- Add the helm values option to specify a dedicated network interface in a cluster with multiple network interfaces. See [deploy helm](./helm_deploy.md) for additional information
+
+### Documentation
+
+- Add instructions for running [migration job]((../docs/migration.md)) in a custom namespace,
+  with `kube-system` as the default.
+
+### Changes
+
+- Upgrade sidecar container versions
+- Upgrade base image system packages
+
+### Bug Fixes
+
+- Fix a compatability issue with VPSA version 23.09 and later
