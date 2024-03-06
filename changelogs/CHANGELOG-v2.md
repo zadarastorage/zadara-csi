@@ -163,11 +163,11 @@ No functional changes.
 
 ### Enhancements
 
-- Add the helm values option to specify a dedicated network interface in a cluster with multiple network interfaces. See [deploy helm](./helm_deploy.md) for additional information
+- Add the helm values option to specify a dedicated network interface in a cluster with multiple network interfaces. See [deploy helm](../docs/helm_deploy.md) for additional information
 
 ### Documentation
 
-- Add instructions for running [migration job]((../docs/migration.md)) in a custom namespace,
+- Add instructions for running [migration job](../docs/migration.md) in a custom namespace,
   with `kube-system` as the default.
 
 ### Changes
