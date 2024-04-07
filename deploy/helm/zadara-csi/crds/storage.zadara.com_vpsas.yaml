@@ -97,6 +97,9 @@ spec:
               CHAPUser:
                 description: Username for iSCSI authentication
                 type: string
+              ExternalManageToken:
+                description: API access token of the VPSA for external manage user
+                type: string
               IQN:
                 description: IQN (iSCSI Qualified Name) of the VPSA (iSCSI target)
                 type: string
