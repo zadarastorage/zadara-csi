@@ -178,3 +178,9 @@ No functional changes.
 ### Bug Fixes
 
 - Fix a compatability issue with VPSA version 23.09 and later
+
+## v2.4.1
+
+### Bug Fixes
+
+- Fix a VPSA external manage token
