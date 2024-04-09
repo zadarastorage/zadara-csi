@@ -103,6 +103,10 @@ spec:
               IQN:
                 description: IQN (iSCSI Qualified Name) of the VPSA (iSCSI target)
                 type: string
+              LegacyVPSA:
+                description: LegacyVPSA is true when vpsa version < 23.03, does not
+                  support set externally manage
+                type: boolean
               capacity:
                 properties:
                   available:
