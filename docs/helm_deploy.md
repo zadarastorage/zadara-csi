@@ -101,9 +101,9 @@ You can verify resulting YAML files without installing, by adding `--dry-run --d
 <!--- Auto-generated from values.yaml -->
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"2.4.1-pre2"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
+| image.csiDriver | object | `{"repository":"zadara/csi-driver","tag":"2.4.1"}` | csiDriver is the main CSI container, provided by Zadara. `repository` and `tag` are used similarly for all images below. |
 | image.csiDriver.repository | string | `"zadara/csi-driver"` | repository to pull image from, Dockerhub by default. |
-| image.csiDriver.tag | string | `"2.4.1-pre2"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
+| image.csiDriver.tag | string | `"2.4.1"` | image tag. Modifying tags is not recommended and may cause compatibility issues. |
 | image.provisioner.repository | string | `"k8s.gcr.io/sig-storage/csi-provisioner"` |  |
 | image.provisioner.tag | string | `"v3.4.0"` | latest csi-provisioner requiries k8s 1.20.0 and snapshots.apiVersion: v1  If facing issues, try v2.2.2 |
 | image.attacher.repository | string | `"k8s.gcr.io/sig-storage/csi-attacher"` |  |
