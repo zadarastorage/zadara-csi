@@ -1,4 +1,4 @@
-# Migration from CSI 1.*x* to CSI 2.0
+# Migration from CSI 1.*x* to CSI 2.*y*
 
 ## Overview
 
@@ -10,7 +10,7 @@
 
 3. Run `migrator` tool.
 
-4. Install CSI 2.0 to complete the migration.
+4. Install CSI 2.*y* to complete the migration.
 
 This process does not affect the application or I/O and is completely transparent to the user.
 
@@ -139,8 +139,9 @@ spec:
       serviceAccountName: csi-migrator-sa
       containers:
         - name: csi-migrator
-          ## OPTIONAL: use custom registry
-          image: "zadara/csi-migrator-1to2:2.1.0"
+          ## OPTIONAL: use custom registry,
+          ## OPTIONAL: specify csi-migrator tag, use csi-migrator-1to2:2.y in order to migrate to zadara-csi:2.y
+          image: "zadara/csi-migrator-1to2:2.4.1"
           args:
             - "migrator"
             ## OPTIONAL: Name for the new CSI driver to create.
@@ -324,7 +325,7 @@ $ kubectl get vscstorageclass.storage.zadara.com -o wide
   zadara-vpsa            true                                                    11m
 ```
 
-🛈 VSCNode custom resource (one for each K8s Node) is not created at this point, it will be created by CSI 2.0 after
+🛈 VSCNode custom resource (one for each K8s Node) is not created at this point, it will be created by CSI 2.*y* after
 installation.
 
 Detailed overview with example logs:
@@ -332,7 +333,7 @@ Detailed overview with example logs:
 <details>
 <summary>Click to expand</summary>
 
-#### Installing CSI 2.0 Custom Resource Definitions (CRDs)
+#### Installing CSI 2.*y* Custom Resource Definitions (CRDs)
 
 Migrator installs the following CRDs:
 
@@ -368,7 +369,7 @@ Example logs:
 
 #### Creating Custom Resources
 
-CSI 2.0 uses Custom Resources for managing storage across multiple VPSAs. Migrator creates the following resources:
+CSI 2.*y* uses Custom Resources for managing storage across multiple VPSAs. Migrator creates the following resources:
 
 - VSCStorageClass: one for all CSI 1.x instances.
 - VPSA: one for each CSI v1.x driver.
@@ -508,13 +509,13 @@ $ kubectl get volumeattachment.storage.k8s.io -o wide
 
 ### Finish migration
 
-Install CSI 2.0: see [instructions](helm_deploy.md)
+Install CSI 2.*y*: see [instructions](helm_deploy.md)
 
 ⚠ If your have modified `--new-csi-driver-name` in migrator `Job` (instead of default `csi.zadara.com`),
-please make sure it stays the same in CSI 2.0 `my_values.yaml`.
+please make sure it stays the same in CSI 2.*y* `my_values.yaml`.
 
 After installing, all Custom Resources will be updated.
-This might take a few moments, after CSI 2.0 Pods are up and running.
+This might take a few moments, after CSI 2.*y* Pods are up and running.
 
 Upon success, all `STATUS` columns will report `Ready` state.
 Example:
@@ -549,7 +550,7 @@ $ kubectl get vscstorageclass.storage.zadara.com -o wide
 ```
 
 Additionally, on startup CSI `node` component will clean up unused iSCSI connections
-(in CSI 2.0 iSCSI connections are created on-demand and deleted when not used).
+(in CSI 2.*y* iSCSI connections are created on-demand and deleted when not used).
 
 ## Cleanup
 
@@ -595,7 +596,7 @@ Usage of ./migrator:
 ![Storage References](migration-storage-references.svg)
 
 - In CSI 1.x `spec.csi.volumeHandle` refers to VPSA-internal volume ID, e.g. `volume-00000001`.
-- In CSI 2.x `spec.csi.volumeHandle` refers to `metadata.name` of a [Volume](custom_resources_generated.md#volume) Custom Resource.
+- In CSI 2.y `spec.csi.volumeHandle` refers to `metadata.name` of a [Volume](custom_resources_generated.md#volume) Custom Resource.
 
 ### Abort migration
 
@@ -603,7 +604,7 @@ In case of errors, you may want to delete Custom Resources and CRDs to start ane
 
 Deleting CRDs will cascade delete all associated Custom Resources.
 
-⚠ Do not run these command if CSI 2.0 is already installed - it will delete all Volumes and other VPSA resources.
+⚠ Do not run these command if CSI 2.*y* is already installed - it will delete all Volumes and other VPSA resources.
 
 ```
 kubectl delete crd snapshots.storage.zadara.com
