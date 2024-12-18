@@ -3,8 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.11.3
-  creationTimestamp: null
+    controller-gen.kubebuilder.io/version: v0.16.5
   name: snapshots.storage.zadara.com
 spec:
   group: storage.zadara.com
@@ -33,14 +32,19 @@ spec:
         description: Snapshot is the Schema for the snapshots API
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
             type: string
           metadata:
             type: object
@@ -48,14 +52,19 @@ spec:
             description: SnapshotSpec defines the desired state of Snapshot
             properties:
               description:
-                description: Human-readable description. Mapped to a Comment on VPSA
+                description: |-
+                  Human-readable description.
+                  Mapped to a Comment on VPSA
                 type: string
               displayName:
-                description: Human-readable name. Mapped to display name of VPSA Snapshot.
+                description: |-
+                  Human-readable name.
+                  Mapped to display name of VPSA Snapshot.
                 type: string
               volumeID:
-                description: Name of the Volume Custom Resource, specifying the source
-                  Volume for the Snapshot.
+                description: |-
+                  Name of the Volume Custom Resource,
+                  specifying the source Volume for the Snapshot.
                 type: string
             required:
             - displayName
@@ -88,16 +97,17 @@ spec:
                 anyOf:
                 - type: integer
                 - type: string
-                description: Size is the size of source Volume at the time of creating
-                  Snapshot, and it also determines the size of cloned Volume.
+                description: |-
+                  Size is the size of source Volume at the time of creating Snapshot,
+                  and it also determines the size of cloned Volume.
                 pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                 x-kubernetes-int-or-string: true
               state:
-                description: 'Status of the Snapshot `Creating`:        Snapshot Exists
-                  in DB. `TakingSnapshot`:  Snapshot exists on VPSA, waiting for it
-                  to be ready. `Ready`:           Snapshot is ready to use. `Deleting`:        Snapshot
-                  in being deleted, delete on VPSA is in progress. `Failed`:          Snapshot
-                  is in bad state.'
+                description: "Status of the Snapshot\n\t`Creating`:        Snapshot
+                  Exists in DB.\n\t`TakingSnapshot`:  Snapshot exists on VPSA, waiting
+                  for it to be ready.\n\t`Ready`:           Snapshot is ready to use.\n\t`Deleting`:
+                  \       Snapshot in being deleted, delete on VPSA is in progress.\n\t`Failed`:
+                  \         Snapshot is in bad state."
                 type: string
             type: object
         type: object

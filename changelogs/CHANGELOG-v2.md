@@ -184,3 +184,10 @@ No functional changes.
 ### Bug Fixes
 
 - Fix a VPSA external manage token
+
+## v2.4.2
+
+### Bug Fixes
+
+- Upgrade sidecar container versions
+- Upgrade base image system packages

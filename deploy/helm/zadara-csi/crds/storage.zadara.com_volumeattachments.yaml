@@ -3,8 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.11.3
-  creationTimestamp: null
+    controller-gen.kubebuilder.io/version: v0.16.5
   name: volumeattachments.storage.zadara.com
 spec:
   group: storage.zadara.com
@@ -43,14 +42,19 @@ spec:
         description: VolumeAttachment is the Schema for the volumeattachments API
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
             type: string
           metadata:
             type: object
@@ -97,18 +101,19 @@ spec:
               NAS:
                 type: object
               VPSAServerID:
-                description: Internal Server ID on the VPSA, e.g, srv-00000001. Note,
-                  that Servers are shared between VolumeAttachments on the same Node.
+                description: |-
+                  Internal Server ID on the VPSA, e.g, srv-00000001.
+                  Note, that Servers are shared between VolumeAttachments on the same Node.
                 type: string
               state:
-                description: 'Status of the VolumeAttachment `Creating`:          VolumeAttachment
-                  exists in DB. `Attaching`:         Server exists on Volume''s VPSA,
-                  VPSAServerID is set. `ISCSILoginPending`: Volume is attached to
-                  Server on VPSA, waiting for Node to establish iSCSI connection (Block
-                  only). `Ready`:             Volume is attached and ready to mount.
-                  `Detaching`:         Detach requested. `Deleting`:          Volume
-                  detached from VPSA Server, try to delete VPSA Server. `Failed`:            VolumeAttachment
-                  is in bad state.'
+                description: "Status of the VolumeAttachment\n\t`Creating`:          VolumeAttachment
+                  exists in DB.\n\t`Attaching`:         Server exists on Volume's
+                  VPSA, VPSAServerID is set.\n\t`ISCSILoginPending`: Volume is attached
+                  to Server on VPSA, waiting for Node to establish iSCSI connection
+                  (Block only).\n\t`Ready`:             Volume is attached and ready
+                  to mount.\n\t`Detaching`:         Detach requested.\n\t`Deleting`:
+                  \         Volume detached from VPSA Server, try to delete VPSA Server.\n\t`Failed`:
+                  \           VolumeAttachment is in bad state."
                 type: string
             required:
             - state

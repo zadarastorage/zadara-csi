@@ -3,8 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.11.3
-  creationTimestamp: null
+    controller-gen.kubebuilder.io/version: v0.16.5
   name: volumes.storage.zadara.com
 spec:
   group: storage.zadara.com
@@ -50,14 +49,19 @@ spec:
         description: Volume is the Schema for the volumes API
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
             type: string
           metadata:
             type: object
@@ -65,18 +69,24 @@ spec:
             description: VolumeSpec defines the desired state of Volume
             properties:
               VSCStorageClassName:
-                description: Name of the VSCStorageClass Custom Resource (i.e, a group
-                  of VPSAs), which handles Volume provisioning.
+                description: |-
+                  Name of the VSCStorageClass Custom Resource (i.e, a group of VPSAs),
+                  which handles Volume provisioning.
                 type: string
               description:
-                description: Human-readable description. Mapped to a Comment on VPSA
+                description: |-
+                  Human-readable description.
+                  Mapped to a Comment on VPSA
                 type: string
               displayName:
-                description: Human-readable name. Mapped to display name of VPSA Volume.
+                description: |-
+                  Human-readable name.
+                  Mapped to display name of VPSA Volume.
                 type: string
               flags:
-                description: Additional flags used when creating a new Volume. VolumeFlags
-                  may override those defined in StorageClass.
+                description: |-
+                  Additional flags used when creating a new Volume.
+                  VolumeFlags may override those defined in StorageClass.
                 properties:
                   compress:
                     description: Enable data compression (all-flash VPSA required)
@@ -90,7 +100,9 @@ spec:
                   extra:
                     additionalProperties:
                       type: string
-                    description: Additional Volume flags. See "Create Volume" in https://vpsa-api.zadarastorage.com/#volumes
+                    description: |-
+                      Additional Volume flags.
+                      See "Create Volume" in https://vpsa-api.zadarastorage.com/#volumes
                     type: object
                 required:
                 - compress
@@ -147,12 +159,14 @@ spec:
                 description: Internal Pool ID on the VPSA, e.g, pool-00000001
                 type: string
               state:
-                description: 'Status of the Snapshot `Creating`:     Volume exists
-                  in DB. `Provisioning`: Creating a *new empty* Volume on VPSA. VPSAVolumeID
-                  is set. `Cloning`:      Creating a *cloned* Volume on VPSA. VPSAVolumeID
-                  may be empty, CGID is set. `Ready`:        Volume is ready to use
-                  `Deleting`:     Delete on VPSA is in progress. `Failed`:       Volume
-                  exists on VPSA, but in bad state'
+                description: |-
+                  Status of the Snapshot
+                  `Creating`:     Volume exists in DB.
+                  `Provisioning`: Creating a *new empty* Volume on VPSA. VPSAVolumeID is set.
+                  `Cloning`:      Creating a *cloned* Volume on VPSA. VPSAVolumeID may be empty, CGID is set.
+                  `Ready`:        Volume is ready to use
+                  `Deleting`:     Delete on VPSA is in progress.
+                  `Failed`:       Volume exists on VPSA, but in bad state
                 type: string
             required:
             - CGID

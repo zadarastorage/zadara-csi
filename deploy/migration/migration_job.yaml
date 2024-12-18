@@ -18,7 +18,7 @@ spec:
       containers:
         - name: csi-migrator
           ## OPTIONAL: use custom registry
-          image: "zadara/csi-migrator-1to2:2.4.1"
+          image: "zadara/csi-migrator-1to2:2.4.2"
           args:
             - "migrator"
             ## OPTIONAL: Name for the new CSI driver to create.
