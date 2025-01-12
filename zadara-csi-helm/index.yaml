@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   example-workload:
   - apiVersion: v2
-    created: "2025-01-12T13:13:12.656774797+02:00"
+    created: "2025-01-12T14:08:36.914949393+02:00"
     description: Example workload using Zadara-CSI NAS & Block volumes
-    digest: 055dc9004c11480ea0383f9a7d63323aaa1b399a5f9f4b6f8e521cb58afa1ad7
+    digest: 0aef689133d8fe8236064f4d9786c3be226ab019f791bbd0801efe4f5b0ca76e
     name: example-workload
     urls:
     - example-workload-1.0.0.tgz
@@ -12,10 +12,10 @@ entries:
   snapshots-v1:
   - apiVersion: v2
     appVersion: 6.1.0
-    created: "2025-01-12T13:13:12.659163517+02:00"
+    created: "2025-01-12T14:08:36.933052339+02:00"
     description: Common infrastructure for v1 CSI Snapshots. Includes snapshots CRDs,
       cluster-global Snapshot Controller, and RBAC for it.
-    digest: 21511f1b2d0926b113397c8cd5c2ca1b30d4ab66e40196072abcac63d577d6cf
+    digest: c03948ac14d3f85042d62d00e19fc5407445794f5385db7cd5d324868aab2625
     kubeVersion: '>= 1.20.0-0'
     name: snapshots-v1
     type: application
@@ -24,7 +24,7 @@ entries:
     version: 6.1.0+zadara.1
   - apiVersion: v2
     appVersion: 4.1.1
-    created: "2025-01-12T13:13:12.657948383+02:00"
+    created: "2025-01-12T14:08:36.916078492+02:00"
     description: Common infrastructure for v1 CSI Snapshots. Includes snapshots CRDs,
       cluster-global Snapshot Controller, and RBAC for it.
     digest: 651fb35d263bf8001144468dd1b2ddc6b62ad569fbc6f8d30bbc67fabf8eb947
@@ -37,10 +37,10 @@ entries:
   snapshots-v1beta1:
   - apiVersion: v2
     appVersion: 3.3.0
-    created: "2025-01-12T13:13:12.660358054+02:00"
+    created: "2025-01-12T14:08:36.935569279+02:00"
     description: Common infrastructure for v1beta1 CSI Snapshots. Includes snapshots
       CRDs, cluster-global Snapshot Controller, and RBAC for it.
-    digest: 195dba420871ab2bdfa3909da90958d6008761af1b1e5ed652338d0e1975e8c3
+    digest: 40e7283c109e666fddd89ef3047606794fb9732e1beb758749733bb298e4546e
     kubeVersion: '>= 1.17.0-0'
     name: snapshots-v1beta1
     type: application
@@ -50,9 +50,9 @@ entries:
   zadara-csi:
   - apiVersion: v2
     appVersion: 2.4.2
-    created: "2025-01-12T13:13:12.678242893+02:00"
+    created: "2025-01-12T14:08:36.956606154+02:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
-    digest: b26b5df7c3a7372bca4915b1926cd17e05f0c46e23329afe81d0b00a6b49c482
+    digest: e75507e69c453c685e7f0cb9fdefad60fda5f4bdfeb564324f739ef56b3cf4c8
     home: https://github.com/zadarastorage/zadara-csi
     keywords:
     - CSI
@@ -76,7 +76,7 @@ entries:
     version: 3.3.1
   - apiVersion: v2
     appVersion: 2.4.1
-    created: "2025-01-12T13:13:12.675419344+02:00"
+    created: "2025-01-12T14:08:36.953215769+02:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
     digest: ea090154ca91abf17392a0fca7ef6606967077a02b4ef7899152e0504f10cebc
     home: https://github.com/zadarastorage/zadara-csi
@@ -102,7 +102,7 @@ entries:
     version: 3.3.0
   - apiVersion: v2
     appVersion: 2.3.0
-    created: "2025-01-12T13:13:12.672514323+02:00"
+    created: "2025-01-12T14:08:36.949555195+02:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
     digest: 6d14a7f8a4bea18d998540257d282e13059d02a93171851173d23192580168d6
     home: https://github.com/zadarastorage/zadara-csi
@@ -128,7 +128,7 @@ entries:
     version: 3.2.0
   - apiVersion: v2
     appVersion: 2.2.0
-    created: "2025-01-12T13:13:12.669511919+02:00"
+    created: "2025-01-12T14:08:36.946056991+02:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
     digest: 3deaf7a09d520762f0a7747cd8456d3e06491c4579beac668ccf3bb601321b92
     home: https://github.com/zadarastorage/zadara-csi
@@ -154,7 +154,7 @@ entries:
     version: 3.1.0
   - apiVersion: v2
     appVersion: 2.1.1
-    created: "2025-01-12T13:13:12.666517475+02:00"
+    created: "2025-01-12T14:08:36.942804719+02:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
     digest: a0c3f18711f34c1ce4f4dcb5f1d6122b68111826d5769ea14586d7da1df5f8e4
     home: https://github.com/zadarastorage/zadara-csi
@@ -180,7 +180,7 @@ entries:
     version: 3.0.1
   - apiVersion: v2
     appVersion: 2.0.0
-    created: "2025-01-12T13:13:12.662185854+02:00"
+    created: "2025-01-12T14:08:36.939361631+02:00"
     description: Container Storage Interface (CSI) driver for Zadara VPSA
     digest: ba752ca259b247c9a6431886f5c04a06a958b60313185b5c2479f7e2d38da7e1
     home: https://github.com/zadarastorage/zadara-csi
@@ -204,4 +204,4 @@ entries:
     urls:
     - zadara-csi-3.0.0.tgz
     version: 3.0.0
-generated: "2025-01-12T13:13:12.655226622+02:00"
+generated: "2025-01-12T14:08:36.913526868+02:00"
