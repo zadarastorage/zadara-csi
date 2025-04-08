@@ -141,7 +141,7 @@ spec:
         - name: csi-migrator
           ## OPTIONAL: use custom registry,
           ## OPTIONAL: specify csi-migrator tag, use csi-migrator-1to2:2.y in order to migrate to zadara-csi:2.y
-          image: "zadara/csi-migrator-1to2:2.4.2"
+          image: "zadara/csi-migrator-1to2:2.4.3"
           args:
             - "migrator"
             ## OPTIONAL: Name for the new CSI driver to create.
