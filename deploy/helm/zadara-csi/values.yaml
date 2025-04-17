@@ -4,7 +4,7 @@ image:
   # `repository` and `tag` are used similarly for all images below.
   csiDriver:
     # -- repository to pull image from, Dockerhub by default.
-    repository: sajayass/csi-driver
+    repository: zadara/csi-driver
     # -- image tag. Modifying tags is not recommended and may cause compatibility issues.
     tag: 2.4.3
   provisioner:
