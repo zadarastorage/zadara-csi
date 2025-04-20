@@ -187,7 +187,15 @@ No functional changes.
 
 ## v2.4.2
 
-### Bug Fixes
+### Changes
 
 - Upgrade sidecar container versions
+- Upgrade base image system packages
+
+## v2.4.3
+
+### Bug Fixes
+- Fix mount nfs version 3
+
+### Changes
 - Upgrade base image system packages
