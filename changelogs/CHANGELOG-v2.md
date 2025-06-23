@@ -199,3 +199,8 @@ No functional changes.
 
 ### Changes
 - Upgrade base image system packages
+
+## v2.4.4
+
+### Bug Fixes
+- Fix Cleanup unnecessary iSCSI sessions
