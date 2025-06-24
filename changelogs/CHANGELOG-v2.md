@@ -203,4 +203,4 @@ No functional changes.
 ## v2.4.4
 
 ### Bug Fixes
-- Fix Cleanup unnecessary iSCSI sessions
+- Fix cleanup unnecessary iSCSI sessions
