@@ -204,3 +204,11 @@ No functional changes.
 
 ### Bug Fixes
 - Fix cleanup unnecessary iSCSI sessions
+
+## v2.4.5
+
+### Changes
+- Upgrade base image system packages
+
+### Bug Fixes
+- Fix custom resource volume attachment stuck in deleting state
