@@ -15,5 +15,5 @@ reclaimPolicy: Delete
 allowVolumeExpansion: true
 ## parameters are driver-specific settings, see examples below
 parameters: {}
-  # VSCStorageClass: vscstorageclass-sample
+  # VSCStorageClassName: vscstorageclass-sample
   # volumeOptions: '{"nfsanonuid":"65500", "nfsanongid":"65500"}'

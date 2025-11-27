@@ -65,7 +65,7 @@ kubectl get vpsa
 Install example-workload Chart with I/O on NAS volumes
 
 ```
-helm install io-test ./helm/example-workload --set blockVolumes.enabled=false
+helm install io-test ./deploy/helm/example-workload --set blockVolumes.enabled=false
 ```
 
 Check Zadara Custom Resources status, make sure all statuses are `Ready`:
