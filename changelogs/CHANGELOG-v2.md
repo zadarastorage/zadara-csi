@@ -212,3 +212,13 @@ No functional changes.
 
 ### Bug Fixes
 - Fix custom resource volume attachment stuck in deleting state
+
+## v2.4.6
+
+### Changes
+- Upgrade base image to Debian Bookworm
+- Upgrade Kubernetes client libraries and address security vulnerabilities
+- Update example StorageClass configuration and quickstart documentation
+
+### Bug Fixes
+- Suppress noisy warning logs when handling nodes with empty IP addresses
