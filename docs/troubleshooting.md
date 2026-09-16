@@ -278,6 +278,79 @@ $ sudo iscsiadm -m iface -I zadara_10.10.12.2 -o delete
 zadara_10.10.12.2 unbound and deleted.
 ```
 
+## Volume stuck in `Deleting` state
+
+A VPSA refuses to delete a Volume that still has snapshots, so the Volume custom resource stays in
+`Deleting` and the delete is retried indefinitely:
+
+```
+$ kubectl get volumes.storage.zadara.com
+NAME                                       DISPLAY NAME                               STATUS     TYPE   CAPACITY   VPSA                 AGE
+pvc-b7542d2f-adc4-452e-b9ad-36d0d9f66ba3   pvc-b7542d2f-adc4-452e-b9ad-36d0d9f66ba3   Deleting   NAS    88Gi       vpsa-storage-array   29m
+
+$ kubectl describe volumes.storage.zadara.com pvc-b7542d2f-adc4-452e-b9ad-36d0d9f66ba3
+Events:
+  Type     Reason    Message
+  ----     ------    -------
+  Warning  Deleting  N/A (2147493749): Virtual volume pvc-b7542d2f-... still has 2 snapshots
+```
+
+This happens both for snapshots taken through Kubernetes (`VolumeSnapshot`) and for snapshots the CSI
+driver cannot see at all, such as those created by a VPSA snapshot policy.
+
+The regular resolution is to delete the snapshots. Once the last one is gone, the pending Volume
+delete completes on its own, with no further action needed.
+
+### Forcing the delete
+
+If the snapshots are not worth keeping, annotate the stuck Volume to delete it along with them:
+
+```
+kubectl annotate volumes.storage.zadara.com <name> storage.zadara.com/force-delete=true
+```
+
+⚠ *This destroys the VPSA snapshots, including any the CSI driver does not know about.* The
+annotation is deliberately per-object: there is no cluster-wide force-delete switch.
+
+- `<name>` is the name of the **Volume** custom resource (`pvc-<uid>`), not of the PVC.
+- The annotation does not directly delete a healthy Volume. However, it remains armed and will
+  force-delete the Volume and its snapshots when the Volume is later marked for deletion. A Volume
+  already stuck in `Deleting` is retried with force on its next reconcile. While armed, a healthy
+  Volume reports a `ForceDeleteArmed` warning event on every reconcile. Remove the annotation before
+  initiating deletion if force-delete behavior is no longer intended.
+- Kubernetes does not validate annotation keys, so a misspelled key, or the right key with a value
+  other than `true`, is reported as a `ForceDeleteIgnored` warning event naming the intended key,
+  rather than being silently ignored.
+
+Once the Volume is deleted while annotated, the driver reports `ForceDeleting`, passes the force flag
+to the VPSA, and the Volume custom resource, its `Snapshot` custom resources, the PVC and the PV are
+all removed.
+
+### Leftover `VolumeSnapshot` objects after a forced delete
+
+A forced delete removes the snapshots on the VPSA, but the Kubernetes-native `VolumeSnapshot` and
+`VolumeSnapshotContent` objects are left behind, still reporting `READYTOUSE: true` while the VPSA
+snapshots they point at are gone:
+
+```
+$ kubectl get volumesnapshot
+NAME        READYTOUSE   SOURCEPVC                                  RESTORESIZE   AGE
+snap-test   true         pvc-b7542d2f-adc4-452e-b9ad-36d0d9f66ba3   88Gi          31m
+```
+
+This is expected. Those objects belong to the external-snapshotter sidecar, and their lifecycle is
+independent of the source Volume — deleting a volume never deletes them, forced or not.
+
+Delete them the usual way:
+
+```
+kubectl delete volumesnapshot <name>
+```
+
+The deletion succeeds even though the VPSA snapshots are already gone: the sidecar calls the driver,
+which reports success for a snapshot that no longer exists, as the CSI specification requires. Each
+`VolumeSnapshotContent` object is removed along with its `VolumeSnapshot`.
+
 ## Application Pods or PVCs are in Pending state
 
 TODO: check VolumeAttachments

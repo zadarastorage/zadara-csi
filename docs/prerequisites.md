@@ -62,6 +62,11 @@ This is done automatically, and does not require any preparations.
 
 Minimal supported K8s version: 1.20
 
+The `snapshots-v1` Helm Chart (external-snapshotter v8) requires K8s 1.25 or newer, because its CRDs use
+[CEL validation rules](https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/#validation-rules).
+Helm refuses to install or upgrade the Chart on older clusters.
+Clusters running K8s 1.20-1.24 can still use CSI snapshots with the previous Chart version, see below.
+
 ### Helm
 
 CSI driver, Snapshot controller and usage examples are provided as Helm Charts.
@@ -107,7 +112,12 @@ and [Snapshot Controller](https://kubernetes-csi.github.io/docs/snapshot-control
     For your convenience, we provide Helm Charts,
     based on [official K8s-CSI YAMLs](https://github.com/kubernetes-csi/external-snapshotter)
 
-    - [snapshots-v1 chart](#helm/snapshots-v1) for K8s 1.20+
+    - [snapshots-v1 chart](#helm/snapshots-v1) for K8s 1.25+
+
+    - [snapshots-v1 chart](#helm/snapshots-v1) version `6.1.0+zadara.1` for K8s 1.20-1.24:
+      ```
+      $ helm install csi-snapshots-v1 zadara-csi-helm/snapshots-v1 --version 6.1.0+zadara.1
+      ```
 
     - [snapshots-v1beta1 chart](#helm/snapshots-v1beta1) for older versions
 
@@ -145,10 +155,15 @@ and [Snapshot Controller](https://kubernetes-csi.github.io/docs/snapshot-control
     snapshot-controller-7485bfc5f-mqf79   1/1     Running   0          69s
     ```
 
-- Optionally, you can install [Snapshot validation webhook](https://github.com/kubernetes/enhancements/tree/master/keps/sig-storage/1900-volume-snapshot-validation-webhook) (not included in helm charts).
+- The Snapshot validation webhook is no longer needed: since external-snapshotter v8 validation is built into the CRDs.
 
-    [Installation instructions and YAMLs](https://github.com/kubernetes-csi/external-snapshotter/tree/master/deploy/kubernetes/webhook-example)
-    (OCI image is available at `k8s.gcr.io/sig-storage/snapshot-validation-webhook`)
+- Upgrading an existing installation: Helm installs CRDs only on `helm install` and never modifies them on `helm upgrade`.
+  To upgrade to the external-snapshotter v8 CRDs (K8s 1.25+), apply them explicitly after upgrading the Chart:
+    ```
+    $ helm upgrade csi-snapshots-v1 zadara-csi-helm/snapshots-v1
+    $ kubectl apply -f deploy/helm/snapshots-v1/crds/
+    ```
+  Existing `VolumeSnapshot` objects are not affected.
 
 ---
 </details>

@@ -222,3 +222,15 @@ No functional changes.
 
 ### Bug Fixes
 - Suppress noisy warning logs when handling nodes with empty IP addresses
+
+## v2.4.7
+
+### Changes
+- Support [forcing deletion of a Volume stuck on VPSA snapshots](../docs/troubleshooting.md#forcing-the-delete) via the `storage.zadara.com/force-delete` annotation
+- Upgrade sidecar container versions: csi-provisioner v6.3.0, csi-attacher v4.12.0, csi-resizer v2.2.1, livenessprobe v2.19.0, csi-node-driver-registrar v2.17.0, csi-snapshotter v8.6.0
+- Pull sidecar images from `registry.k8s.io` instead of the deprecated `k8s.gcr.io`
+- Upgrade `snapshots-v1` chart to external-snapshotter v8.6.0 (snapshot-controller image, CRDs and RBAC). The v8 CRDs use CEL validation rules and require Kubernetes 1.25 or newer
+
+### Documentation
+- Document the [force-delete flow](../docs/troubleshooting.md#forcing-the-delete) and the `VolumeSnapshot` objects it leaves behind
+- Document the Kubernetes 1.25 requirement of the `snapshots-v1` chart, the pinned install for older clusters, and the manual CRD upgrade step

@@ -5,7 +5,7 @@ namespace: kube-system
 # snapshotController https://kubernetes-csi.github.io/docs/snapshot-controller.html
 snapshotController:
   replicas: 1
-  image: k8s.gcr.io/sig-storage/snapshot-controller:v3.0.3
+  image: registry.k8s.io/sig-storage/snapshot-controller:v3.0.3
 
 # imagePullSecrets: list of names of Secrets in the same namespace
 # how to create imagePullSecrets: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
